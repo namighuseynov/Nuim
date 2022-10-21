@@ -1,36 +1,53 @@
-workspace "Nuim" 
+workspace "Nuim"
     system "windows"
-    architecture "x64"
-    configurations "Release"
     systemversion "latest"
+    configurations "Release"
+    architecture "x64"
     location "Nuim"
     startproject "Nuim"
-    targetdir "bin/"
-    objdir "bin-obj/" 
+    defines "SYSTEM_WINDOWS"
+
+project "Nuim"
+    kind "ConsoleApp"
+    language "C++"
+    location "Nuim"
+    targetdir "bin"
+    objdir "bin-obj"
+    links "Engine"
+    includedirs "Engine/src/"
+
+    files {
+        "Nuim/src/*.cpp",
+        "Nuim/src/*.h",
+        "Nuim/src/*.c",
+    }
 
 project "Engine"
     kind "StaticLib"
-    language "C++"  
+    language "C++"
     location "Engine"
+    targetdir "bin"
+    objdir "bin-obj"
+    links "opengl32.lib"
+    includedirs "Linking/include"
+    libdirs "Linking/libs/GLFW"
+    links "GLFW/glfw3.lib"
 
-    files { "**.h", "**.c" }
+    files {
+        "Engine/src/*.cpp",
+        "Engine/src/*.h",
+        "Engine/src/*.c",
+        "Engine/src/Nuim/*.cpp",
+        "Engine/src/Nuim/*.h",
+        "Engine/src/Nuim*.c",
+        "Engine/src/Nuim/Components/*.cpp",
+        "Engine/src/Nuim/Components/*.h",
+        "Engine/src/Nuim/Components/*.c",
+        "Engine/src/Nuim/InputSystem/*.cpp",
+        "Engine/src/Nuim/InputSystem/*.h",
+        "Engine/src/Nuim/InputSystem/*.c"
+    }
 
-    filter "system:windows" 
-        cppdialect "C++17"
 
-project "Nuim"   
-    kind "ConsoleApp"  
-    language "C++"   
-    location "Nuim"
-    links "Engine"
-    
-    files { "**.h", "**.c" }
 
-    filter "system:windows" 
-        cppdialect "C++17"
-        links {"kernel32", "user32", "gdi32", "winspool", "comdlg32", "advapi32", "shell32", "ole32", "oleaut32", "uuid", "odbc32", "odbccp32", "opengl32", "GLFW/glfw3.lib"}
-    filter "configurations:Release" 
-        defines { "NDEBUG" }      
-        optimize "On" 
-    includedirs {"Linking/include"}
-    libdirs {"Linking/libs/GLFW"}
+

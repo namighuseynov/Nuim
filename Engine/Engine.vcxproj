@@ -37,34 +37,18 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>SYSTEM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Linking\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;..\GLFW\glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Linking\libs\GLFW;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Linking\include\GLFW\glfw3.h" />
-    <ClInclude Include="..\Linking\include\GLFW\glfw3native.h" />
-    <ClInclude Include="..\Linking\include\KHR\khrplatform.h" />
-    <ClInclude Include="..\Linking\include\glad\glad.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\common.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\exponential.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\geometric.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\integer.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\matrix.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\neon.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\packing.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\platform.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\trigonometric.h" />
-    <ClInclude Include="..\Linking\include\glm\simd\vector_relational.h" />
-    <ClInclude Include="..\Linking\include\stb\stb_image.h" />
-    <ClInclude Include="src\Engine.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Engine.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
