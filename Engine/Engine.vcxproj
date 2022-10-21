@@ -6,6 +6,18 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Nuim\Application.h" />
+    <ClInclude Include="src\Nuim\Components\Shader.h" />
+    <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\Nuim\Core.h" />
+    <ClInclude Include="src\Nuim\EntryPoint.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Nuim\Application.cpp" />
+    <ClCompile Include="src\Nuim\Components\Shader.cpp" />
+    <ClCompile Include="src\Nuim\glad.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
@@ -40,6 +52,7 @@
       <PreprocessorDefinitions>SYSTEM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Linking\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
