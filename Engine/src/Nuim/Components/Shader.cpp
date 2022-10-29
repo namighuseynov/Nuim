@@ -38,8 +38,6 @@ Nuim::Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPat
 	catch (std::ifstream::failure e) {
 		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
 	}
-	char infoLog[512];
-	int success;
 
 	//convert sources to glchar
 	const GLchar* vertexShaderSrc = vertexShaderSource.c_str();
@@ -71,12 +69,21 @@ Nuim::Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPat
 	glDeleteShader(fragmentShader);
 }
 
+Nuim::Shader::~Shader() {
+	glDeleteProgram(this->id);
+}
+
+
 void Nuim::Shader::Use() {
 	glUseProgram(this->id);
 }
 
 unsigned int Nuim::Shader::GetId() {
 	return this->id;
+}
+
+void Nuim::Shader::SetInt(const char* attr, const int& value) {
+	glUniform1i(glGetUniformLocation(this->id, attr), value);
 }
 
 int Nuim::Shader::checkCompileOrLinkingError(const unsigned int& shaderOrProgram, const char* type) {

@@ -8,11 +8,11 @@ namespace Nuim {
 	{
 	public:
 		Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
-
+		~Shader();
+	public:
 		void Use();
 		unsigned int GetId();
-	public:
-
+		void SetInt(const char* attr, const int& value);
 	public:
 
 	private:

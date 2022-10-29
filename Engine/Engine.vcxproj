@@ -6,18 +6,6 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Nuim\Application.h" />
-    <ClInclude Include="src\Nuim\Components\Shader.h" />
-    <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\Nuim\Core.h" />
-    <ClInclude Include="src\Nuim\EntryPoint.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Nuim\Application.cpp" />
-    <ClCompile Include="src\Nuim\Components\Shader.cpp" />
-    <ClCompile Include="src\Nuim\glad.c" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
@@ -58,10 +46,23 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;..\GLFW\glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Linking\libs\GLFW;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;..\GLFW\glfw3.lib;..\GLAD\glad.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Linking\libs\GLFW;..\Linking\libs\GLAD;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Nuim\Components\Camera.h" />
+    <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\Nuim\Application.h" />
+    <ClInclude Include="src\Nuim\Components\Shader.h" />
+    <ClInclude Include="src\Nuim\Core.h" />
+    <ClInclude Include="src\Nuim\EntryPoint.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Nuim\Components\Camera.cpp" />
+    <ClCompile Include="src\Nuim\Application.cpp" />
+    <ClCompile Include="src\Nuim\Components\Shader.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

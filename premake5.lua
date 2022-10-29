@@ -32,8 +32,14 @@ project "Engine"
     objdir "bin-obj"
     links "opengl32.lib"
     includedirs "Linking/include"
-    libdirs "Linking/libs/GLFW"
-    links "GLFW/glfw3.lib"
+    libdirs {
+        "Linking/libs/GLFW",
+        "Linking/libs/GLAD",
+    }
+    links {
+        "GLFW/glfw3.lib",
+        "GLAD/glad.lib",
+    }
 
     files {
         "Engine/src/*.cpp",

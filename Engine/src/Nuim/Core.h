@@ -4,5 +4,5 @@
 #endif
 
 #ifndef SYSTEM_WINDOWS
-	#error Nuim Engine Support only Windows!
+	#error Nuim Engine Supports only Windows!
 #endif // !SYSTEM_WINDOWS

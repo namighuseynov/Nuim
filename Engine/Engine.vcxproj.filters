@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Nuim">
+      <UniqueIdentifier>{BED4897C-AA0B-8B0D-53F8-70103F0E070F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Nuim\Components">
+      <UniqueIdentifier>{13870930-7F12-77F4-8823-FAE8F42DD3F4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\Nuim\Application.h">
+      <Filter>Nuim</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Nuim\Components\Shader.h">
+      <Filter>Nuim\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Nuim\Core.h">
+      <Filter>Nuim</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Nuim\EntryPoint.h">
+      <Filter>Nuim</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Nuim\Components\Camera.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Nuim\Application.cpp">
+      <Filter>Nuim</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Nuim\Components\Shader.cpp">
+      <Filter>Nuim\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Nuim\Components\Camera.cpp" />
+  </ItemGroup>
+</Project>
