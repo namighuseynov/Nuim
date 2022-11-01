@@ -2,15 +2,6 @@
 
 class NuimEngine :
 	public Nuim::Application {
-public:
-	NuimEngine()
-	{
-		;
-	}
-	~NuimEngine()
-	{
-		;
-	}
 };
 
 Nuim::Application* Nuim::CreateApplication() {

@@ -1,25 +1,27 @@
 #include "nmpch.h"
-#include "Application.h"
-
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
-#include "Components/Shader.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
+#include "Application.h"
+#include "Components/Shader.h"
+ 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+GLFWwindow* window;
 
-int Nuim::Application::Run() {
+int Nuim::Application::initWindow() {
     // Init
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Nuim", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "Nuim", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -34,7 +36,19 @@ int Nuim::Application::Run() {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    return 0;
+}
 
+int Nuim::Application::initGL() {
+    return 0;
+};
+
+int Nuim::Application::clearEngine() {
+    glfwTerminate();
+    return 0;
+};
+
+int Nuim::Application::mainLoop() {
     // Shaders
     Shader* shader = new Shader("assets/shaders/vertex_shader.nvs", "assets/shaders/fragment_shader.nfs");
 
@@ -43,9 +57,9 @@ int Nuim::Application::Run() {
     float vertices[] = {
 
         0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f,    1.0f, 1.0f,
-        0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f, 
-       -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, 
-       -0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f,    0.0f, 1.0f   
+        0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f,
+       -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f,
+       -0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f,    0.0f, 1.0f
 
     };
     unsigned int indices[]{
@@ -58,7 +72,7 @@ int Nuim::Application::Run() {
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-    
+
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), &indices, GL_STATIC_DRAW);
@@ -77,7 +91,7 @@ int Nuim::Application::Run() {
 
     // Textures
     unsigned int texture1, texture2;
-    
+
     //Box Texture
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -150,8 +164,16 @@ int Nuim::Application::Run() {
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     glDeleteVertexArrays(1, &VAO);
+    return 0;
+};
 
-    glfwTerminate();
+
+int Nuim::Application::Run() {
+
+    Nuim::Application::initWindow();
+    Nuim::Application::initGL();
+    Nuim::Application::mainLoop();
+    Nuim::Application::clearEngine();
     return 0;
 }
 

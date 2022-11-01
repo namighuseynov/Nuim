@@ -1,11 +1,5 @@
 #include "nmpch.h"
-
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
-
 #include "Shader.h"
-
-
 
 #define NUIM_SHADER 0
 #define NUIM_PROGRAM 1

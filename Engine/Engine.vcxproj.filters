@@ -28,6 +28,8 @@
     <ClInclude Include="src\Nuim\nmpch.h">
       <Filter>Nuim</Filter>
     </ClInclude>
+    <ClInclude Include="src\Nuim\Engine\Time.h" />
+    <ClInclude Include="src\Nuim\Engine\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Nuim\Application.cpp">
@@ -42,5 +44,7 @@
     <ClCompile Include="src\Nuim\nmpch.cpp">
       <Filter>Nuim</Filter>
     </ClCompile>
+    <ClCompile Include="src\Nuim\Engine\Time.cpp" />
+    <ClCompile Include="src\Nuim\Engine\Input.cpp" />
   </ItemGroup>
 </Project>

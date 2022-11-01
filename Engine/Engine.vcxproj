@@ -52,6 +52,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Nuim\Engine\Input.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Nuim\Application.h" />
     <ClInclude Include="src\Nuim\Components\Camera.h" />
@@ -59,14 +60,17 @@
     <ClInclude Include="src\Nuim\Core.h" />
     <ClInclude Include="src\Nuim\EntryPoint.h" />
     <ClInclude Include="src\Nuim\nmpch.h" />
+    <ClInclude Include="src\Nuim\Engine\Time.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Nuim\Engine\Input.cpp" />
     <ClCompile Include="src\Nuim\Application.cpp" />
     <ClCompile Include="src\Nuim\Components\Camera.cpp" />
     <ClCompile Include="src\Nuim\Components\Shader.cpp" />
     <ClCompile Include="src\Nuim\nmpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Nuim\Engine\Time.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
