@@ -31,7 +31,16 @@ project "Engine"
     targetdir "bin"
     objdir "bin-obj"
     links "opengl32.lib"
-    includedirs "Linking/include"
+
+    pchheader "nmpch.h"
+    pchsource "Engine/src/Nuim/nmpch.cpp"
+    -- Includes
+    includedirs {
+        "Engine/src/Nuim",
+        "Linking/include"
+    }
+
+
     libdirs {
         "Linking/libs/GLFW",
         "Linking/libs/GLAD",

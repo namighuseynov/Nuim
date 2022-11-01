@@ -35,10 +35,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>nmpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SYSTEM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Linking\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\Nuim;..\Linking\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -51,17 +52,21 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Nuim\Components\Camera.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Nuim\Application.h" />
+    <ClInclude Include="src\Nuim\Components\Camera.h" />
     <ClInclude Include="src\Nuim\Components\Shader.h" />
     <ClInclude Include="src\Nuim\Core.h" />
     <ClInclude Include="src\Nuim\EntryPoint.h" />
+    <ClInclude Include="src\Nuim\nmpch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Nuim\Components\Camera.cpp" />
     <ClCompile Include="src\Nuim\Application.cpp" />
+    <ClCompile Include="src\Nuim\Components\Camera.cpp" />
     <ClCompile Include="src\Nuim\Components\Shader.cpp" />
+    <ClCompile Include="src\Nuim\nmpch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,6 +13,9 @@
     <ClInclude Include="src\Nuim\Application.h">
       <Filter>Nuim</Filter>
     </ClInclude>
+    <ClInclude Include="src\Nuim\Components\Camera.h">
+      <Filter>Nuim\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Nuim\Components\Shader.h">
       <Filter>Nuim\Components</Filter>
     </ClInclude>
@@ -22,15 +25,22 @@
     <ClInclude Include="src\Nuim\EntryPoint.h">
       <Filter>Nuim</Filter>
     </ClInclude>
-    <ClInclude Include="src\Nuim\Components\Camera.h" />
+    <ClInclude Include="src\Nuim\nmpch.h">
+      <Filter>Nuim</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Nuim\Application.cpp">
       <Filter>Nuim</Filter>
     </ClCompile>
+    <ClCompile Include="src\Nuim\Components\Camera.cpp">
+      <Filter>Nuim\Components</Filter>
+    </ClCompile>
     <ClCompile Include="src\Nuim\Components\Shader.cpp">
       <Filter>Nuim\Components</Filter>
     </ClCompile>
-    <ClCompile Include="src\Nuim\Components\Camera.cpp" />
+    <ClCompile Include="src\Nuim\nmpch.cpp">
+      <Filter>Nuim</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
