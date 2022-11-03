@@ -1,6 +1,9 @@
 #pragma once
 
-class Time {
+namespace Nuim {
+	class Time {
 
-};
+	};
+}
+
 
