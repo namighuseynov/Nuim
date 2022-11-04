@@ -39,7 +39,7 @@
       <PrecompiledHeaderFile>nmpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SYSTEM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src\Nuim;..\Linking\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Linking\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -52,25 +52,21 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Nuim\Engine\Input.h" />
-    <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\Nuim\Application.h" />
-    <ClInclude Include="src\Nuim\Components\Camera.h" />
-    <ClInclude Include="src\Nuim\Components\Shader.h" />
-    <ClInclude Include="src\Nuim\Core.h" />
-    <ClInclude Include="src\Nuim\EntryPoint.h" />
-    <ClInclude Include="src\Nuim\nmpch.h" />
-    <ClInclude Include="src\Nuim\Engine\Time.h" />
+    <ClInclude Include="src\Nuim.h" />
+    <ClInclude Include="src\Nuim\Core\Application.h" />
+    <ClInclude Include="src\Nuim\Core\Core.h" />
+    <ClInclude Include="src\Nuim\Core\EntryPoint.h" />
+    <ClInclude Include="src\Nuim\Renderer\Camera.h" />
+    <ClInclude Include="src\Nuim\Renderer\Shader.h" />
+    <ClInclude Include="src\nmpch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Nuim\Engine\Input.cpp" />
-    <ClCompile Include="src\Nuim\Application.cpp" />
-    <ClCompile Include="src\Nuim\Components\Camera.cpp" />
-    <ClCompile Include="src\Nuim\Components\Shader.cpp" />
-    <ClCompile Include="src\Nuim\nmpch.cpp">
+    <ClCompile Include="src\Nuim\Core\Application.cpp" />
+    <ClCompile Include="src\Nuim\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Nuim\Renderer\Shader.cpp" />
+    <ClCompile Include="src\nmpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Nuim\Engine\Time.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

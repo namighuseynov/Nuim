@@ -1,10 +1,12 @@
 #include "nmpch.h"
+#include "Application.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
-#include "Application.h"
-#include "Components/Shader.h"
+#include "Nuim/Renderer/Shader.h"
+#include "Nuim/Renderer/Camera.h"
+
  
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);

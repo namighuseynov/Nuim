@@ -12,6 +12,8 @@ namespace Nuim {
         SCROLL_Y = 5,
     };
 
+    
+
     enum class KeyCode {
 
         KEY_UNKNOWN = -1,
@@ -148,10 +150,10 @@ namespace Nuim {
     class Input {
     public:
         static float GetAxis(const KeyCode& key);
-        static int GetKey(const KeyCode& key);
-        static int GetKeyDown(const KeyCode& key);
-        static int GetKeyUp(const KeyCode& key);
-        static int GetMouseButton(const KeyCode& key);
+        static int GetKey(GLFWwindow* window, const KeyCode& key);
+        static int GetKeyDown(GLFWwindow* window, const KeyCode& key);
+        static int GetKeyUp(GLFWwindow* window, const KeyCode& key);
+        static int GetMouseButton(GLFWwindow* window, const KeyCode& key);
         static void Update();
     };
 }

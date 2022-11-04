@@ -4,47 +4,42 @@
     <Filter Include="Nuim">
       <UniqueIdentifier>{BED4897C-AA0B-8B0D-53F8-70103F0E070F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Nuim\Components">
-      <UniqueIdentifier>{13870930-7F12-77F4-8823-FAE8F42DD3F4}</UniqueIdentifier>
+    <Filter Include="Nuim\Core">
+      <UniqueIdentifier>{D69F7BFE-420A-3075-8B48-E11AF7F10DCA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Nuim\Renderer">
+      <UniqueIdentifier>{244E3BDD-900E-B713-5949-0091C5C8FBEF}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\Nuim\Application.h">
-      <Filter>Nuim</Filter>
+    <ClInclude Include="src\Nuim.h" />
+    <ClInclude Include="src\Nuim\Core\Application.h">
+      <Filter>Nuim\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Nuim\Components\Camera.h">
-      <Filter>Nuim\Components</Filter>
+    <ClInclude Include="src\Nuim\Core\Core.h">
+      <Filter>Nuim\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Nuim\Components\Shader.h">
-      <Filter>Nuim\Components</Filter>
+    <ClInclude Include="src\Nuim\Core\EntryPoint.h">
+      <Filter>Nuim\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Nuim\Core.h">
-      <Filter>Nuim</Filter>
+    <ClInclude Include="src\Nuim\Renderer\Camera.h">
+      <Filter>Nuim\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Nuim\EntryPoint.h">
-      <Filter>Nuim</Filter>
+    <ClInclude Include="src\Nuim\Renderer\Shader.h">
+      <Filter>Nuim\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Nuim\nmpch.h">
-      <Filter>Nuim</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Nuim\Engine\Time.h" />
-    <ClInclude Include="src\Nuim\Engine\Input.h" />
+    <ClInclude Include="src\nmpch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Nuim\Application.cpp">
-      <Filter>Nuim</Filter>
+    <ClCompile Include="src\Nuim\Core\Application.cpp">
+      <Filter>Nuim\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Nuim\Components\Camera.cpp">
-      <Filter>Nuim\Components</Filter>
+    <ClCompile Include="src\Nuim\Renderer\Camera.cpp">
+      <Filter>Nuim\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Nuim\Components\Shader.cpp">
-      <Filter>Nuim\Components</Filter>
+    <ClCompile Include="src\Nuim\Renderer\Shader.cpp">
+      <Filter>Nuim\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Nuim\nmpch.cpp">
-      <Filter>Nuim</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Nuim\Engine\Time.cpp" />
-    <ClCompile Include="src\Nuim\Engine\Input.cpp" />
+    <ClCompile Include="src\nmpch.cpp" />
   </ItemGroup>
 </Project>

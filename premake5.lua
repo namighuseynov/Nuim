@@ -33,10 +33,10 @@ project "Engine"
     links "opengl32.lib"
 
     pchheader "nmpch.h"
-    pchsource "Engine/src/Nuim/nmpch.cpp"
+    pchsource "Engine/src/nmpch.cpp"
     -- Includes
     includedirs {
-        "Engine/src/Nuim",
+        "Engine/src",
         "Linking/include"
     }
 
@@ -54,15 +54,23 @@ project "Engine"
         "Engine/src/*.cpp",
         "Engine/src/*.h",
         "Engine/src/*.c",
-        "Engine/src/Nuim/*.cpp",
-        "Engine/src/Nuim/*.h",
-        "Engine/src/Nuim*.c",
-        "Engine/src/Nuim/Components/*.cpp",
-        "Engine/src/Nuim/Components/*.h",
-        "Engine/src/Nuim/Components/*.c",
-        "Engine/src/Nuim/InputSystem/*.cpp",
-        "Engine/src/Nuim/InputSystem/*.h",
-        "Engine/src/Nuim/InputSystem/*.c"
+
+        "Engine/src/Nuim/Core/*.cpp",
+        "Engine/src/Nuim/Core/*.h",
+        "Engine/src/Nuim/Core/*.c",
+
+        "Engine/src/Nuim/Math/*.cpp",
+        "Engine/src/Nuim/Math/*.h",
+        "Engine/src/Nuim/Math/*.c",
+
+        "Engine/src/Nuim/Renderer/*.cpp",
+        "Engine/src/Nuim/Renderer/*.h",
+        "Engine/src/Nuim/Renderer/*.c",
+
+        "Engine/src/Nuim/Scene/*.cpp",
+        "Engine/src/Nuim/Scene/*.h",
+        "Engine/src/Nuim/Scene/*.c",
+
     }
 
 

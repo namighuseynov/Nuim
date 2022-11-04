@@ -1,4 +1,4 @@
-#include "Engine.h"
+#include "Nuim.h"
 
 class NuimEngine :
 	public Nuim::Application {
