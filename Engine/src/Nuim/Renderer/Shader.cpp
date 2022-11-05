@@ -1,6 +1,12 @@
 #include "nmpch.h"
 
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+#include "Nuim/Math/NMath.h"
+
 #include "Shader.h"
+
+
 
 #define NUIM_SHADER 0
 #define NUIM_PROGRAM 1
@@ -75,6 +81,14 @@ unsigned int Nuim::Shader::GetId() {
 
 void Nuim::Shader::SetInt(const char* attr, const int& value) {
 	glUniform1i(glGetUniformLocation(this->id, attr), value);
+}
+
+void Nuim::Shader::SetFlaot(const char* attr, const float& value) {
+	glUniform1f(glGetUniformLocation(this->id, attr), value);
+}
+
+void Nuim::Shader::SetMat4(const char* attr, const glm::mat4& value) {
+	glUniformMatrix4fv(glGetUniformLocation(this->id, attr), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 int Nuim::Shader::checkCompileOrLinkingError(const unsigned int& shaderOrProgram, const char* type) {

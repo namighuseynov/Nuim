@@ -1,9 +1,15 @@
 #include "nmpch.h"
 #include "Application.h"
 
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
+#include "Nuim/Math/NMath.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
+#include "Nuim/Core/Input.h"
 #include "Nuim/Renderer/Shader.h"
 #include "Nuim/Renderer/Camera.h"
 
@@ -133,6 +139,10 @@ int Nuim::Application::mainLoop() {
     shader->SetInt("texture1", 0);
     shader->SetInt("texture2", 1);
 
+    float PosX = 0.0f;
+    float PosY = 0.0f;
+    float offset = 0.05f;
+
     //Update
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -149,9 +159,27 @@ int Nuim::Application::mainLoop() {
 
         // Draw Shapes
         shader->Use();
+        glm::mat4 trans(1.0f);
+        if (glfwGetKey(window, GLFW_KEY_W)) {
+            PosY += offset;
+        }
+        if (glfwGetKey(window, GLFW_KEY_S)) {
+            PosY -= offset;
+        }
+        if (glfwGetKey(window, GLFW_KEY_D)) {
+            PosX += offset;
+        }
+        if (glfwGetKey(window, GLFW_KEY_A)) {
+            PosX -= offset;
+        }
+        trans = glm::translate(trans, glm::vec3(PosX, PosY, 0.0f));
+        shader->SetMat4("transform", trans);
+        
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices);
-
+        int key = Input::GetKey(window, KeyCode::KEY_W);
+        std::cout << key << std::endl;
         // Event etc
         glfwSwapBuffers(window);
         glfwPollEvents();

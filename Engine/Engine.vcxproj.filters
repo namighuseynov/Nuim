@@ -29,6 +29,8 @@
       <Filter>Nuim\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\nmpch.h" />
+    <ClInclude Include="src\Nuim\Math\NMath.h" />
+    <ClInclude Include="src\Nuim\Core\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Nuim\Core\Application.cpp">
@@ -41,5 +43,6 @@
       <Filter>Nuim\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\nmpch.cpp" />
+    <ClCompile Include="src\Nuim\Core\Input.cpp" />
   </ItemGroup>
 </Project>

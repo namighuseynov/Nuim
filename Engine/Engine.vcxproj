@@ -52,15 +52,18 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Nuim\Core\Input.h" />
     <ClInclude Include="src\Nuim.h" />
     <ClInclude Include="src\Nuim\Core\Application.h" />
     <ClInclude Include="src\Nuim\Core\Core.h" />
     <ClInclude Include="src\Nuim\Core\EntryPoint.h" />
+    <ClInclude Include="src\Nuim\Math\NMath.h" />
     <ClInclude Include="src\Nuim\Renderer\Camera.h" />
     <ClInclude Include="src\Nuim\Renderer\Shader.h" />
     <ClInclude Include="src\nmpch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Nuim\Core\Input.cpp" />
     <ClCompile Include="src\Nuim\Core\Application.cpp" />
     <ClCompile Include="src\Nuim\Renderer\Camera.cpp" />
     <ClCompile Include="src\Nuim\Renderer\Shader.cpp" />

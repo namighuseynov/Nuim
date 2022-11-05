@@ -13,6 +13,8 @@ namespace Nuim {
 		void Use();
 		unsigned int GetId();
 		void SetInt(const char* attr, const int& value);
+		void SetFlaot(const char* attr, const float& value);
+		void SetMat4(const char* attr, const glm::mat4& value);
 	public:
 
 	private:
