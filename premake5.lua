@@ -71,6 +71,10 @@ project "Engine"
         "Engine/src/Nuim/Scene/*.h",
         "Engine/src/Nuim/Scene/*.c",
 
+        "Engine/src/Nuim/EventSystem/*.cpp",
+        "Engine/src/Nuim/EventSystem/*.h",
+        "Engine/src/Nuim/EventSystem/*.c",
+
     }
 
 

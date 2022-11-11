@@ -1,6 +1,6 @@
 #pragma once
-#ifndef ENTRY_POINT_H
-	#define ENTRY_POINT_H
+#ifndef MAIN_LOOP_H
+	#define MAIN_LOOP_H
 
 int main() {
 	Nuim::Application* NuimEngine = Nuim::CreateApplication();
