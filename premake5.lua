@@ -3,7 +3,6 @@ workspace "Nuim"
     systemversion "latest"
     configurations "Release"
     architecture "x64"
-    location "Nuim"
     startproject "Nuim"
     defines "SYSTEM_WINDOWS"
 
@@ -37,7 +36,8 @@ project "Engine"
     -- Includes
     includedirs {
         "Engine/src",
-        "Linking/include"
+        "Linking/include",
+        "vendor"
     }
 
 
@@ -66,6 +66,10 @@ project "Engine"
         "Engine/src/Nuim/Renderer/*.cpp",
         "Engine/src/Nuim/Renderer/*.h",
         "Engine/src/Nuim/Renderer/*.c",
+
+        "Engine/src/Nuim/ImGui/*.cpp",
+        "Engine/src/Nuim/ImGui/*.h",
+        "Engine/src/Nuim/ImGui/*.c",
 
         "Engine/src/Nuim/Scene/*.cpp",
         "Engine/src/Nuim/Scene/*.h",

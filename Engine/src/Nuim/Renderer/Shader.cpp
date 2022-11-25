@@ -2,7 +2,7 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "Nuim/Math/NMath.h"
+#include "Nuim/Math/Math.h"
 
 #include "Shader.h"
 

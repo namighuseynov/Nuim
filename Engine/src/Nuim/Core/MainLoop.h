@@ -1,11 +1,15 @@
-#pragma once
-#ifndef MAIN_LOOP_H
-	#define MAIN_LOOP_H
+#pragma once 
 
-int main() {
-	Nuim::Application* NuimEngine = Nuim::CreateApplication();
-	NuimEngine->Run();
-	delete NuimEngine;
+#include "Nuim/Core/Core.h"
+#include "Nuim/Core/Application.h"
+
+#ifdef NUIM_PLATFORM_WINDOWS
+
+
+int main(int argc, char** argv) {
+	auto app = Nuim::CreateApplication({ argc, argv });
+	app->Run();
+	delete app;
+	return 0;
 }
-#endif // !ENTRY_POINT_H
-
+#endif // NUIM_PLATFORM_WINDOWS
