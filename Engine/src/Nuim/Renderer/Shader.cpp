@@ -1,5 +1,5 @@
 #include "nmpch.h"
-
+/*
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Nuim/Math/Math.h"
@@ -112,3 +112,4 @@ int Nuim::Shader::checkCompileOrLinkingError(const unsigned int& shaderOrProgram
 	}
 	return 0;
 }
+*/

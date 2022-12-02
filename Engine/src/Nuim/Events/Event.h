@@ -17,9 +17,9 @@ namespace Nuim {
 		None = 0,
 		ApplicationEventCategory = BIT(0),
 		InputEventCategory = BIT(1),
-		KeyboardEventCategory = BIT(0),
-		MouseEventCategory = BIT(0),
-		MouseButtonEventCategory = BIT(0)
+		KeyboardEventCategory = BIT(2),
+		MouseEventCategory = BIT(3),
+		MouseButtonEventCategory = BIT(4)
 	};
 
 

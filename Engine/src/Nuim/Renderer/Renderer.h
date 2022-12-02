@@ -11,4 +11,4 @@ namespace Nuim {
 		static void SceneBegin();
 		static void SceneEnd();
 	};
-}
+} 

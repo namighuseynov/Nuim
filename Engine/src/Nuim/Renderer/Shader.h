@@ -1,3 +1,4 @@
+/*
 #pragma once
 #ifndef NUIM_SHADER_H
 #define NUIM_SHADER_H
@@ -26,4 +27,4 @@ namespace Nuim {
 
 
 #endif
-
+*/

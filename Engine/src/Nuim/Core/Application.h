@@ -2,7 +2,6 @@
 #include "Nuim/Core/Core.h"
 #include "Nuim/Events/ApplicationEvent.h"
 
-#include <sstream>
 
 namespace Nuim {
 	struct ApplicationCommandLineArgs {
@@ -36,7 +35,6 @@ namespace Nuim {
 		bool minimized = false;
 		static Application* instance;
 		ApplicationSpecification specification;
-
 	};
 	Application* CreateApplication(ApplicationCommandLineArgs args);
 }

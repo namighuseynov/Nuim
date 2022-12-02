@@ -59,6 +59,14 @@ project "Engine"
         "Engine/src/Nuim/Core/*.h",
         "Engine/src/Nuim/Core/*.c",
 
+        "Engine/src/Nuim/Events/*.cpp",
+        "Engine/src/Nuim/Events/*.h",
+        "Engine/src/Nuim/Events/*.c",
+
+        "Engine/src/Nuim/ImGui/*.cpp",
+        "Engine/src/Nuim/ImGui/*.h",
+        "Engine/src/Nuim/ImGui/*.c",
+
         "Engine/src/Nuim/Math/*.cpp",
         "Engine/src/Nuim/Math/*.h",
         "Engine/src/Nuim/Math/*.c",
@@ -67,17 +75,9 @@ project "Engine"
         "Engine/src/Nuim/Renderer/*.h",
         "Engine/src/Nuim/Renderer/*.c",
 
-        "Engine/src/Nuim/ImGui/*.cpp",
-        "Engine/src/Nuim/ImGui/*.h",
-        "Engine/src/Nuim/ImGui/*.c",
-
         "Engine/src/Nuim/Scene/*.cpp",
         "Engine/src/Nuim/Scene/*.h",
         "Engine/src/Nuim/Scene/*.c",
-
-        "Engine/src/Nuim/EventSystem/*.cpp",
-        "Engine/src/Nuim/EventSystem/*.h",
-        "Engine/src/Nuim/EventSystem/*.c",
 
     }
 

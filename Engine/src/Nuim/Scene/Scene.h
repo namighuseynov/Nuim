@@ -1,5 +1,7 @@
 #pragma once
-class Scene
-{
-};
 
+namespace Nuim {
+	class Scene {
+
+	};
+}
