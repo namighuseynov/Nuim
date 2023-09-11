@@ -1,6 +1,7 @@
 #pragma once
 #include "PlatformDef.h"
 #include <memory>
+#include <iostream>
 
 #define BIT(x) (1 << x)
 
