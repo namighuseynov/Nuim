@@ -1,8 +1,11 @@
 #Directories
 bin/ 
 bin-obj/
+vendor/
 
 #files
-*.user
 .vs
-.sln
+*.user
+*.vcxproj
+*.vcxproj.filters
+*.sln
