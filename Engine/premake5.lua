@@ -38,9 +38,9 @@ project "Engine"
         "../Engine/src/Nuim/Events/*.h",
         "../Engine/src/Nuim/Events/*.c",
 
-        "../Engine/src/Nuim/ImGui/*.cpp",
-        "../Engine/src/Nuim/ImGui/*.h",
-        "../Engine/src/Nuim/ImGui/*.c",
+        "../Engine/src/Nuim/Imgui/*.cpp",
+        "../Engine/src/Nuim/Imgui/*.h",
+        "../Engine/src/Nuim/Imgui/*.c",
 
         "../Engine/src/Nuim/Math/*.cpp",
         "../Engine/src/Nuim/Math/*.h",

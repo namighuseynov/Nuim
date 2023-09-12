@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef SYSTEM_WINDOWS 
-	
-#endif
-
 #include <iostream>
 #include <string>
 #include <sstream>
