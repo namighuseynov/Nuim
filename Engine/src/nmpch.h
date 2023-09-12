@@ -7,4 +7,4 @@
 #include <streambuf>
 #include <map>
 #include <functional>
-
+#include <memory>
