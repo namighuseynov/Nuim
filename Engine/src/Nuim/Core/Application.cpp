@@ -53,70 +53,84 @@ namespace Nuim {
 		glfwTerminate();
 	}
 	int Application::Run() {
+		int success;
+		char infoLog[512];
+		float vertices[] = {
+				-0.5f, -0.5f, 0.0f,
+				 0.0f,  0.5f, 0.0f,
+				 0.5f, -0.5f, 0.0f
+		};
+
+		unsigned int VBO, VAO, vertexShader, fragmentShader, shaderProgram;
+
+		glGenBuffers(1, &VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		glGenVertexArrays(1, &VAO);
+
+		const char* VERTEX_SHADER_SOURCE = "#version 330 core\n"
+			"layout (location = 0) in vec3 aPos;\n"
+			"void main() {\n"
+			"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+			"}";
+
+		const char* FRAGMENT_SHADER_SOURCE = "#version 330 core\n"
+			"out vec4 FragColor;\n"
+			"void main() {\n"
+			"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);"
+			"}";
+
+		vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertexShader, 1, &VERTEX_SHADER_SOURCE, NULL);
+		glCompileShader(vertexShader);
+		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+			std::cout << infoLog << std::endl;
+		}
+
+		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragmentShader, 1, &FRAGMENT_SHADER_SOURCE, NULL);
+		glCompileShader(fragmentShader);
+		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+			std::cout << infoLog << std::endl;
+		}
+
+		shaderProgram = glCreateProgram();
+		glAttachShader(shaderProgram, vertexShader);
+		glAttachShader(shaderProgram, fragmentShader);
+		glLinkProgram(shaderProgram);
+		glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+		if (!success) {
+			glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+			std::cout << infoLog << std::endl;
+		}
+
+
 		
+
 		while (!glfwWindowShouldClose(this->windowInstance))
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
 
 
-			float vertices[] = {
-				-0.5f, -0.5f, 0.0f,
-				 0.0f,  0.5f, 0.0f,
-				 0.5f, -0.5f, 0.0f
-			};
-			unsigned int VBO;
-			glGenBuffers(1, &VBO);
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			//GL CODE
+			glBindVertexArray(VAO);
+			glBindBuffer(GL_VERTEX_ARRAY, VBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);	
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
+			glEnableVertexAttribArray(0); 
 
-			const char* vertexShaderSource = "#version 330 core\n"
-				"layout (location = 0) in vec3 aPos;\n"
-				"void main()\n"
-				"{\n"
-				"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-				"}\0";
 
-			const char* fragmentShaderSource = "#version 330 core\n"
-				"out vec4 FragColor;\n"
-				"void main()\n"
-				"{\n"
-				"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-				"}\n";
-
-			unsigned int vertexShader;
-			vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-			glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-			glCompileShader(vertexShader);
-			int  success;
-			char infoLog[512];
-			glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-			if (!success)
-			{
-				glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-				std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-			}
-
-			unsigned int fragmentShader;
-			fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-			glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-			glCompileShader(fragmentShader);
-
-			unsigned int shaderProgram;
-			shaderProgram = glCreateProgram();
-
-			glAttachShader(shaderProgram, vertexShader);
-			glAttachShader(shaderProgram, fragmentShader);
-			glLinkProgram(shaderProgram);
-
-			glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-			if (!success) {
-				glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-			}
 
 			glUseProgram(shaderProgram);
+			glBindVertexArray(VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+			//
 
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
@@ -160,6 +174,10 @@ namespace Nuim {
 			glfwSwapBuffers(this->windowInstance);
 			glfwPollEvents();
 		}
+		
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragmentShader);
+		glDeleteProgram(shaderProgram);
 
 		return 0;
 	}
