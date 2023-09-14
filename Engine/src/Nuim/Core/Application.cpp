@@ -4,7 +4,7 @@
 #include "GLFW/glfw3.h"
 
 #include "Application.h"
-#include "Nuim/Renderer/Renderer.h"
+#include "Shader.h"
 
 
 namespace Nuim {
@@ -109,7 +109,7 @@ namespace Nuim {
 			std::cout << infoLog << std::endl;
 		}
 
-
+		std::cout << Nuim::LoadShader("Render/nvs.vert") << std::endl;
 		
 
 		while (!glfwWindowShouldClose(this->windowInstance))
