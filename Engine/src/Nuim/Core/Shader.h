@@ -2,16 +2,13 @@
 
 namespace Nuim {
 	static const char* LoadShader(std::string path) {
-		std::string line;
-		std::string allLine;
 		std::ifstream shaderFile;
+		std::stringstream shaderStream;
 		shaderFile.open(path, std::ios::in);
 		if (shaderFile.is_open()) {
-			while (std::getline(shaderFile, line)) {
-				allLine+=line;
-			}
+			shaderStream << shaderFile.rdbuf();
 			shaderFile.close();
-			return allLine.c_str();
+			return shaderStream.str().c_str();
 		}
 		else {
 			std::cerr << "Error opening the file" << std::endl;
@@ -21,13 +18,11 @@ namespace Nuim {
 
 	class Shader {
 	public:
-		Shader(std::string vertexShaderSource, std::string fragmentShaderSource);
+		Shader(const char* vertexShaderSource, const char* fragmentShaderSource);
 		~Shader();
 	public:
 		void Use();
 	private:
-		unsigned int fragmentShader;
-		unsigned int vertexShader;
 		unsigned int ID;
 	};
 }

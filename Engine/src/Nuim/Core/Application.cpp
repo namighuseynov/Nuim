@@ -53,15 +53,13 @@ namespace Nuim {
 		glfwTerminate();
 	}
 	int Application::Run() {
-		int success;
-		char infoLog[512];
 		float vertices[] = {
 				-0.5f, -0.5f, 0.0f,
 				 0.0f,  0.5f, 0.0f,
 				 0.5f, -0.5f, 0.0f
 		};
 
-		unsigned int VBO, VAO, vertexShader, fragmentShader, shaderProgram;
+		unsigned int VBO, VAO;
 
 		glGenBuffers(1, &VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -69,53 +67,13 @@ namespace Nuim {
 
 		glGenVertexArrays(1, &VAO);
 
-		const char* VERTEX_SHADER_SOURCE = "#version 330 core\n"
-			"layout (location = 0) in vec3 aPos;\n"
-			"void main() {\n"
-			"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-			"}";
+		Shader shader(Nuim::LoadShader("Render/nvs.vert"), Nuim::LoadShader("Render/nfs.frag")); 
+		char buf[512] = {};
+		float v = 0.0f;
 
-		const char* FRAGMENT_SHADER_SOURCE = "#version 330 core\n"
-			"out vec4 FragColor;\n"
-			"void main() {\n"
-			"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);"
-			"}";
-
-		vertexShader = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertexShader, 1, &VERTEX_SHADER_SOURCE, NULL);
-		glCompileShader(vertexShader);
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-		if (!success) {
-			glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-			std::cout << infoLog << std::endl;
-		}
-
-		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShader, 1, &FRAGMENT_SHADER_SOURCE, NULL);
-		glCompileShader(fragmentShader);
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-		if (!success) {
-			glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-			std::cout << infoLog << std::endl;
-		}
-
-		shaderProgram = glCreateProgram();
-		glAttachShader(shaderProgram, vertexShader);
-		glAttachShader(shaderProgram, fragmentShader);
-		glLinkProgram(shaderProgram);
-		glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-		if (!success) {
-			glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-			std::cout << infoLog << std::endl;
-		}
-
-		std::cout << Nuim::LoadShader("Render/nvs.vert") << std::endl;
-		
-
-		while (!glfwWindowShouldClose(this->windowInstance))
+		while (!glfwWindowShouldClose(this->windowInstance)) 
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
-
 
 			//GL CODE
 			glBindVertexArray(VAO);
@@ -125,9 +83,8 @@ namespace Nuim {
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
 			glEnableVertexAttribArray(0); 
 
+			shader.Use();
 
-
-			glUseProgram(shaderProgram);
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			//
@@ -157,14 +114,13 @@ namespace Nuim {
 				
 			}
 			
+			ImGui::InputText("string", buf, IM_ARRAYSIZE(buf));
+			ImGui::SliderFloat("float", &v, 0.0f, 1.0f);
+			
 			ImGui::Begin("Scene"); {
 				ImGui::Text("Scene");
 				ImGui::End();
 			}
-
-
-
-
 
 
 			ImGui::Render();
@@ -174,11 +130,6 @@ namespace Nuim {
 			glfwSwapBuffers(this->windowInstance);
 			glfwPollEvents();
 		}
-		
-		glDeleteShader(vertexShader);
-		glDeleteShader(fragmentShader);
-		glDeleteProgram(shaderProgram);
-
 		return 0;
 	}
 	void Application::Close() {
