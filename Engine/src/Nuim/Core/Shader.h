@@ -22,6 +22,7 @@ namespace Nuim {
 		~Shader();
 	public:
 		void Use();
+		void SetColor(float r, float g, float b);
 	private:
 		unsigned int ID;
 	};

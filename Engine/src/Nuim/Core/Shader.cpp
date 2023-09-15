@@ -51,3 +51,10 @@ void Nuim::Shader::Use()
 {
 	glUseProgram(this->ID);
 }
+
+void Nuim::Shader::SetColor(float r, float g, float b)
+{
+	std::cout << r << g << b << std::endl;
+	int vertexColorLocation = glGetUniformLocation(this->ID, "aColor");
+	glUniform4f(vertexColorLocation, r, g, b, 1.0f);
+}

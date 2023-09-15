@@ -19,7 +19,9 @@ namespace Nuim {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#ifdef __APPLE__
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 
 		this->windowInstance = glfwCreateWindow(1280, 720, "Nuim", NULL, NULL);
 		if (this->windowInstance == NULL)
@@ -69,12 +71,14 @@ namespace Nuim {
 
 		Shader shader(Nuim::LoadShader("Render/nvs.vert"), Nuim::LoadShader("Render/nfs.frag")); 
 		char buf[512] = {};
-		float v = 0.0f;
+		float r = 0.1f;
+		float g = 0.5f;
+		float b = 0.2f;
 
 		while (!glfwWindowShouldClose(this->windowInstance)) 
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
-
+			
 			//GL CODE
 			glBindVertexArray(VAO);
 			glBindBuffer(GL_VERTEX_ARRAY, VBO);
@@ -83,12 +87,14 @@ namespace Nuim {
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
 			glEnableVertexAttribArray(0); 
 
+			
 			shader.Use();
+			shader.SetColor(r, g, b);
 
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			//
-
+			
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
@@ -113,15 +119,21 @@ namespace Nuim {
 				ImGui::End();
 				
 			}
+			ImGui::Begin("Edit"); {
+				ImGui::SliderFloat("r", &r, 0.0f, 1.0f);
+				ImGui::SliderFloat("g", &g, 0.0f, 1.0f);
+				ImGui::SliderFloat("b", &b, 0.0f, 1.0f);
+				ImGui::End();
+			}
 			
-			ImGui::InputText("string", buf, IM_ARRAYSIZE(buf));
-			ImGui::SliderFloat("float", &v, 0.0f, 1.0f);
+			ImGui::ShowDemoWindow();
 			
 			ImGui::Begin("Scene"); {
 				ImGui::Text("Scene");
 				ImGui::End();
 			}
 
+			
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
