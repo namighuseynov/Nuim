@@ -1,5 +1,5 @@
 #pragma once
-#include "PlatformDef.h"
+#include "Platform.h"
 #include <memory>
 #include <iostream>
 
