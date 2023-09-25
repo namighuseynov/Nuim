@@ -8,3 +8,4 @@ workspace "Nuim"
 
 include "Nuim/premake5.lua"
 include "Engine/premake5.lua"
+include "Vulkan/premake5.lua"

@@ -1,0 +1,6 @@
+project "Vulkan"
+    kind "StaticLib"
+    language "C++"
+    cppdialect "C++17"
+    targetdir "../bin"
+    objdir "../bin-obj"
