@@ -9,3 +9,4 @@ vendor/
 *.vcxproj
 *.vcxproj.filters
 *.sln
+*.lib

@@ -4,8 +4,12 @@ project "Nuim"
     cppdialect "C++17"
     targetdir "../bin"
     objdir "../bin-obj"
-    links "Engine"
+    links {
+        -- "Engine",
+        "Vulkan"
+    }
     includedirs "../Engine/src/"
+    includedirs "../Vulkan/src/"
 
     files {
         "../Nuim/src/*.cpp",
