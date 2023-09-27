@@ -2,17 +2,20 @@ project "Nuim"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
-    targetdir "../bin"
-    objdir "../bin-obj"
+    targetdir "%{wks.location}/bin"
+    objdir "%{wks.location}/bin-obj"
     links {
-        -- "Engine",
-        "Vulkan"
+        -- "G_Engine",
+        "V_Engine",
     }
-    includedirs "../Engine/src/"
-    includedirs "../Vulkan/src/"
+    -- includedirs "../Engine/src/"
+    includedirs {
+        "%{wks.location}/Linking/include",
+        "%{wks.location}/V_Engine/src/",
+    }
 
     files {
-        "../Nuim/src/*.cpp",
-        "../Nuim/src/*.h",
-        "../Nuim/src/*.c",
+        "%{wks.location}/Nuim/src/*.cpp",
+        "%{wks.location}/Nuim/src/*.h",
+        "%{wks.location}/Nuim/src/*.c",
     }

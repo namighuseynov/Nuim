@@ -1,4 +1,4 @@
-project "Vulkan"
+project "V_Engine"
     kind "StaticLib"
     language "C++"
     cppdialect "C++17"
@@ -23,9 +23,13 @@ project "Vulkan"
     }
 
     files {
-        "%{wks.location}/Vulkan/src/*.cpp",
-        "%{wks.location}/Vulkan/src/*.h",
-        "%{wks.location}/Vulkan/src/*.c",
+        "%{wks.location}/V_Engine/src/*.cpp",
+        "%{wks.location}/V_Engine/src/*.h",
+        "%{wks.location}/V_Engine/src/*.c",
+
+        "%{wks.location}/V_Engine/src/V_Nuim/Core/*.cpp",
+        "%{wks.location}/V_Engine/src/V_Nuim/Core/*.h",
+        "%{wks.location}/V_Engine/src/V_Nuim/Core/*.c",
 
         -- "../Vulkan/src/Nuim/Core/*.cpp",
         -- "../Vulkan/src/Nuim/Core/*.h",

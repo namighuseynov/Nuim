@@ -1,10 +1,9 @@
 #pragma once
-#include "Nuim/Core/Core.h"
+#include "G_Nuim/Core/Core.h"
 
-
-#include "Nuim/Imgui/imgui.h"
-#include "Nuim/Imgui/imgui_impl_glfw.h"
-#include "Nuim/Imgui/imgui_impl_opengl3.h"
+#include "G_Nuim/Imgui/imgui.h"
+#include "G_Nuim/Imgui/imgui_impl_glfw.h"
+#include "G_Nuim/Imgui/imgui_impl_opengl3.h"
 
 
 namespace Nuim {
