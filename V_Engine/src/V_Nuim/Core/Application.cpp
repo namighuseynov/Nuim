@@ -1,10 +1,18 @@
+#include "Core.h"
 #include <iostream>
+#include <vector>
 #include <string>
 
 #include "Application.h"
 
 
 namespace NuimVulkan {
+	const U32 WIDTH = 800;
+	const U32 HEIGHT = 600;
+
+	const std::vector<const char*> validationLayers = {
+		"VK_LAYER_KHRONOS_validation"
+	};
 
 #ifndef NDEBUG
 	const bool enableValidationLayers = true;
@@ -12,6 +20,14 @@ namespace NuimVulkan {
 	const bool enableValidationLayers = false;
 #endif
 
+	bool checkValidationLayerSupport() {
+		U32 layerCount;
+		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+		std::vector<VkLayerProperties> availableLayers(layerCount);
+		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+		return false;
+	}
 
 	Application::Application() : window(nullptr), vkInstance(nullptr) {
 		if (!glfwInit()) return;
