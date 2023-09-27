@@ -5,13 +5,13 @@ project "Nuim"
     targetdir "%{wks.location}/bin"
     objdir "%{wks.location}/bin-obj"
     links {
-        -- "G_Engine",
+        "G_Engine",
         "V_Engine",
     }
-    -- includedirs "../Engine/src/"
     includedirs {
         "%{wks.location}/Linking/include",
         "%{wks.location}/V_Engine/src/",
+        "%{wks.location}/G_Engine/src/",
     }
 
     files {
