@@ -2,7 +2,7 @@
 #include <cstdint>
 
 #ifndef NM_TRUE
-#define TRUE 1
+#define NM_TRUE 1
 #else 
 #undef NM_TRUE
 #define NM_TRUE 1
@@ -15,10 +15,12 @@
 #define NM_FALSE 0
 #endif // !NM_FALSE
 
-//#ifndef BOOL 
-//#define BOOL 0
-//
-//#endif
+#ifndef STRING 
+typedef const char* STRING;
+#else
+#undef STRING
+typedef const char* STRING;
+#endif
 
 #ifndef U8 
 typedef uint8_t U8;

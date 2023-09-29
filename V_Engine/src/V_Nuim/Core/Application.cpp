@@ -1,8 +1,4 @@
 #include "Core.h"
-#include <iostream>
-#include <vector>
-#include <string>
-
 #include "Application.h"
 
 
@@ -20,35 +16,131 @@ namespace NuimVulkan {
 	const bool enableValidationLayers = false;
 #endif
 
-	bool checkValidationLayerSupport() {
-		U32 layerCount;
-		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-		std::vector<VkLayerProperties> availableLayers(layerCount);
-		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-		return false;
+	Application::Application() : window(nullptr), vkInstance(nullptr) {
+		Application::initWindow();
+		Application::initVulkan();
 	}
 
-	Application::Application() : window(nullptr), vkInstance(nullptr) {
+	Application::~Application() {
+		if (enableValidationLayers) {
+			//DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+		}
+		vkDestroyInstance(vkInstance, nullptr);
+		glfwDestroyWindow(window);
+		glfwTerminate();
+	}
+
+	void Application::initWindow() {
 		if (!glfwInit()) return;
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		window = glfwCreateWindow(1000, 800, "Nuim", NULL, NULL);
-		
+
 		if (!window)
 		{
 			glfwTerminate();
-			return ;
+			return;
 		}
 		glfwMakeContextCurrent(window);
 	}
 
-	Application::~Application() {
-		vkDestroyInstance(vkInstance, nullptr);
-		glfwDestroyWindow(window);
-		glfwTerminate();
+	void Application::initVulkan()
+	{
+		createInstance();
 	}
+
+	void Application::createInstance() {
+
+		if (enableValidationLayers && !checkValidationLayerSupport()) {
+			throw std::runtime_error("validation layers requested, but not available!");
+		}
+
+		VkApplicationInfo applicationInfo{};
+		applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+		applicationInfo.pApplicationName = "Nuim Engine";
+		applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+		applicationInfo.pEngineName = "Nuim";
+		applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+		applicationInfo.apiVersion = VK_API_VERSION_1_0;
+
+		VkInstanceCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		createInfo.pApplicationInfo = &applicationInfo;
+
+		if (enableValidationLayers) {
+			createInfo.enabledLayerCount = static_cast<U32>(validationLayers.size());
+			createInfo.ppEnabledLayerNames = validationLayers.data();
+		}
+		else {
+			createInfo.enabledLayerCount = 0;
+		}
+		auto extensions = getRequiredExtensions();
+		createInfo.enabledExtensionCount = static_cast<U32>(extensions.size());
+		createInfo.ppEnabledExtensionNames = extensions.data();
+
+		if (vkCreateInstance(&createInfo, nullptr, &vkInstance) != VK_SUCCESS) {
+			throw std::runtime_error("Failed to create vulkan instance");
+		}
+	}
+
+	void Application::setupDebugMessenger() {
+
+	}
+
+	VkResult Application::CreateDebugUtilsMessengerEXT()
+	{
+		return VkResult();
+	}
+
+	void Application::DestroyDebugUtilsMessengerEXT()
+	{
+
+	}
+
+	std::vector<STRING> Application::getRequiredExtensions()
+	{
+		U32 glfwExtensionCount = 0;
+		STRING* glfwExtensions;
+		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		std::vector<STRING> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+		if (enableValidationLayers) {
+			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		}
+
+		return extensions;
+	}
+
+	bool Application::checkValidationLayerSupport() {
+		U32 layerCount;
+		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+		std::vector<VkLayerProperties> availableLayers(layerCount);
+		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+		for (const char* layerName : validationLayers) {
+			bool layerFound = NM_FALSE;
+
+			for (const auto& layerProperties : availableLayers) {
+				if (strcmp(layerName, layerProperties.layerName) == 0) {
+					layerFound = NM_TRUE;
+					break;
+				}
+			}
+			if (!layerFound) {
+				return NM_FALSE;
+			}
+		}
+		return NM_TRUE;
+	}
+
+
+
+
+
+
+
+
 
 	void Application::Run() {
 		while (!glfwWindowShouldClose(window)) {
@@ -63,31 +155,7 @@ namespace NuimVulkan {
 		}
 		
 	}
-	void Application::InitVulkan()
-	{
-		VkApplicationInfo applicationInfo{};
-		applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		applicationInfo.pApplicationName = "Nuim Engine";
-		applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-		applicationInfo.pEngineName = "Nuim";
-		applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-		applicationInfo.apiVersion = VK_API_VERSION_1_0;
-
-		VkInstanceCreateInfo createInfo{};
-		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-		createInfo.pApplicationInfo = &applicationInfo;
-
-		uint32_t glfwExtensionCount = 0;
-		const char** glfwExtensions;
-		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-		createInfo.enabledExtensionCount = glfwExtensionCount;
-		createInfo.ppEnabledExtensionNames = glfwExtensions;
-		createInfo.enabledLayerCount = 0;
-
-		if (vkCreateInstance(&createInfo, nullptr, &vkInstance) != VK_SUCCESS) {
-			throw std::runtime_error("Failed to create vulkan instance");
-		}
-	}
-
-
+	
+	
+	
 }
