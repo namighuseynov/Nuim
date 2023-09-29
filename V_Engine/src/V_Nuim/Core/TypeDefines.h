@@ -15,6 +15,10 @@
 #define NM_FALSE 0
 #endif // !NM_FALSE
 
+//#ifndef BOOL 
+//#define BOOL 0
+//
+//#endif
 
 #ifndef U8 
 typedef uint8_t U8;

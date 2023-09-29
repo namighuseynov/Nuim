@@ -17,7 +17,6 @@ project "V_Engine"
     }
 
     links {
-        "opengl32.lib",
         "glfw3.lib",
         "vulkan-1.lib",
     }
