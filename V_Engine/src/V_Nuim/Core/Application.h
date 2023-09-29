@@ -7,6 +7,18 @@
 #include <string>
 
 namespace NuimVulkan {
+
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+		VkDebugUtilsMessageTypeFlagsEXT messageType,
+		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+		void* pUserData) {
+
+		std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+
+		return VK_FALSE;
+	}
+
 	class Application {
 	public:
 		Application();
@@ -22,7 +34,7 @@ namespace NuimVulkan {
 		void setupDebugMessenger();
 	private:
 		bool checkValidationLayerSupport();
-		VkResult CreateDebugUtilsMessengerEXT();
+		VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks& pAllocationCallbacks, VkDebugUtilsMessengerEXT* pDebugMessenger);
 		void DestroyDebugUtilsMessengerEXT();
 		std::vector<STRING> getRequiredExtensions();
 	private:
