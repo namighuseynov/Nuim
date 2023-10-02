@@ -20,6 +20,7 @@ namespace NuimVulkan {
 		Application::initWindow();
 		Application::initVulkan();
 
+
 		U32 extensionCount = 0;
 		STRING* glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionCount);
 		std::vector<STRING> extensions(glfwExtensions, glfwExtensions + extensionCount);

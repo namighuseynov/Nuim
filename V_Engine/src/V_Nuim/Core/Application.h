@@ -9,8 +9,7 @@
 namespace NuimVulkan {
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-		std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-
+		std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl; 
 		return VK_FALSE;
 	}
 
@@ -20,8 +19,6 @@ namespace NuimVulkan {
 		~Application();
 	public:
 		void Run();
-		
-		
 	private:
 		void initWindow();
 		void initVulkan();
