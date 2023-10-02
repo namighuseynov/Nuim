@@ -1,4 +1,6 @@
 #pragma once
+
+#ifdef NUIM_PLATFORM_WINDOWS
 #include <cstdint>
 
 #ifndef NM_TRUE
@@ -77,3 +79,5 @@ typedef int64_t I64;
 #undef I64
 typedef int64_t I64;
 #endif
+#endif
+
