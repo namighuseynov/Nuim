@@ -20,8 +20,7 @@ namespace NuimVulkan {
 		Application::initWindow();
 		Application::initVulkan();
 
-
-		U32 extensionCount = 0;
+		/*U32 extensionCount = 0;
 		STRING* glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionCount);
 		std::vector<STRING> extensions(glfwExtensions, glfwExtensions + extensionCount);
 		std::cout << "Extensions:" << std::endl;
@@ -55,7 +54,7 @@ namespace NuimVulkan {
 		std::cout << "Supported Layers:" << std::endl;
 		for (VkLayerProperties layer : supportedLayers) {
 			std::cout << layer.layerName << std::endl;
-		}
+		}*/
 	}
 
 	Application::~Application() {
@@ -93,7 +92,6 @@ namespace NuimVulkan {
 		if (enableValidationLayers && !checkValidationLayerSupport()) {
 			throw std::runtime_error("validation layers requested, but not available!");
 		}
-
 		VkApplicationInfo applicationInfo{};
 		applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		applicationInfo.pApplicationName = "Nuim Engine";
@@ -103,6 +101,7 @@ namespace NuimVulkan {
 		applicationInfo.apiVersion = VK_API_VERSION_1_0;
 
 		VkInstanceCreateInfo createInfo{};
+
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &applicationInfo;
 
@@ -188,10 +187,12 @@ namespace NuimVulkan {
 			for (const auto& layerProperties : availableLayers) {
 				if (strcmp(layerName, layerProperties.layerName) == 0) {
 					layerFound = NM_TRUE;
+					std::cout << layerName << "Is supported" << std::endl;
 					break;
 				}
 			}
 			if (!layerFound) {
+				std::cout << layerName << "Is not supported" << std::endl;
 				return NM_FALSE;
 			}
 		}
