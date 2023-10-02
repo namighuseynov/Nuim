@@ -10,12 +10,6 @@ namespace NuimVulkan {
 		"VK_LAYER_KHRONOS_validation"
 	};
 
-#ifndef NUIM_NDEBUG
-	const bool enableValidationLayers = NM_FALSE;
-#else
-	const bool enableValidationLayers = NM_TRUE;
-#endif
-
 	Application::Application() : window(nullptr), vkInstance(nullptr) {
 #ifdef NUIM_DEBUG
 		this->debug_mode = NM_TRUE;
@@ -25,45 +19,11 @@ namespace NuimVulkan {
 
 		Application::initWindow();
 		Application::initVulkan();
-		/*U32 extensionCount = 0;
-		STRING* glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionCount);
-		std::vector<STRING> extensions(glfwExtensions, glfwExtensions + extensionCount);
-		std::cout << "Extensions:" << std::endl;
-		for (auto extension : extensions) {
-			std::cout << extension << std::endl;
-		}
-		U32 supportedExtensionCount = 0;
-		VkResult result = vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, nullptr);
-		if (result != VK_SUCCESS) {
-			throw std::runtime_error("Failed to enumerate supported extensions");
-		}
-		std::vector<VkExtensionProperties> supportedExtensions(supportedExtensionCount);
-		result = vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, supportedExtensions.data());
-		if (result != VK_SUCCESS) {
-			throw std::runtime_error("Failed to enumerate supported extensions");
-		}
-		std::cout << "Supported Extensions:" << std::endl;
-		for (auto item : supportedExtensions) {
-			std::cout << item.extensionName << std::endl;
-		}
-		U32 supportedLayersCount = 0;
-		result = vkEnumerateInstanceLayerProperties(&supportedLayersCount, nullptr);
-		if (result != VK_SUCCESS) {
-			throw std::runtime_error("Failed to enumerate supported layers");
-		}
-		std::vector<VkLayerProperties> supportedLayers(supportedLayersCount);
-		result = vkEnumerateInstanceLayerProperties(&supportedLayersCount, supportedLayers.data());
-		if (result != VK_SUCCESS) {
-			throw std::runtime_error("Failed to enumerate supported layers");
-		}
-		std::cout << "Supported Layers:" << std::endl;
-		for (VkLayerProperties layer : supportedLayers) {
-			std::cout << layer.layerName << std::endl;
-		}*/
+		std::cout << "Debug mode is: " << this->debug_mode << std::endl;
 	}
 
 	Application::~Application() {
-		if (enableValidationLayers) {
+		if (this->debug_mode) {
 			DestroyDebugUtilsMessengerEXT(vkInstance, debugMessenger, nullptr);
 		}
 		vkDestroyInstance(vkInstance, nullptr);
@@ -94,7 +54,7 @@ namespace NuimVulkan {
 
 	void Application::createInstance() {
 
-		if (enableValidationLayers && !checkValidationLayerSupport()) {
+		if (this->debug_mode && !checkValidationLayerSupport()) {
 			throw std::runtime_error("validation layers requested, but not available!");
 		}
 		VkApplicationInfo applicationInfo{};
@@ -110,7 +70,7 @@ namespace NuimVulkan {
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &applicationInfo;
 
-		if (enableValidationLayers) {
+		if (this->debug_mode) {
 			createInfo.enabledLayerCount = static_cast<U32>(validationLayers.size());
 			createInfo.ppEnabledLayerNames = validationLayers.data();
 		}
@@ -128,7 +88,7 @@ namespace NuimVulkan {
 
 	void Application::setupDebugMessenger() {
 		
-		if (!enableValidationLayers) {
+		if (!this->debug_mode) {
 			return;
 		}
 		VkDebugUtilsMessengerCreateInfoEXT createInfo{};
@@ -172,7 +132,7 @@ namespace NuimVulkan {
 		STRING* glfwExtensions;
 		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 		std::vector<STRING> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-		if (enableValidationLayers) {
+		if (this->debug_mode) {
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 		}
 
