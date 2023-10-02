@@ -10,16 +10,21 @@ namespace NuimVulkan {
 		"VK_LAYER_KHRONOS_validation"
 	};
 
-#ifndef NDEBUG
+#ifndef NUIM_NDEBUG
 	const bool enableValidationLayers = NM_FALSE;
 #else
 	const bool enableValidationLayers = NM_TRUE;
 #endif
 
 	Application::Application() : window(nullptr), vkInstance(nullptr) {
+#ifdef NUIM_DEBUG
+		this->debug_mode = NM_TRUE;
+#else 
+		this->debug_mode = NM_FALSE;
+#endif // NUIM_DEBUG
+
 		Application::initWindow();
 		Application::initVulkan();
-
 		/*U32 extensionCount = 0;
 		STRING* glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionCount);
 		std::vector<STRING> extensions(glfwExtensions, glfwExtensions + extensionCount);

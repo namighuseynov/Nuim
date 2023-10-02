@@ -9,6 +9,13 @@ workspace "Nuim"
 	{
 		"MultiProcessorCompile"
 	}
+    filter "configurations:Debug"
+        defines { "DEBUG", "NUIM_DEBUG" }
+        symbols "On"
+
+    filter "configurations:Release"
+        defines { "NDEBUG", "NUIM_NDEBUG" }
+        optimize "On"
 
 include "Nuim/premake5.lua"
 include "V_Engine/premake5.lua"

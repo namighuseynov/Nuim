@@ -31,6 +31,7 @@ namespace NuimVulkan {
 		std::vector<STRING> getRequiredExtensions();
 		void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 	private:
+		U8 debug_mode = true;
 		GLFWwindow* window;
 		VkInstance vkInstance;
 		VkDebugUtilsMessengerEXT debugMessenger;
