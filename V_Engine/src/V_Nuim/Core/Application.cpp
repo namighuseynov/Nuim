@@ -3,8 +3,6 @@
 
 
 namespace NuimVulkan {
-	const U32 WIDTH = 800;
-	const U32 HEIGHT = 600;
 
 	const std::vector<STRING> validationLayers = {
 		"VK_LAYER_KHRONOS_validation"
@@ -57,33 +55,46 @@ namespace NuimVulkan {
 		if (this->debug_mode && !checkValidationLayerSupport()) {
 			throw std::runtime_error("validation layers requested, but not available!");
 		}
-		VkApplicationInfo applicationInfo{};
-		applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		applicationInfo.pApplicationName = "Nuim Engine";
-		applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-		applicationInfo.pEngineName = "Nuim";
-		applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-		applicationInfo.apiVersion = VK_API_VERSION_1_0;
 
-		VkInstanceCreateInfo createInfo{};
+		U32 version{ 0 };
+		vk::Result result = vk::enumerateInstanceVersion(&version);
+		if (result != vk::Result::eSuccess) {
+			throw std::runtime_error("Failed to check Vulkan version");
+		}
+		//version &= ~(0xFFFU);
+		version = VK_MAKE_API_VERSION(0, 1, 0, 0);
+		vk::ApplicationInfo applicationInfo = vk::ApplicationInfo(
+			this->applicationName,
+			version,
+			"Nuim",
+			version,
+			version
+		);
 
-		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-		createInfo.pApplicationInfo = &applicationInfo;
+		auto extensions = getRequiredExtensions();
+		U32 layerCount{ 0 };
 
-		if (this->debug_mode) {
+		vk::InstanceCreateInfo createInfo = vk::InstanceCreateInfo(
+			vk::InstanceCreateFlags(),
+			&applicationInfo,
+			0, nullptr, static_cast<U32>(extensions.size()), extensions.data()
+		);
+		try {
+			this->vkInstance = vk::createInstance(createInfo);
+		}
+		catch (vk::SystemError err) {
+			if (debug_mode) {
+				std::cout << err.what() << std::endl;
+			}
+		}
+
+		/*if (this->debug_mode) {
 			createInfo.enabledLayerCount = static_cast<U32>(validationLayers.size());
 			createInfo.ppEnabledLayerNames = validationLayers.data();
 		}
 		else {
 			createInfo.enabledLayerCount = 0;
-		}
-		auto extensions = getRequiredExtensions();
-		createInfo.enabledExtensionCount = static_cast<U32>(extensions.size());
-		createInfo.ppEnabledExtensionNames = extensions.data();
-
-		if (vkCreateInstance(&createInfo, nullptr, &vkInstance) != VK_SUCCESS) {
-			throw std::runtime_error("Failed to create vulkan instance");
-		}
+		}*/
 	}
 
 	void Application::setupDebugMessenger() {
@@ -116,7 +127,6 @@ namespace NuimVulkan {
 		else {
 			return VK_ERROR_EXTENSION_NOT_PRESENT;
 		}
-		
 	}
 
 	void Application::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
@@ -164,8 +174,6 @@ namespace NuimVulkan {
 		return NM_TRUE;
 	}
 
-
-
 	void Application::Run() {
 		while (!glfwWindowShouldClose(window)) {
 			/* Render here */
@@ -177,9 +185,5 @@ namespace NuimVulkan {
 			/* Poll for and process events */
 			glfwPollEvents();
 		}
-		std::system("pause");
 	}
-	
-	
-	
 }

@@ -6,7 +6,8 @@
 #include <string>
 
 namespace NuimVulkan {
-
+	const U32 WIDTH = 800;
+	const U32 HEIGHT = 600;
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
 		std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl; 
 		return VK_FALSE;
@@ -31,9 +32,10 @@ namespace NuimVulkan {
 		std::vector<STRING> getRequiredExtensions();
 		void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 	private:
+		STRING applicationName = "Nuim Engine";
 		U16 debug_mode = true;
 		GLFWwindow* window;
-		VkInstance vkInstance;
+		vk::Instance vkInstance;
 		VkDebugUtilsMessengerEXT debugMessenger;
 	};
 
