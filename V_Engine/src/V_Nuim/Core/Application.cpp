@@ -1,6 +1,6 @@
 #include "Core.h"
 #include "Application.h"
-
+#include "Instance.h"
 
 namespace NuimVulkan {
 
@@ -24,7 +24,7 @@ namespace NuimVulkan {
 		if (this->debug_mode) {
 			DestroyDebugUtilsMessengerEXT(vkInstance, debugMessenger, nullptr);
 		}
-		vkDestroyInstance(vkInstance, nullptr);
+		vkInstance.destroy();
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
@@ -55,7 +55,6 @@ namespace NuimVulkan {
 		if (this->debug_mode && !checkValidationLayerSupport()) {
 			throw std::runtime_error("validation layers requested, but not available!");
 		}
-
 		U32 version{ 0 };
 		vk::Result result = vk::enumerateInstanceVersion(&version);
 		if (result != vk::Result::eSuccess) {
@@ -74,6 +73,8 @@ namespace NuimVulkan {
 		auto extensions = getRequiredExtensions();
 		U32 layerCount{ 0 };
 
+		NM_VK_INIT::Supported(extensions, debug_mode);
+
 		vk::InstanceCreateInfo createInfo = vk::InstanceCreateInfo(
 			vk::InstanceCreateFlags(),
 			&applicationInfo,
@@ -87,14 +88,6 @@ namespace NuimVulkan {
 				std::cout << err.what() << std::endl;
 			}
 		}
-
-		/*if (this->debug_mode) {
-			createInfo.enabledLayerCount = static_cast<U32>(validationLayers.size());
-			createInfo.ppEnabledLayerNames = validationLayers.data();
-		}
-		else {
-			createInfo.enabledLayerCount = 0;
-		}*/
 	}
 
 	void Application::setupDebugMessenger() {
