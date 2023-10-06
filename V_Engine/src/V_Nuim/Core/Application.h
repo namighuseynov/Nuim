@@ -6,13 +6,6 @@
 #include <string>
 
 namespace NuimVulkan {
-	const U32 WIDTH = 800;
-	const U32 HEIGHT = 600;
-	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-		std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl; 
-		return VK_FALSE;
-	}
-
 	class Application {
 	public:
 		Application();
@@ -20,24 +13,15 @@ namespace NuimVulkan {
 	public:
 		void Run();
 	private:
-		void initWindow();
-		void initVulkan();
-	private:
-		void createInstance();
-		void setupDebugMessenger();
-	private:
-		bool checkValidationLayerSupport();
-		VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
-		void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
-		std::vector<STRING> getRequiredExtensions();
-		void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+		void InitWindow();
+		void InitVulkan();
 	private:
 		STRING applicationName = "Nuim Engine";
-		U16 debug_mode = true;
-		GLFWwindow* window;
-		vk::Instance vkInstance;
-		VkDebugUtilsMessengerEXT debugMessenger;
+		U16 debug_mode{ NM_TRUE };
+		GLFWwindow* window{ nullptr };
+		vk::Instance vkInstance{ nullptr };
+		vk::DebugUtilsMessengerEXT debugMessenger{ nullptr };
+		vk::DispatchLoaderDynamic dldi;
 	};
-
 	extern Application* CreateApplication();
 }
