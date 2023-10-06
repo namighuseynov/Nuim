@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Instance.h"
 #include "DebugMessenger.h"
+#include "PhysicalDevice.h"
 
 namespace NuimVulkan {
 
@@ -14,11 +15,13 @@ namespace NuimVulkan {
 
 		Application::InitWindow();
 		Application::InitVulkan();
+
+		NM_VK_INIT::ShowPhysicalDevices(this->vkInstance, this->dldi);
 	}
 
 	Application::~Application() {
 		if (this->debug_mode) {
-			//vkInstance.destroyDebugUtilsMessengerEXT(this->debugMessenger,nullptr,this->dldi);
+			vkInstance.destroyDebugUtilsMessengerEXT(this->debugMessenger,nullptr,this->dldi);
 		}
 		vkInstance.destroy();
 		glfwDestroyWindow(window);
@@ -43,7 +46,7 @@ namespace NuimVulkan {
 	void Application::InitVulkan()
 	{
 		this->vkInstance = NM_VK_INIT::CreateInstance(this->debug_mode, "Nuim Engine");
-		this->debugMessenger = NM_VK_INIT::CreateDebugMessenger(this->vkInstance, this->dldi);
+		this->debugMessenger = NM_VK_INIT::CreateDebugMessenger(this->vkInstance, this->debug_mode, this->dldi);
 	}
 
 	void Application::Run() {
