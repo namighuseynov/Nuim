@@ -1,0 +1,5 @@
+namespace Nuim {
+	class Renderer {
+
+	};
+}

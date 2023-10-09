@@ -8,6 +8,4 @@
 //NuimVulkan::Application* NuimVulkan::CreateApplication() {
 //	return new NuimEngine();
 //}
-
-
-#include "../../D_Engine/src/Core/Application.h"
+#include "../../D_Engine/src/Nuim.h"

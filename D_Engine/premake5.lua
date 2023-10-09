@@ -13,9 +13,21 @@ project "D_Engine"
     files {
         "%{wks.location}/D_Engine/src/*.cpp",
         "%{wks.location}/D_Engine/src/*.h",
+        "%{wks.location}/D_Engine/src/*.hpp",
         "%{wks.location}/D_Engine/src/*.c",
 
-        "%{wks.location}/D_Engine/src/V_Nuim/Core/*.cpp",
-        "%{wks.location}/D_Engine/src/V_Nuim/Core/*.h",
-        "%{wks.location}/D_Engine/src/V_Nuim/Core/*.c",
+        "%{wks.location}/D_Engine/src/Nuim/Core/*.cpp",
+        "%{wks.location}/D_Engine/src/Nuim/Core/*.h",
+        "%{wks.location}/D_Engine/src/Nuim/Core/*.hpp",
+        "%{wks.location}/D_Engine/src/Nuim/Core/*.c",
+
+        "%{wks.location}/D_Engine/src/Nuim/Renderer/*.cpp",
+        "%{wks.location}/D_Engine/src/Nuim/Renderer/*.h",
+        "%{wks.location}/D_Engine/src/Nuim/Renderer/*.hpp",
+        "%{wks.location}/D_Engine/src/Nuim/Renderer/*.c",
+
+        "%{wks.location}/D_Engine/src/Nuim/ImGui/*.cpp",
+        "%{wks.location}/D_Engine/src/Nuim/ImGui/*.h",
+        "%{wks.location}/D_Engine/src/Nuim/ImGui/*.hpp",
+        "%{wks.location}/D_Engine/src/Nuim/ImGui/*.c",
     }

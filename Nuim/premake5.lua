@@ -1,12 +1,13 @@
 project "Nuim"
-    kind "ConsoleApp"
+    -- kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
     targetdir "%{wks.location}/bin"
     objdir "%{wks.location}/bin-obj"
     links {
-        "G_Engine",
-        "V_Engine",
+        -- "G_Engine",
+        -- "V_Engine",
+        "D_Engine"
     }
     includedirs {
         "%{wks.location}/Linking/include",
@@ -19,3 +20,6 @@ project "Nuim"
         "%{wks.location}/Nuim/src/*.h",
         "%{wks.location}/Nuim/src/*.c",
     }
+
+    filter "system:windows"
+        kind "WindowedApp"
