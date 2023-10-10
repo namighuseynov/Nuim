@@ -6,6 +6,7 @@ int WINAPI WinMain(
 	_In_ LPSTR lpCmdLine,
 	_In_ int nCmdShow
 ) {
+	
 	Nuim::Application* app = new Nuim::Application(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 	app->Run();
 	delete app;

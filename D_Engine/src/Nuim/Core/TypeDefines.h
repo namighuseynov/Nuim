@@ -1,7 +1,9 @@
 #pragma once
 
 #ifdef NUIM_PLATFORM_WINDOWS
+#include <iostream>
 #include <cstdint>
+#include <string>
 
 #ifndef NM_TRUE
 #define NM_TRUE			1

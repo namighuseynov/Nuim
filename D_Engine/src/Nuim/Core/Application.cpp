@@ -1,4 +1,4 @@
-#include "Core.h"
+﻿#include "Core.h"
 #include "Application.h"
 
 namespace Nuim {
@@ -27,7 +27,8 @@ namespace Nuim {
 				NULL);
 			return;
 		}
-
+		std::wstring text = std::to_wstring(sizeof("nnnəə"));
+		MessageBox(NULL, text.c_str(), text.c_str(), NULL);
 		this->hInstance = hInstance;
 		HWND hwnd = CreateWindowEx(
 			WS_EX_OVERLAPPEDWINDOW,

@@ -4,11 +4,13 @@ workspace "Nuim"
     configurations { "Debug", "Release" }
     architecture "x64"
     startproject "Nuim"
-    defines {"SYSTEM_WINDOWS", "_CRT_SECURE_NO_WARNINGS"}
+    characterset "Unicode"
+    defines {"SYSTEM_WINDOWS", "_CRT_SECURE_NO_WARNINGS", "NUIM_CHARACTERSET_UNICODE" }
     flags
 	{
 		"MultiProcessorCompile"
 	}
+    
     filter "configurations:Debug"
         defines { "DEBUG", "NUIM_DEBUG" }
         symbols "On"
