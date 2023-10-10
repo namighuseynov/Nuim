@@ -19,6 +19,7 @@
 #define NM_FALSE		0
 #endif					// !NM_FALSE
 
+
 #ifndef STRING 
 typedef const char* STRING;
 #else	
@@ -82,6 +83,22 @@ typedef int64_t			I64;
 #else
 #undef I64
 typedef int64_t			I64;
+#endif
+
+#ifdef NUIM_CHARACTERSET_UNICODE
+
+#ifndef CHAR16
+
+typedef char16_t CHAR16;
+typedef const CHAR16* USTRING;
+typedef USTRING* PUSTRING;
+
+#endif // !CHAR16
+
+#endif // NUIM_CHARSET_UNICODE
+
+#ifndef SIZEOF_CHAR16
+#define SIZEOF_CHAR16 sizeof(CHAR16)
 #endif
 
 #ifndef SIZEOF_U8

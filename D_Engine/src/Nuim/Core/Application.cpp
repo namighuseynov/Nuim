@@ -16,7 +16,7 @@ namespace Nuim {
 		this->wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 		this->wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 		this->wcex.lpszMenuName = NULL;
-		this->wcex.lpszClassName = szWindowClass;
+		this->wcex.lpszClassName = (LPWSTR)szWindowClass;
 		this->wcex.hIconSm = LoadIcon(this->wcex.hInstance, IDI_APPLICATION);
 
 		if (!RegisterClassEx(&wcex))
@@ -27,13 +27,11 @@ namespace Nuim {
 				NULL);
 			return;
 		}
-		std::wstring text = std::to_wstring(sizeof("nnnəə"));
-		MessageBox(NULL, text.c_str(), text.c_str(), NULL);
 		this->hInstance = hInstance;
 		HWND hwnd = CreateWindowEx(
 			WS_EX_OVERLAPPEDWINDOW,
-			szWindowClass,
-			szTitle,
+			(LPWSTR)(szWindowClass),
+			(LPWSTR)szTitle,
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT, CW_USEDEFAULT,
 			800,
@@ -48,7 +46,7 @@ namespace Nuim {
 			MessageBox(NULL, L"Call to create", L"sdkf", NULL);
 			return;
 		}
-
+		ShowMessage(u"Nuim Engine");
 		ShowWindow(hwnd, nCmdShow);
 		UpdateWindow(hwnd);
 	}
@@ -95,5 +93,11 @@ namespace Nuim {
 		}
 
 		return 0;
+	}
+
+
+
+	void ShowMessage(USTRING msg) {
+		MessageBox(NULL, (LPWSTR)msg, (LPWSTR)msg, NULL);
 	}
 }

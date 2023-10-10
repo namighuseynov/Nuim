@@ -3,10 +3,8 @@
 #include <tchar.h>
 
 namespace Nuim {
-
-	static TCHAR szWindowClass[] = L"NuimEngine";
-
-	static TCHAR szTitle[] = L"Nuim";
+	void ShowMessage(USTRING msg);
+	
 
 	LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -22,6 +20,8 @@ namespace Nuim {
 		void Run();
 
 	private:
+		USTRING szWindowClass = u"NuimEngine";
+		USTRING szTitle = u"Nuim";
 		HINSTANCE hInstance{ NULL };
 		WNDCLASSEX wcex{ NULL };
 	};
