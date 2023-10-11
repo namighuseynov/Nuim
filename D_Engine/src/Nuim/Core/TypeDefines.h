@@ -1,9 +1,6 @@
 #pragma once
 
 #ifdef NUIM_PLATFORM_WINDOWS
-#include <iostream>
-#include <cstdint>
-#include <string>
 
 #ifndef NM_TRUE
 #define NM_TRUE			1
@@ -19,6 +16,13 @@
 #define NM_FALSE		0
 #endif					// !NM_FALSE
 
+#ifndef NUIM_SUCCESS
+#define NUIM_SUCCESS 0
+#endif // !NUIM_SUCCESS
+
+#ifndef NUIM_FAILURE
+#define NUIM_FAILURE 1
+#endif // !NUIM_FAILURE
 
 #ifndef STRING 
 typedef const char* STRING;
