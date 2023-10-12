@@ -46,7 +46,6 @@ namespace Nuim {
 			MessageBox(NULL, L"Call to create", L"sdkf", NULL);
 			return;
 		}
-		ShowMessage(u"Nuim Engine");
 		ShowWindow(hwnd, nCmdShow);
 		UpdateWindow(hwnd);
 	}
@@ -71,6 +70,9 @@ namespace Nuim {
 
 		switch (message)
 		{
+		case WM_KEYDOWN:
+			
+			break;
 		case WM_PAINT:
 			hdc = BeginPaint(hWnd, &ps);
 
