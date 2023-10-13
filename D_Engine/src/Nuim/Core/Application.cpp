@@ -7,7 +7,7 @@ namespace Nuim {
 		LPSTR lpCmdLine,
 		int nCmdShow) {
 		this->wcex.cbSize = sizeof(WNDCLASSEX);
-		this->wcex.style = CS_HREDRAW | CS_VREDRAW;
+		this->wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		this->wcex.lpfnWndProc = WndProc;
 		this->wcex.cbClsExtra = 0;
 		this->wcex.cbWndExtra = 0;
@@ -22,9 +22,9 @@ namespace Nuim {
 		if (!RegisterClassEx(&wcex))
 		{
 			MessageBox(NULL,
-				_T("Call to RegisterClassEx failed!"),
-				_T("Windows Desktop Guided Tour"),
-				NULL);
+				L"Call to RegisterClassEx failed!",
+				L"Windows Desktop Guided Tour",
+				NULL); 
 			return;
 		}
 		this->hInstance = hInstance;
@@ -32,7 +32,7 @@ namespace Nuim {
 			WS_EX_OVERLAPPEDWINDOW,
 			(LPWSTR)(szWindowClass),
 			(LPWSTR)szTitle,
-			WS_OVERLAPPEDWINDOW,
+			WS_TILEDWINDOW,
 			CW_USEDEFAULT, CW_USEDEFAULT,
 			800,
 			600,
@@ -43,10 +43,10 @@ namespace Nuim {
 		);
 
 		if (!hwnd) {
-			MessageBox(NULL, L"Call to create", L"sdkf", NULL);
+			MessageBox(NULL, L"Call to create", L"Message", NULL);
 			return;
 		}
-		ShowWindow(hwnd, nCmdShow);
+		ShowWindow(hwnd, SW_SHOWMAXIMIZED);
 		UpdateWindow(hwnd);
 	}
 
@@ -64,28 +64,56 @@ namespace Nuim {
 
 
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-		PAINTSTRUCT ps;
-		HDC hdc;
-		TCHAR greeting[] = L"Hello from Nuim Engine";
-
+		//PAINTSTRUCT ps;
+		//HDC hdc;
+		//TCHAR greeting[] = L"Hello from Nuim Engine";
+		//UINT16 cmnd{ 0 };
 		switch (message)
 		{
-		case WM_KEYDOWN:
-			
-			break;
-		case WM_PAINT:
-			hdc = BeginPaint(hWnd, &ps);
+		//case WM_CHAR: {
+		//	CHAR16 chr = static_cast<CHAR16>(wParam);
+		//	CHAR16 buffer[2] = { chr, u'\0' };
 
-			// Here your application is laid out.
-			// For this introduction, we just print out "Hello, Windows desktop!"
-			// in the top left corner.
-			TextOut(hdc,
-				5, 5,
-				greeting, (int)_tcslen(greeting));
-			// End application-specific layout section.
+		//	ShowMessage(buffer);
 
-			EndPaint(hWnd, &ps);
-			break;
+
+		//	int keyCode = static_cast<int>(lParam);
+
+		//	break;
+		//}
+		//	
+		//case WM_APPCOMMAND:
+		//	cmnd = GET_APPCOMMAND_LPARAM(lParam);
+		//	ShowMessage(u"Media");
+
+		//case WM_ACTIVATE:
+		//	if (wParam == WA_CLICKACTIVE) {
+		//		ShowMessage(u"Activate");
+		//	}
+		//	
+		//	
+		//case WM_KEYDOWN:
+		//	/*if (wParam == KEY) {
+		//		ShowMessage(u"Pressed");
+		//	}*/
+		//	break;
+
+		//case WM_KEYUP:
+		//	
+		//	break;
+		//case WM_PAINT:
+		//	hdc = BeginPaint(hWnd, &ps);
+
+		//	// Here your application is laid out.
+		//	// For this introduction, we just print out "Hello, Windows desktop!"
+		//	// in the top left corner.
+		//	TextOut(hdc,
+		//		5, 5,
+		//		greeting, (int)_tcslen(greeting));
+		//	// End application-specific layout section.
+
+		//	EndPaint(hWnd, &ps);
+		//	break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
@@ -97,9 +125,8 @@ namespace Nuim {
 		return 0;
 	}
 
-
-
 	void ShowMessage(USTRING msg) {
-		MessageBox(NULL, (LPWSTR)msg, (LPWSTR)msg, NULL);
+		MessageBox(NULL, (LPWSTR)msg, L"Message", NULL);
 	}
+
 }
