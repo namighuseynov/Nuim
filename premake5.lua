@@ -5,7 +5,7 @@ workspace "Nuim"
     architecture "x64"
     startproject "Nuim"
     characterset "Unicode"
-    defines {"SYSTEM_WINDOWS", "_CRT_SECURE_NO_WARNINGS", "NUIM_CHARACTERSET_UNICODE" }
+    defines {"_CRT_SECURE_NO_WARNINGS", "NUIM_CHARACTERSET_UNICODE" }
     flags
 	{
 		"MultiProcessorCompile"

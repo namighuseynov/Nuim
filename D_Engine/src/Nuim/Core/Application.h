@@ -1,6 +1,4 @@
 #pragma once
-#include <Windows.h>
-#include <tchar.h>
 
 namespace Nuim {
 	void ShowMessage(USTRING msg);

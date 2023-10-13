@@ -4,10 +4,13 @@ project "D_Engine"
     cppdialect "C++20"
     targetdir "%{wks.location}/bin"
     objdir "%{wks.location}/bin-obj"
+    pchheader "nmpch.h"
+    pchsource "%{wks.location}/D_Engine/src/nmpch.cpp"
 
 --     -- Includes
     includedirs {
         "%{wks.location}/Linking/include",
+        "%{wks.location}/D_Engine/src/"
     }
 
     files {

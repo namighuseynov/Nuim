@@ -5,10 +5,6 @@
 #ifdef _WIN64
 
 #define NUIM_PLATFORM_WINDOWS
-#include <Windows.h>
-#include <iostream>
-#include <cstdint>
-#include <string>
 #else 
 #error "Nuim Engine does not support x32 architecture"
 #endif 
