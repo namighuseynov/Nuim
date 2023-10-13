@@ -97,6 +97,12 @@ typedef char16_t CHAR16;
 typedef const CHAR16* USTRING;
 typedef USTRING* PUSTRING;
 
+#ifdef _UNICODE
+#define UNICODE_TEXT(x) (LPCWSTR)u##x
+#else
+#define UNICODE_TEXT(x) x
+#endif
+
 #endif // !CHAR16
 
 #endif // NUIM_CHARSET_UNICODE

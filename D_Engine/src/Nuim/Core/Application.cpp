@@ -22,8 +22,8 @@ namespace Nuim {
 		if (!RegisterClassEx(&wcex))
 		{
 			MessageBox(NULL,
-				L"Call to RegisterClassEx failed!",
-				L"Windows Desktop Guided Tour",
+				UNICODE_TEXT("Call to RegisterClassEx failed!"),
+				UNICODE_TEXT("Windows Desktop Guided Tour"),
 				NULL); 
 			return;
 		}
@@ -43,7 +43,7 @@ namespace Nuim {
 		);
 
 		if (!hwnd) {
-			MessageBox(NULL, L"Call to create", L"Message", NULL);
+			MessageBox(NULL, UNICODE_TEXT("Call to create"), UNICODE_TEXT("Message"), NULL);
 			return;
 		}
 		ShowWindow(hwnd, SW_SHOWMAXIMIZED);
@@ -126,7 +126,7 @@ namespace Nuim {
 	}
 
 	void ShowMessage(USTRING msg) {
-		MessageBox(NULL, (LPWSTR)msg, L"Message", NULL);
+		MessageBox(NULL, (LPWSTR)msg, UNICODE_TEXT("Message"), NULL);
 	}
 
 }
