@@ -26,14 +26,13 @@ int main() {
 
 #endif
 
+
 #elif defined(NUIM_PLATFORM_LINUX)
-
-#define lINUX
-
+#include <iostream>
 int main() {
-    return NUIM_SUCCESS;
+	std::cout << "Hello from Nuim Engine" << std::endl;
+    return 0;
 }
-
 #endif
 
 #define ENTRY_POINT_H
