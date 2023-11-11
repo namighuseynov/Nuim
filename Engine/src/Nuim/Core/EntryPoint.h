@@ -28,9 +28,11 @@ int main() {
 
 
 #elif defined(NUIM_PLATFORM_LINUX)
-#include <iostream>
+
 int main() {
-	std::cout << "Hello from Nuim Engine" << std::endl;
+	Nuim::Application* app = new Nuim::Application();
+	app->Run();
+	delete app;
     return 0;
 }
 #endif

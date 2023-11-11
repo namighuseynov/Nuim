@@ -5,8 +5,8 @@
 namespace Nuim {
     class Window {
     public:
-        std::string Title;
-        int Width;
-        int Height;
+        std::string Title = "Nuim";
+        int Width = 1200;
+        int Height = 800;
     };
 }
