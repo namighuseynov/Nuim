@@ -1,4 +1,7 @@
 #pragma once
+#include "../Core/Core.h"
+#include "../Platform/glad/glad.h"
+#include <GLFW/glfw3.h>
 #include "Renderer.hpp"
 #include "../Platform/LinuxWindow.hpp"
 

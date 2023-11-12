@@ -2,12 +2,15 @@
 #include "PlatformDef.h"
 
 #include <iostream>
+#include <fstream>
+#include <ostream>
 #include <string>
 #include <vector>
 #include <map>
 #include <math.h>
 #include <functional>
 #include <stdio.h>
+#include <sstream>
 
 #ifndef NM_TRUE
 #define NM_TRUE			1
