@@ -1,5 +1,5 @@
-rm -r build
-rm -r bin
+# rm -r build
+# rm -r bin
 
 cd Engine
 cmake -S . -B ../build/Engine

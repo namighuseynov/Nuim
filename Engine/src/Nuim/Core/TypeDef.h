@@ -1,8 +1,6 @@
 #ifndef TYPE_DEF_H
 #include "PlatformDef.h"
 
-#ifdef NUIM_PLATFORM_WINDOWS
-#include <Windows.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -10,6 +8,7 @@
 #include <math.h>
 #include <functional>
 #include <stdio.h>
+
 #ifndef NM_TRUE
 #define NM_TRUE			1
 #else 
@@ -31,15 +30,6 @@
 #ifndef NUIM_FAILURE
 #define NUIM_FAILURE 1
 #endif // !NUIM_FAILURE
-
-#ifndef STRING 
-typedef const char* STRING;
-#else	
-#undef STRING
-typedef const char* STRING;
-#endif // STRING
-
-typedef STRING* PSTRING;
 
 #ifndef U8 
 typedef uint8_t			U8;
@@ -97,28 +87,6 @@ typedef int64_t			I64;
 typedef int64_t			I64;
 #endif
 
-#ifdef NUIM_CHARACTERSET_UNICODE
-
-#ifndef CHAR16
-
-typedef char16_t CHAR16;
-typedef const CHAR16* USTRING;
-typedef USTRING* PUSTRING;
-
-#ifdef _UNICODE
-#define UNICODE_TEXT(x) (LPCWSTR)u##x
-#else
-#define UNICODE_TEXT(x) x
-#endif
-
-#endif // !CHAR16
-
-#endif // NUIM_CHARSET_UNICODE
-
-#ifndef SIZEOF_CHAR16
-#define SIZEOF_CHAR16 sizeof(CHAR16)
-#endif
-
 #ifndef SIZEOF_U8
 #define SIZEOF_U8 sizeof(U8)
 #endif
@@ -149,6 +117,42 @@ typedef USTRING* PUSTRING;
 
 #ifndef SIZEOF_I64
 #define SIZEOF_I64 sizeof(I64)
+#endif
+
+#ifdef NUIM_PLATFORM_WINDOWS
+#include <Windows.h>
+
+#ifndef STRING 
+typedef const char* STRING;
+#else	
+#undef STRING
+typedef const char* STRING;
+#endif // STRING
+
+typedef STRING* PSTRING;
+
+
+
+#ifdef NUIM_CHARACTERSET_UNICODE
+
+#ifndef CHAR16
+
+typedef char16_t CHAR16;
+typedef const CHAR16* USTRING;
+typedef USTRING* PUSTRING;
+
+#ifdef _UNICODE
+#define UNICODE_TEXT(x) (LPCWSTR)u##x
+#else
+#define UNICODE_TEXT(x) x
+#endif
+
+#endif // !CHAR16
+
+#endif // NUIM_CHARSET_UNICODE
+
+#ifndef SIZEOF_CHAR16
+#define SIZEOF_CHAR16 sizeof(CHAR16)
 #endif
 
 #elif defined(NUIM_PLATFORM_LINUX)

@@ -4,9 +4,13 @@ namespace Nuim {
 
     GL_Renderer::GL_Renderer(LinuxWindow* window) {
         this->window = window;
+
+        
+
     }
 
     void GL_Renderer::Begin() {
+        
         while (!glfwWindowShouldClose(this->window->Instance))
         {
             // input
