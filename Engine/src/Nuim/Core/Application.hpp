@@ -12,7 +12,11 @@
 namespace Nuim {
     class Application {
     public:
+#ifdef NUIM_PLATFORM_WINDOWS
+        Application(HINSTANCE hInstance, I32 nCmdShow);
+#elif defined(NUIM_PLATFORM_LINUX)
         Application();
+#endif
         ~Application();
     public:
         void Run();

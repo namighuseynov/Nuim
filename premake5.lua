@@ -20,7 +20,8 @@ workspace "Nuim"
         optimize "On"
 
 include "Nuim/premake5.lua"
-include "D_Engine/premake5.lua"
+include "Engine/premake5.lua"
+-- include "D_Engine/premake5.lua"
 
 -- include "V_Engine/premake5.lua"
 -- include "G_Engine/premake5.lua"
