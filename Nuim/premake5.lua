@@ -7,12 +7,14 @@ project "Nuim"
     links {
         -- "G_Engine",
         -- "V_Engine",
-        "D_Engine"
+        -- "D_Engine"
+        "Engine"
     }
     includedirs {
         "%{wks.location}/Linking/include",
         "%{wks.location}/V_Engine/src/",
         "%{wks.location}/G_Engine/src/",
+        "%{wks.location}/Engine/src/",
     }
 
     files {

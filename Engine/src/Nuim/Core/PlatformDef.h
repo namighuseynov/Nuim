@@ -1,16 +1,15 @@
 #ifndef PLATFORM_DEF_H
 
 #ifdef _WIN32
-#ifdef _WIN64
+    #ifdef _WIN64
+        #define NUIM_PLATFORM_WINDOWS
+    #else 
+        #error "Nuim Engine does not support x32 architecture"
+    #endif 
 
-#define NUIM_PLATFORM_WINDOWS
-#else 
-#error "Nuim Engine does not support x32 architecture"
-#endif 
+#elif __linux__ 
 
-#elif defined(__linux__) 
-
-#define NUIM_PLATFORM_LINUX
+    #define NUIM_PLATFORM_LINUX
 
 #elif defined(__APPLE__)
 

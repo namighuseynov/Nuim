@@ -10,12 +10,12 @@ int WINAPI WinMain(
 	_In_ int nCmdShow
 ) {
 
-	Nuim::Application* app = new Nuim::Application(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+	Nuim::Application* app = new Nuim::Application(hInstance, nCmdShow);
 	app->Run();
 	delete app;
 	return NUIM_SUCCESS;
 }
-#elif NUIM_SUBSYSTEM_CONSOLE
+#else
 
 int main() {
 	Nuim::Application* app = new Nuim::Application();
@@ -26,14 +26,15 @@ int main() {
 
 #endif
 
+
 #elif defined(NUIM_PLATFORM_LINUX)
 
-#define lINUX
-
 int main() {
-    return NUIM_SUCCESS;
+	Nuim::Application* app = new Nuim::Application();
+	app->Run();
+	delete app;
+    return 0;
 }
-
 #endif
 
 #define ENTRY_POINT_H
