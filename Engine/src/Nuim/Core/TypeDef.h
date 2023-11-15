@@ -123,7 +123,14 @@ typedef int64_t			I64;
 #endif
 
 #ifdef NUIM_PLATFORM_WINDOWS
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <d3dcompiler.h>
+#include <DirectXMath.h>
+
+
 
 #ifndef STRING 
 typedef const char* STRING;
