@@ -20,8 +20,8 @@ workspace "NuimDemo"
         optimize "On"
 
 project "NuimDemo"
-    kind "ConsoleApp"
-    -- kind "WindowedApp"
+    -- kind "ConsoleApp"
+    kind "WindowedApp"
     language "C++"
     cppdialect "C++17"
     targetdir "%{wks.location}/bin"
@@ -34,7 +34,7 @@ project "NuimDemo"
     }
 
     filter "kind:WindowedApp"
-        defines {"NUIM_SUBSYSTEM_WINDOWS"}
-    filter "kind:ConsoleApp"
-        defines {"NUIM_SUBSYSTEM_CONSOLE"}
+        defines {"WINDOWED"}
+    -- filter "kind:ConsoleApp"
+    --     defines {"NUIM_SUBSYSTEM_CONSOLE"}
         
