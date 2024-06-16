@@ -27,7 +27,11 @@ int WINAPI WinMain(
 	LPSTR		lpCmdLine,
 	int		nShowCmd
 ) {
-	return MessageBox(NULL, L"hello, world", L"caption", 0);
+	HWND hwnd = nullptr;
+	WNDCLASSEX wc = {};
+
+
+	return MessageBox(NULL,L"Message", L"caption", 0);
 }
 
 
