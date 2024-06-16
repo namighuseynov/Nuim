@@ -11,28 +11,18 @@ namespace NuimDemo {
 #ifdef WINDOWED
 #define WINDOWED_APPLICATION
 #include <Windows.h>
+#include "EntryPoint.h"
 
-LRESULT Wndproc(
-	HWND hWnd,
-	UINT uMsg,
-	WPARAM wParam,
-	LPARAM lParam
-) {
-	return NULL;
-}
-
-int WINAPI WinMain( 
-	HINSTANCE	hInstance,
-	HINSTANCE	hPrevInstance,
-	LPSTR		lpCmdLine,
-	int		nShowCmd
-) {
-	HWND hwnd = nullptr;
-	WNDCLASSEX wc = {};
+//LRESULT Wndproc(
+//	HWND hWnd,
+//	UINT uMsg,
+//	WPARAM wParam,
+//	LPARAM lParam
+//) {
+//	return NULL;
+//}
 
 
-	return MessageBox(NULL,L"Message", L"caption", 0);
-}
 
 
 #else
