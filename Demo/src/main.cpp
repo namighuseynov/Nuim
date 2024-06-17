@@ -1,28 +1,9 @@
 #include "NuimDemoPCH.h"
-#include "Application.h"
-
-namespace NuimDemo {
-	class NuimApplication :
-		public Application {
-
-	};
-}
 
 #ifdef WINDOWED
 #define WINDOWED_APPLICATION
-#include <Windows.h>
+
 #include "EntryPoint.h"
-
-//LRESULT Wndproc(
-//	HWND hWnd,
-//	UINT uMsg,
-//	WPARAM wParam,
-//	LPARAM lParam
-//) {
-//	return NULL;
-//}
-
-
 
 
 #else
