@@ -26,6 +26,13 @@ project "NuimDemo"
     cppdialect "C++17"
     targetdir "%{wks.location}/bin"
     objdir "%{wks.location}/bin-obj"
+    includedirs {
+        "%{wks.location}",
+        "%{wks.location}/src"
+    }
+
+    pchheader "NuimDemoPCH.h"
+    pchsource "%{wks.location}/src/NuimDemoPCH.cpp"
     
     files {
         "%{wks.location}/src/*.cpp",

@@ -1,3 +1,4 @@
+#include "NuimDemoPCH.h"
 #include "Application.h"
 
 namespace NuimDemo {
