@@ -8,6 +8,7 @@ namespace NuimDemo {
 		BaseWindow(HINSTANCE hInstance, LPWSTR className, UINT16 width, UINT16 height, UINT16 posX, UINT16 posY, int nCmdShow);
 	public:
 		bool Show();
+		HWND GetHWND();
 	public:
 		UINT16 Width;
 		UINT16 Height;

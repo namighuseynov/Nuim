@@ -37,6 +37,7 @@ project "NuimDemo"
     
     files {
         "%{wks.location}/src/*.cpp",
+        "%{wks.location}/src/*.hpp",
         "%{wks.location}/src/*.h",
         "%{wks.location}/src/*.c",
     }

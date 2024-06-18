@@ -26,6 +26,11 @@ namespace NuimDemo {
 		return 1;
 	}
 
+	HWND BaseWindow::GetHWND()
+	{
+		return this->hWnd;
+	}
+
 
 	BaseWindow::BaseWindow(HINSTANCE hInstance, LPWSTR className, UINT16 width, UINT16 height, UINT16 posX, UINT16 posY, int nCmdShow) {
 		this->hInstance		= hInstance;

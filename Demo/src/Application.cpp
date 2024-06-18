@@ -7,10 +7,14 @@ namespace NuimDemo {
 		this->hInstance = hInstance;
 		this->nCmdShow = nCmdShow;
 		CreateAppWindow();
+		this->renderer = new Renderer(this->baseWindow);
 	};
 	Application::~Application() {
 		if (this->baseWindow != nullptr) {
 			delete baseWindow;
+		}
+		if (this->renderer != nullptr) {
+			delete renderer;
 		}
 	}
 	bool Application::CreateAppWindow() {

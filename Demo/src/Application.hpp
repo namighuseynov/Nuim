@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseWindow.h"
+#include "Renderer.hpp"
 
 namespace NuimDemo {
 	class Application
@@ -16,6 +17,7 @@ namespace NuimDemo {
 		HINSTANCE hInstance;
 		int nCmdShow;
 		BaseWindow* baseWindow = nullptr;
+		Renderer* renderer = nullptr;
 	};
 }
 
