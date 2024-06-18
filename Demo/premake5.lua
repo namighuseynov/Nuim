@@ -21,6 +21,7 @@ workspace "NuimDemo"
 
 project "NuimDemo"
     -- kind "ConsoleApp"
+    system "windows"
     kind "WindowedApp"
     language "C++"
     cppdialect "C++17"
@@ -39,6 +40,8 @@ project "NuimDemo"
         "%{wks.location}/src/*.h",
         "%{wks.location}/src/*.c",
     }
+    filter "system:windows"
+        links {"d3d11.lib"}
 
     filter "kind:WindowedApp"
         defines {"WINDOWED"}

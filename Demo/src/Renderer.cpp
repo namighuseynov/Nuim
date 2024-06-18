@@ -1,2 +1,6 @@
 #include "NuimDemoPCH.h"
-#include "Renderer.h"
+#include "Renderer.hpp"
+
+namespace NuimDemo {
+
+}
