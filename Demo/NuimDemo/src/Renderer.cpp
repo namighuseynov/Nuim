@@ -11,63 +11,71 @@ namespace NuimDemo {
 		
 	}
 
+	void Renderer::ShutDown() {
+		//this->swapChain->Release();
+		//this->backBuffer->Release();		
+		////this->deviceContext->Release();
+		//this->device->Release();
+
+	}
+
+	void Renderer::RenderFrame()
+	{
+		float clearColor[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
+		this->deviceContext->ClearRenderTargetView(backBuffer, clearColor);
+		this->swapChain->Present(0, 0);
+	}
+
 	bool Renderer::Initialize() {
-		//Device and context
-		HRESULT hr = D3D11CreateDevice(
-			0,
-			D3D_DRIVER_TYPE_HARDWARE,
-			0,
-			D3D11_CREATE_DEVICE_DEBUG,
-			0,
-			0,
-			D3D11_SDK_VERSION,
-			&this->device,
-			&this->featureLevel,
-			&this->deviceContext
-		);
-		if (FAILED(hr)) {
-			MessageBox(nullptr, L"Failed to create d3d11 device", L"Error", 0);
-			return false;
-		}
-		if (featureLevel != D3D_FEATURE_LEVEL_11_0) {
-			MessageBox(0, L"Direct3D Feature Level 11 unsupported.", 0, 0);
-			return false;
-		}
-
-		//MSAA
-		UINT m4xMsaaQuality;
-		this->device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m4xMsaaQuality);
-
 		//Swap chain desc
-		this->sd.BufferDesc.Width = this->window->Width;
-		this->sd.BufferDesc.Height = this->window->Height;
-		this->sd.BufferDesc.RefreshRate.Numerator = 60;
+		ZeroMemory(&this->sd, sizeof(DXGI_SWAP_CHAIN_DESC));
 		this->sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		this->sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		this->sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		this->sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		this->sd.BufferCount = 1;
 		this->sd.OutputWindow = this->window->GetHWND();
 		this->sd.Windowed = true;
 		this->sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		this->sd.SampleDesc.Count = 4;	
+		this->sd.BufferDesc.Width = this->window->Width;
+		this->sd.BufferDesc.Height = this->window->Height;
 		this->sd.Flags = 0;
-
-		//Swap chain
-		ComPtr<IDXGIDevice> dxgiDevice;
-		this->device.As(&dxgiDevice);
-		ComPtr<IDXGIAdapter> dxgiAdapter;
-		dxgiDevice->GetAdapter(&dxgiAdapter);
-		ComPtr<IDXGIFactory> dxgiFactory;
-		dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)& dxgiFactory);
-
-		HRESULT res = dxgiFactory->CreateSwapChain(
-			this->device.Get(),
-			&this->sd,
-			&this->swapChain
+		this->sd.BufferDesc.RefreshRate.Numerator = 60;
+		//Device and context
+		HRESULT hr = D3D11CreateDeviceAndSwapChain(
+			NULL,
+			D3D_DRIVER_TYPE_HARDWARE,
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			D3D11_SDK_VERSION,
+			&sd,
+			&swapChain,
+			&device,
+			NULL,
+			&deviceContext
 		);
+		if (FAILED(hr)) {
+			MessageBox(nullptr, L"Failed to create d3d11 device", L"Error", 0);
+			return false;
+		}
 
 		// Viewport
+		ID3D11Texture2D* pBackBuffer;
+		this->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 
+		this->device->CreateRenderTargetView(pBackBuffer, NULL, &this->backBuffer);
+		pBackBuffer->Release();
+
+		this->deviceContext->OMSetRenderTargets(1, &this->backBuffer, NULL);
+
+		ZeroMemory(&this->viewport, sizeof(D3D11_VIEWPORT));
+		this->viewport.TopLeftX = 0;
+		this->viewport.TopLeftY = 0;
+		this->viewport.Width = this->window->Width;
+		this->viewport.Height = this->window->Height;	
+
+		this->deviceContext->RSSetViewports(1, &this->viewport);
 		return true;
 	}
 }

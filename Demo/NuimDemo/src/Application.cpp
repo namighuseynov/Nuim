@@ -19,8 +19,10 @@ namespace NuimDemo {
 			delete baseWindow;
 		}
 		if (this->renderer != nullptr) {
+			renderer->ShutDown();
 			delete renderer;
 		}
+
 	}
 	bool Application::CreateAppWindow() {
 		this->baseWindow = new BaseWindow(
@@ -40,6 +42,8 @@ namespace NuimDemo {
 		while (GetMessage(&msg, 0, 0, 0)) {
 			TranslateMessage(&msg);
 			DispatchMessageW(&msg);
+
+			renderer->RenderFrame();
 		}
 	};
 	void Application::Close()
