@@ -6,8 +6,13 @@ namespace NuimDemo {
 	Application::Application(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow) {
 		this->hInstance = hInstance;
 		this->nCmdShow = nCmdShow;
-		CreateAppWindow();
-		this->renderer = new Renderer(this->baseWindow);
+		if (CreateAppWindow()) {
+			this->renderer = new Renderer(this->baseWindow);
+		}
+		else {
+			MessageBox(nullptr, L"Error creating renderer", L"Error", 0);
+		}
+		
 	};
 	Application::~Application() {
 		if (this->baseWindow != nullptr) {

@@ -6,11 +6,13 @@
 namespace NuimDemo {
 
 	Renderer::Renderer(BaseWindow* window) {
-		Initialize();
 		this->window = window;
+		Initialize();
+		
 	}
 
 	bool Renderer::Initialize() {
+		//Device and context
 		HRESULT hr = D3D11CreateDevice(
 			0,
 			D3D_DRIVER_TYPE_HARDWARE,
@@ -31,8 +33,12 @@ namespace NuimDemo {
 			MessageBox(0, L"Direct3D Feature Level 11 unsupported.", 0, 0);
 			return false;
 		}
+
+		//MSAA
 		UINT m4xMsaaQuality;
 		this->device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m4xMsaaQuality);
+
+		//Swap chain desc
 		this->sd.BufferDesc.Width = this->window->Width;
 		this->sd.BufferDesc.Height = this->window->Height;
 		this->sd.BufferDesc.RefreshRate.Numerator = 60;
@@ -45,6 +51,26 @@ namespace NuimDemo {
 		this->sd.Windowed = true;
 		this->sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		this->sd.Flags = 0;
+
+		//Swap chain
+		ComPtr<IDXGIDevice> dxgiDevice;
+		this->device.As(&dxgiDevice);
+		ComPtr<IDXGIAdapter> dxgiAdapter;
+		dxgiDevice->GetAdapter(&dxgiAdapter);
+		ComPtr<IDXGIFactory> dxgiFactory;
+		dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)& dxgiFactory);
+
+		//this->device->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice);
+		//IDXGIAdapter* dxgiAdapter = 0;
+		//dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgiAdapter);
+		//IDXGIFactory* dxgiFactory = 0;
+		//dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&dxgiFactory);
+
+		HRESULT res = dxgiFactory->CreateSwapChain(
+			this->device.Get(),
+			&this->sd,
+			&this->swapChain
+		);
 		return true;
 	}
 }
