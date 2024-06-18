@@ -21,17 +21,28 @@ workspace "NuimDemo"
 
 project "NuimDemo"
     -- kind "ConsoleApp"
+    system "windows"
     kind "WindowedApp"
     language "C++"
     cppdialect "C++17"
     targetdir "%{wks.location}/bin"
     objdir "%{wks.location}/bin-obj"
+    includedirs {
+        "%{wks.location}",
+        "%{wks.location}/src"
+    }
+
+    pchheader "NuimDemoPCH.h"
+    pchsource "%{wks.location}/src/NuimDemoPCH.cpp"
     
     files {
         "%{wks.location}/src/*.cpp",
+        "%{wks.location}/src/*.hpp",
         "%{wks.location}/src/*.h",
         "%{wks.location}/src/*.c",
     }
+    filter "system:windows"
+        links {"d3d11.lib"}
 
     filter "kind:WindowedApp"
         defines {"WINDOWED"}
