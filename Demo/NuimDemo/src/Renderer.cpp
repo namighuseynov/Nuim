@@ -60,17 +60,14 @@ namespace NuimDemo {
 		ComPtr<IDXGIFactory> dxgiFactory;
 		dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)& dxgiFactory);
 
-		//this->device->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice);
-		//IDXGIAdapter* dxgiAdapter = 0;
-		//dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgiAdapter);
-		//IDXGIFactory* dxgiFactory = 0;
-		//dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&dxgiFactory);
-
 		HRESULT res = dxgiFactory->CreateSwapChain(
 			this->device.Get(),
 			&this->sd,
 			&this->swapChain
 		);
+
+		// Viewport
+
 		return true;
 	}
 }

@@ -20,13 +20,12 @@ workspace "NuimDemo"
         optimize "On"
 
 project "NuimDemo"
-    -- kind "ConsoleApp"
     system "windows"
     kind "WindowedApp"
     language "C++"
     cppdialect "C++17"
-    targetdir "%{wks.location}/bin"
-    objdir "%{wks.location}/bin-obj"
+    targetdir "%{wks.location}/../bin"
+    objdir "%{wks.location}/../bin-obj"
     includedirs {
         "%{wks.location}",
         "%{wks.location}/src"
