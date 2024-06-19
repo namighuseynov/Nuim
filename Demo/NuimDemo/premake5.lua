@@ -40,6 +40,12 @@ project "NuimDemo"
         "%{wks.location}/src/*.h",
         "%{wks.location}/src/*.c",
     }
+    files {
+        "%{wks.location}/src/ImGui/*.cpp",
+        "%{wks.location}/src/ImGui/*.hpp",
+        "%{wks.location}/src/ImGui/*.h",
+        "%{wks.location}/src/ImGui/*.c",
+    }
     filter "system:windows"
         links {"d3d11.lib"}
 
