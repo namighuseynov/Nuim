@@ -28,6 +28,7 @@ namespace NuimDemo {
 
 	bool Renderer::Initialize() {
 		//Swap chain desc
+
 		ZeroMemory(&this->sd, sizeof(DXGI_SWAP_CHAIN_DESC));
 		this->sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		this->sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -76,6 +77,8 @@ namespace NuimDemo {
 		this->viewport.Height = this->window->Height;	
 
 		this->deviceContext->RSSetViewports(1, &this->viewport);
+
+
 		return true;
 	}
 }

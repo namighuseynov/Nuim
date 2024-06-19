@@ -13,6 +13,7 @@ namespace NuimDemo {
 			MessageBox(nullptr, L"Error creating renderer", L"Error", 0);
 		}
 		
+		
 	};
 	Application::~Application() {
 		if (this->baseWindow != nullptr) {
