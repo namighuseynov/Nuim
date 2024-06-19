@@ -20,13 +20,12 @@ workspace "NuimDemo"
         optimize "On"
 
 project "NuimDemo"
-    -- kind "ConsoleApp"
     system "windows"
     kind "WindowedApp"
     language "C++"
     cppdialect "C++17"
-    targetdir "%{wks.location}/bin"
-    objdir "%{wks.location}/bin-obj"
+    targetdir "%{wks.location}/../bin"
+    objdir "%{wks.location}/../bin-obj"
     includedirs {
         "%{wks.location}",
         "%{wks.location}/src"
@@ -40,6 +39,12 @@ project "NuimDemo"
         "%{wks.location}/src/*.hpp",
         "%{wks.location}/src/*.h",
         "%{wks.location}/src/*.c",
+    }
+    files {
+        "%{wks.location}/src/ImGui/*.cpp",
+        "%{wks.location}/src/ImGui/*.hpp",
+        "%{wks.location}/src/ImGui/*.h",
+        "%{wks.location}/src/ImGui/*.c",
     }
     filter "system:windows"
         links {"d3d11.lib"}
