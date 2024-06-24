@@ -3,12 +3,6 @@
 
 using Microsoft::WRL::ComPtr;
 
-// Swap Chain
-
-// Resources
-
-// Math
-
 namespace NuimDemo {
 
 	class Renderer

@@ -93,20 +93,7 @@ namespace NuimDemo {
 
 		this->deviceContext->RSSetViewports(1, &this->viewport);
 
-		// Setup Dear ImGui context
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsLight();
-
-		// Setup Platform/Renderer backends
-		ImGui_ImplWin32_Init(this->window->GetHWND());
-		ImGui_ImplDX11_Init(this->device.Get(), this->deviceContext.Get());
 		return true;
 	}
 }
