@@ -1,7 +1,13 @@
 #include "NuimDemoPCH.h"
 #include "BaseWindow.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_dx11.h"
+#include "ImGui/imgui_impl_win32.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace NuimDemo {
+	
 
 	LRESULT CALLBACK WndProcess(
 		HWND hwnd,
@@ -9,6 +15,8 @@ namespace NuimDemo {
 		WPARAM wParam,
 		LPARAM lParam
 	) {
+		if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+			return true;
 		switch (msg) {
 		case WM_CLOSE:
 			DestroyWindow(hwnd);
