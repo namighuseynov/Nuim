@@ -1,5 +1,8 @@
 #pragma once
-#include <d3d11.h>
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_win32.h"
+#include "ImGui/imgui_impl_dx11.h"
+
 
 using Microsoft::WRL::ComPtr;
 
@@ -13,6 +16,9 @@ namespace NuimDemo {
 		void CleanupDeviceD3D();
 		void CreateRenderTarget();
 		void CleanupRenderTarget();
+		void Begin();
+		void ShutDown();
+		void Render();
 	public:
 		ComPtr<ID3D11Device> d3d_device;
 		ComPtr<ID3D11DeviceContext> d3d_deviceContext;

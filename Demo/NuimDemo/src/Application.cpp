@@ -7,18 +7,13 @@ namespace NuimDemo {
 		this->hInstance = hInstance;
 		this->nCmdShow = nCmdShow;
 		if (CreateAppWindow()) {
-			this->d3d_renderer = new D3DRenderer(this->baseWindow);
-			d3d_renderer->Begin();
+			this->d3d_app = new D3DApp(this->baseWindow);
+			d3d_app->Begin();
 		}
 		else {
 			MessageBox(nullptr, L"Error creating renderer", L"Error", 0);
 		}
 	};
-	Application::~Application() {
-		if (this->baseWindow != nullptr) {
-			delete baseWindow;
-		}
-	}
 	bool Application::CreateAppWindow() {
 		this->baseWindow = new BaseWindow(
 			this->hInstance,
@@ -29,7 +24,6 @@ namespace NuimDemo {
 			CW_USEDEFAULT,
 			this->nCmdShow
 		);
-		this->baseWindow->Show();
 		return 1;
 	};
 	void Application::Run() {
@@ -38,8 +32,10 @@ namespace NuimDemo {
 			TranslateMessage(&msg);
 			DispatchMessageW(&msg);
 
-			d3d_renderer->Render();
+			d3d_app->Render();
 		}
-		d3d_renderer->ShutDown();
+		d3d_app->ShutDown();
+		delete d3d_app;
+		delete baseWindow;
 	};
 }
