@@ -4,7 +4,7 @@
 #include "ImGui/imgui_impl_dx11.h"
 
 #include "BaseWindow.h"
-#include "Renderer.hpp"
+#include "D3DRenderer.hpp"
 
 namespace NuimDemo {
 	class Application
@@ -14,15 +14,12 @@ namespace NuimDemo {
 		~Application();
 	public:
 		void Run();
-		void Close();
 	private:
 		bool CreateAppWindow();
 	private:
 		HINSTANCE hInstance;
 		int nCmdShow;
 		BaseWindow* baseWindow = nullptr;
-		Renderer* renderer = nullptr;
+		D3DRenderer* d3d_renderer = nullptr;
 	};
 }
-
-
