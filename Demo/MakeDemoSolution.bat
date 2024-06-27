@@ -6,5 +6,5 @@ rmdir /s /q bin
 rmdir /s /q bin-obj
 rmdir /s /q .vs
 
-..\premake\premake5.exe --file=premake5.lua vs2022
+premake\premake5.exe --file=premake5.lua vs2022
 PAUSE

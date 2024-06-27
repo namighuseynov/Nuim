@@ -2,10 +2,6 @@
 #include "BaseWindow.h"
 #include "Renderer.hpp"
 
-#include "ImGui/imgui.h"
-#include "ImGui/imgui_impl_win32.h"
-#include "ImGui/imgui_impl_dx11.h"
-
 
 namespace NuimDemo {
 
@@ -16,35 +12,24 @@ namespace NuimDemo {
 	}
 
 	void Renderer::ShutDown() {
-		if (this->swapChain.Get() == nullptr) this->swapChain->Release();
-		if (this->backBuffer == nullptr) this->backBuffer->Release();		
-		if (this->deviceContext.Get() == nullptr) this->deviceContext->Release();
-		if (this->device.Get() == nullptr) this->device->Release();
+		//this->swapChain->Release();
+		//this->backBuffer->Release();		
+		////this->deviceContext->Release();
+		//this->device->Release();
 
-		ImGui_ImplDX11_Shutdown();
-		ImGui_ImplWin32_Shutdown();
-		ImGui::DestroyContext();
 	}
 
 	void Renderer::RenderFrame()
 	{
-
-		// Start the Dear ImGui frame
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-		ImGui::ShowDemoWindow();
-
-		// Rendering
-		ImGui::Render();
 		float clearColor[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
-		this->deviceContext->ClearRenderTargetView(this->backBuffer, clearColor);
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		this->deviceContext->ClearRenderTargetView(backBuffer, clearColor);
 		this->swapChain->Present(0, 0);
 	}
 
 	bool Renderer::Initialize() {
 		//Swap chain desc
+
+		ZeroMemory(&this->sd, sizeof(DXGI_SWAP_CHAIN_DESC));
 		this->sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		this->sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		this->sd.BufferCount = 1;
@@ -80,10 +65,10 @@ namespace NuimDemo {
 		ID3D11Texture2D* pBackBuffer;
 		this->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 
-		this->device->CreateRenderTargetView(pBackBuffer, nullptr, &this->backBuffer);
+		this->device->CreateRenderTargetView(pBackBuffer, NULL, &this->backBuffer);
 		pBackBuffer->Release();
 
-		this->deviceContext->OMSetRenderTargets(1, &this->backBuffer, nullptr);
+		this->deviceContext->OMSetRenderTargets(1, &this->backBuffer, NULL);
 
 		ZeroMemory(&this->viewport, sizeof(D3D11_VIEWPORT));
 		this->viewport.TopLeftX = 0;
