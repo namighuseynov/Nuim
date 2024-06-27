@@ -1,6 +1,6 @@
 project "NuimDemo"
     system "windows"
-    kind "SharedLibs"
+    kind "SharedLib"
     language "C++"
     cppdialect "C++17"
     targetdir "%{wks.location}/../bin"
