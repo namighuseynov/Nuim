@@ -35,11 +35,11 @@ namespace EventSystem {
 	};
 }
 
-#include "Event.hpp"
-#include "EventDispatcher.hpp"
-#include "KeyPressEvent.hpp"
-#include "KeyReleaseEvent.hpp"
-#include "MousePressEvent.hpp"
-#include "MouseMoveEvent.hpp"
-#include "ApplicationStartEvent.hpp"
-#include "ApplicationCloseEvent.hpp"
+#include "EventSystem/Event.hpp"
+#include "EventSystem/EventDispatcher.hpp"
+#include "EventSystem/KeyPressEvent.hpp"
+#include "EventSystem/KeyReleaseEvent.hpp"
+#include "EventSystem/MousePressEvent.hpp"
+#include "EventSystem/MouseMoveEvent.hpp"
+#include "EventSystem/ApplicationStartEvent.hpp"
+#include "EventSystem/ApplicationCloseEvent.hpp"

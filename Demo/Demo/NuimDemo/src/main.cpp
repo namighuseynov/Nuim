@@ -1,4 +1,5 @@
 #include "NuimDemoPCH.h"
+#include "EventSystem.hpp"
 
 #ifdef WINDOWED
 #define WINDOWED_APPLICATION

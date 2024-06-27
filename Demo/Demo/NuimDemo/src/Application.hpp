@@ -14,7 +14,6 @@ namespace NuimDemo {
 		~Application();
 	public:
 		void Run();
-		void Close();
 	private:
 		bool CreateAppWindow();
 	private:

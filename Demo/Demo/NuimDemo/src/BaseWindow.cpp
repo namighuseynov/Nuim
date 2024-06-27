@@ -1,26 +1,8 @@
 #include "NuimDemoPCH.h"
 #include "BaseWindow.h"
+#include "EventSystem.hpp"
 
 namespace NuimDemo {
-
-	LRESULT CALLBACK WndProcess(
-		HWND hwnd,
-		UINT msg,
-		WPARAM wParam,
-		LPARAM lParam
-	) {
-		switch (msg) {
-		case WM_CLOSE:
-			DestroyWindow(hwnd);
-			break;
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
-		default:
-			return DefWindowProc(hwnd, msg, wParam, lParam);
-		}
-	}
-
 	bool BaseWindow::Show() {
 		ShowWindow(this->hWnd, this->nCmdShow);
 		return 1;
