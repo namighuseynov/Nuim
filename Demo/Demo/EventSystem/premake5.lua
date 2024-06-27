@@ -1,24 +1,24 @@
-project "NuimDemo"
+project "EventSystem"
     system "windows"
     kind "SharedLib"
     language "C++"
     cppdialect "C++17"
-    targetdir "%{wks.location}/../bin"
-    objdir "%{wks.location}/../bin-obj"
-    -- includedirs {
-    --     "%{wks.location}",
-    --     "%{wks.location}/src"
-    -- }
+    targetdir "%{wks.location}/bin"
+    objdir "%{wks.location}/bin-obj"
+    includedirs {
+        "%{wks.location}/Demo/EventSystem",
+        "%{wks.location}/Demo/EventSystem/src"
+    }
 
-    -- pchheader "NuimDemoPCH.h"
-    -- pchsource "%{wks.location}/src/NuimDemoPCH.cpp"
+    pchheader "pch.h"
+    pchsource "%{wks.location}/Demo/EventSystem/src/pch.cpp"
     
-    -- files {
-    --     "%{wks.location}/src/*.cpp",
-    --     "%{wks.location}/src/*.hpp",
-    --     "%{wks.location}/src/*.h",
-    --     "%{wks.location}/src/*.c",
-    -- }
+    files {
+        "%{wks.location}/Demo/EventSystem/src/*.cpp",
+        "%{wks.location}/Demo/EventSystem/src/*.hpp",
+        "%{wks.location}/Demo/EventSystem/src/*.h",
+        "%{wks.location}/Demo/EventSystem/src/*.c",
+    }
     -- files {
     --     "%{wks.location}/src/ImGui/*.cpp",
     --     "%{wks.location}/src/ImGui/*.hpp",
