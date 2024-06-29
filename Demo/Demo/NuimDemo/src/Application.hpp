@@ -1,27 +1,18 @@
 #pragma once
-#include "ImGui/imgui.h"
-#include "ImGui/imgui_impl_win32.h"
-#include "ImGui/imgui_impl_dx11.h"
-
-#include "BaseWindow.h"
-#include "Renderer.hpp"
+#include "Window.hpp"
+#include "EventSystem.hpp"
 
 namespace NuimDemo {
 	class Application
 	{
 	public:
 		Application(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow);
-		~Application();
 	public:
 		void Run();
+		void OnEvent(EventSystem::Event& e);
 	private:
-		bool CreateAppWindow();
-	private:
+		std::unique_ptr<Window> m_window;
 		HINSTANCE hInstance;
 		int nCmdShow;
-		BaseWindow* baseWindow = nullptr;
-		Renderer* renderer = nullptr;
 	};
 }
-
-
