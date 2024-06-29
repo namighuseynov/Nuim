@@ -7,9 +7,19 @@
 #endif
 
 namespace EventSystem {
+
+	enum class EVENTSYSTEMLIBRARY_API EventType {
+		KeyPressEvent, KeyReleaseEvent,
+		MousePressEvent, MouseReleaseEvent, MouseMoveEvent, MouseScrollEvent,
+		ApplicationStartEvent, ApplicationCloseEvent,
+		WindowSizeEvent, WindowMinimizeEvent, WindowMaxmimizeEvent
+
+	};
+
 	class EVENTSYSTEMLIBRARY_API Event
 	{
 	public:
 		virtual std::string GetName() const = 0;
+		virtual EventType GetType() const = 0;
 	};
 }

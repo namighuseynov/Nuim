@@ -15,6 +15,19 @@ namespace EventSystem {
 		std::string GetName() const override {
 			return "ApplicationClose";
 		}
+		EventType GetType() {
+			return EventType::ApplicationCloseEvent;
+		}
 	};
 
+	class EVENTSYSTEMLIBRARY_API ApplicationStartEvent :
+		public Event
+	{
+		std::string GetName() const override {
+			return "ApplicationStart";
+		}
+		EventType GetType() {
+			return EventType::ApplicationStartEvent;
+		}
+	};
 }
