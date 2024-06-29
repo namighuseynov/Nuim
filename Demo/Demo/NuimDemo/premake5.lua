@@ -7,12 +7,16 @@ project "NuimDemo"
     objdir "%{wks.location}/bin-obj"
     includedirs {
         "%{wks.location}/Demo/NuimDemo",
-        "%{wks.location}/Demo/NuimDemo/src"
+        "%{wks.location}/Demo/NuimDemo/src",
+        "%{wks.location}/Demo/EventSystem/src",
+
     }
 
     pchheader "NuimDemoPCH.h"
     pchsource "%{wks.location}/Demo/NuimDemo/src/NuimDemoPCH.cpp"
-    
+    links {
+        "EventSystem"
+    }
     files {
         "%{wks.location}/Demo/NuimDemo/src/*.cpp",
         "%{wks.location}/Demo/NuimDemo/src/*.hpp",
