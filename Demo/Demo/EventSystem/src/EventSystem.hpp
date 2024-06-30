@@ -37,9 +37,7 @@ namespace EventSystem {
 
 #include "EventSystem/Event.hpp"
 #include "EventSystem/EventDispatcher.hpp"
-#include "EventSystem/KeyPressEvent.hpp"
-#include "EventSystem/KeyReleaseEvent.hpp"
-#include "EventSystem/MousePressEvent.hpp"
-#include "EventSystem/MouseMoveEvent.hpp"
-#include "EventSystem/ApplicationStartEvent.hpp"
-#include "EventSystem/ApplicationCloseEvent.hpp"
+#include "EventSystem/ApplicationEvent.hpp"
+#include "EventSystem/WindowEvent.hpp"
+#include "EventSystem/KeyEvent.hpp"
+#include "EventSystem/MouseEvent.hpp"

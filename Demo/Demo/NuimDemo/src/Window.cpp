@@ -1,32 +1,9 @@
 #include "NuimDemoPCH.h"
 #include "Window.hpp"
 
-LRESULT CALLBACK WndProcess(
-	HWND hwnd,
-	UINT msg,
-	WPARAM wParam,
-	LPARAM lParam
-) {
-
-	switch (msg) {
-	case WM_CLOSE:
-		DestroyWindow(hwnd);
-		return 0;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	default:
-		return DefWindowProc(hwnd, msg, wParam, lParam);
-	}
-}
-
 namespace NuimDemo {
-	Window* Window::Create(HINSTANCE hInstance)
+	Window::Window(HINSTANCE hInstance) : Height(600), Width(600)
 	{
-		Window* w = new Window();
-		w->Width = 600;
-		w->Height = 600;
-
 		WNDCLASSEX wcex = {};
 		wcex.cbSize = sizeof(WNDCLASSEX);
 		wcex.hInstance = hInstance;
@@ -35,19 +12,60 @@ namespace NuimDemo {
 		wcex.cbWndExtra = 0;
 		wcex.lpszMenuName = L"NuimDemo";
 		wcex.style = CS_HREDRAW;
-		wcex.lpfnWndProc = WndProcess;
-	 	HRESULT hr = RegisterClassEx(&wcex);
+		wcex.lpfnWndProc = Window::WndProcess;
+		HRESULT hr = RegisterClassEx(&wcex);
 		if (FAILED(hr)) {
 			MessageBox(nullptr, L"Registererror", L"Error", 0);
-			return nullptr;
 		}
-		w->hwnd = CreateWindowEx(0, L"NuimDemo", L"NuimDemo", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, w->Width, w->Height, nullptr, nullptr, hInstance, nullptr);
-		if (!w->hwnd) {
+		this->hwnd = CreateWindowEx(0, L"NuimDemo", L"NuimDemo", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 600, 600, nullptr, nullptr, hInstance, this);
+		if (!this->hwnd) {
 			MessageBox(nullptr, L"create window error", L"Error", 0);
-			return nullptr;
 		}
-		ShowWindow(w->hwnd, 1);
-		return w;
+		ShowWindow(this->hwnd, 1);
+	}
+	LRESULT Window::WndProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	{
+		if (msg == WM_CREATE) {
+			LPCREATESTRUCT pCreate = reinterpret_cast<LPCREATESTRUCT>(lParam);
+			Window* pWindow = reinterpret_cast<Window*>(pCreate->lpCreateParams);
+			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWindow));
+		}
+		else {
+			Window* pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+			if (pWindow) {
+				switch (msg) {
+				case WM_MOUSEMOVE:{
+					EventSystem::MouseMoveEvent mouseMoveEvent;
+					pWindow->eventCallbackFn(mouseMoveEvent);
+					return 0;
+				}
+				case WM_LBUTTONDOWN: {
+					EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_LEFT);
+					pWindow->eventCallbackFn(mousePressEvent);
+					return 0;
+				}
+					
+
+				case WM_KEYDOWN: {
+					EventSystem::KeyPressEvent keyPressEvent(static_cast<int>(lParam));
+					pWindow->eventCallbackFn(keyPressEvent);
+					return 0;
+				}
+				case WM_DESTROY: {
+					PostQuitMessage(0);
+					return 0;
+				}
+					
+				default:
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+				}
+			}
+		}
+		return DefWindowProc(hwnd, msg, wParam, lParam);
+	}
+	void Window::SetEventCallback(EventCallback callbackFn)
+	{
+		this->eventCallbackFn = callbackFn;
 	}
 	void Window::OnUpdate()
 	{

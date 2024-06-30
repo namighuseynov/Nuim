@@ -48,7 +48,15 @@ namespace EventSystem {
 
 	class EVENTSYSTEMLIBRARY_API MouseMoveEvent :
 		public Event {
-
+	public:
+		MouseMoveEvent() {};
+	public:
+		std::string GetName() const override {
+			return "MouseMove";
+		}
+		EventType GetType() const  override {
+			return EventType::MouseMoveEvent;
+		}
 	};
 
 	class EVENTSYSTEMLIBRARY_API MouseScrollEvent :
