@@ -12,7 +12,7 @@ namespace EventSystem {
 		KeyPressEvent, KeyReleaseEvent,
 		MousePressEvent, MouseReleaseEvent, MouseMoveEvent, MouseScrollEvent,
 		ApplicationStartEvent, ApplicationCloseEvent,
-		WindowSizeEvent, WindowMinimizeEvent, WindowMaxmimizeEvent
+		WindowSizeEvent, WindowMinimizeEvent, WindowMaxmimizeEvent, WindowRestoreEvent
 
 	};
 

@@ -44,7 +44,6 @@ namespace NuimDemo {
 					pWindow->eventCallbackFn(mousePressEvent);
 					return 0;
 				}
-					
 
 				case WM_KEYDOWN: {
 					EventSystem::KeyPressEvent keyPressEvent(static_cast<int>(lParam));
@@ -53,6 +52,27 @@ namespace NuimDemo {
 				}
 				case WM_DESTROY: {
 					PostQuitMessage(0);
+					return 0;
+				}
+
+				case WM_SYSCOMMAND: {
+					switch (wParam & 0xFFF0) {
+					case SC_MINIMIZE: {
+						EventSystem::WindowMinimizeEvent windowMinimizeEvent;
+						pWindow->eventCallbackFn(windowMinimizeEvent);
+						return 0;
+					}
+					case SC_RESTORE: {
+						EventSystem::WindowRestoreEvent windowRestoreEvent;
+						pWindow->eventCallbackFn(windowRestoreEvent);
+						return 0;
+					}
+					case SC_MAXIMIZE: {
+						EventSystem::WindowMaxmimizeEvent windowMaximizeEvent;
+						pWindow->eventCallbackFn(windowMaximizeEvent);
+						return 0;
+					}
+					}
 					return 0;
 				}
 					
