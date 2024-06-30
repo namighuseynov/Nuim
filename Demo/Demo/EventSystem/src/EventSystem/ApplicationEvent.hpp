@@ -15,7 +15,7 @@ namespace EventSystem {
 		std::string GetName() const override {
 			return "ApplicationClose";
 		}
-		EventType GetType() {
+		EventType GetType() const override{
 			return EventType::ApplicationCloseEvent;
 		}
 	};

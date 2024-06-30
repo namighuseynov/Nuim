@@ -1,10 +1,21 @@
 #pragma once
+#include <functional>
+#include "EventSystem.hpp"
 
 namespace NuimDemo {
 	class Window
 	{
+	using EventCallback = std::function<void(EventSystem::Event& e)>;
 	public:
-		static Window* Create(HINSTANCE hInstance);
+		Window(HINSTANCE hInstance);
+	public:
+		static LRESULT CALLBACK WndProcess(
+			HWND hwnd,
+			UINT msg,
+			WPARAM wParam,
+			LPARAM lParam
+		);
+		void SetEventCallback(EventCallback callbackFn);
 		void OnUpdate();
 	public:
 		UINT Width;
@@ -12,6 +23,6 @@ namespace NuimDemo {
 
 	private:
 		HWND hwnd;
-
+		EventCallback eventCallbackFn;
 	};
 }
