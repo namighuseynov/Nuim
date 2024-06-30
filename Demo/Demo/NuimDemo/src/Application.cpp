@@ -16,7 +16,17 @@ namespace NuimDemo {
 	void Application::OnEvent(EventSystem::Event& e) {
 		AllocConsole();
 		freopen("CONOUT$", "w", stdout);
-
-		std::cout << e.GetName() << std::endl;
+		
+		if (e.GetType() == EventSystem::EventType::MouseMoveEvent) {
+			EventSystem::MouseMoveEvent* mouseMoveEvent = dynamic_cast<EventSystem::MouseMoveEvent*>(&e);
+			std::cout << std::to_string(mouseMoveEvent->GetX()) + "," + std::to_string(mouseMoveEvent->GetY()) << std::endl;
+		}
+		else if (e.GetType() == EventSystem::EventType::MousePressEvent) {
+			EventSystem::MousePressEvent* mousePressEvent = dynamic_cast<EventSystem::MousePressEvent*>(&e);
+			std::cout << std::to_string(mousePressEvent->GetX()) + "," + std::to_string(mousePressEvent->GetY()) << std::endl;
+		}
+		else {
+			std::cout << e.GetName() << std::endl;
+		}
 	}
 }

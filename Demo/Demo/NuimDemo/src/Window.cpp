@@ -35,12 +35,14 @@ namespace NuimDemo {
 			if (pWindow) {
 				switch (msg) {
 				case WM_MOUSEMOVE:{
-					EventSystem::MouseMoveEvent mouseMoveEvent;
+					int x = (int)(short)LOWORD(lParam);
+					int y = (int)(short)HIWORD(lParam);
+					EventSystem::MouseMoveEvent mouseMoveEvent(x, y);
 					pWindow->eventCallbackFn(mouseMoveEvent);
 					return 0;
 				}
 				case WM_LBUTTONDOWN: {
-					EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_LEFT);
+					EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_LEFT, LOWORD(lParam), HIWORD(lParam));
 					pWindow->eventCallbackFn(mousePressEvent);
 					return 0;
 				}
