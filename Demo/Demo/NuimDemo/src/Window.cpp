@@ -2,6 +2,7 @@
 #include "Window.hpp"
 
 namespace NuimDemo {
+	int count = 0;
 	Window::Window(HINSTANCE hInstance) : Height(600), Width(600)
 	{
 		WNDCLASSEX wcex = {};
@@ -29,61 +30,73 @@ namespace NuimDemo {
 			LPCREATESTRUCT pCreate = reinterpret_cast<LPCREATESTRUCT>(lParam);
 			Window* pWindow = reinterpret_cast<Window*>(pCreate->lpCreateParams);
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWindow));
+			return DefWindowProc(hwnd, msg, wParam, lParam);
 		}
 		else {
 			Window* pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 			if (pWindow) {
-				switch (msg) {
-				case WM_MOUSEMOVE:{
-					int x = (int)(short)LOWORD(lParam);
-					int y = (int)(short)HIWORD(lParam);
-					EventSystem::MouseMoveEvent mouseMoveEvent(x, y);
-					pWindow->eventCallbackFn(mouseMoveEvent);
-					return 0;
+			switch (msg) {
+			case WM_SIZE: {
+				if (count == 1) {
+					int width = LOWORD(lParam);
+					int height = HIWORD(lParam);
+					EventSystem::WindowSizeEvent windowSizeEvent(width, height);
+					pWindow->eventCallbackFn(windowSizeEvent);
 				}
-				case WM_LBUTTONDOWN: {
-					EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_LEFT, LOWORD(lParam), HIWORD(lParam));
-					pWindow->eventCallbackFn(mousePressEvent);
-					return 0;
+				else {
+					count += 1;
 				}
-
-				case WM_KEYDOWN: {
-					EventSystem::KeyPressEvent keyPressEvent(static_cast<int>(lParam));
-					pWindow->eventCallbackFn(keyPressEvent);
-					return 0;
-				}
-				case WM_DESTROY: {
-					PostQuitMessage(0);
-					return 0;
-				}
-
-				case WM_SYSCOMMAND: {
-					switch (wParam & 0xFFF0) {
-					case SC_MINIMIZE: {
-						EventSystem::WindowMinimizeEvent windowMinimizeEvent;
-						pWindow->eventCallbackFn(windowMinimizeEvent);
-						return 0;
-					}
-					case SC_RESTORE: {
-						EventSystem::WindowRestoreEvent windowRestoreEvent;
-						pWindow->eventCallbackFn(windowRestoreEvent);
-						return 0;
-					}
-					case SC_MAXIMIZE: {
-						EventSystem::WindowMaxmimizeEvent windowMaximizeEvent;
-						pWindow->eventCallbackFn(windowMaximizeEvent);
-						return 0;
-					}
-					}
-					return 0;
-				}
-					
-				default:
-					return DefWindowProc(hwnd, msg, wParam, lParam);
-				}
+				break;
 			}
+			case WM_MOUSEMOVE:{
+				int x = (int)(short)LOWORD(lParam);
+				int y = (int)(short)HIWORD(lParam);
+				EventSystem::MouseMoveEvent mouseMoveEvent(x, y);
+				pWindow->eventCallbackFn(mouseMoveEvent);
+				break;
+			}
+			case WM_LBUTTONDOWN: {
+				EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_LEFT, LOWORD(lParam), HIWORD(lParam));
+				pWindow->eventCallbackFn(mousePressEvent);
+				break;
+			}
+			case WM_KEYDOWN: {
+				EventSystem::KeyPressEvent keyPressEvent(static_cast<int>(lParam));
+				pWindow->eventCallbackFn(keyPressEvent);
+				break;
+			}
+			case WM_DESTROY: {
+				PostQuitMessage(0);
+				break;
+			}
+			case WM_SYSCOMMAND: {
+				switch (wParam & 0xFFF0) {
+				case SC_MINIMIZE: {
+					EventSystem::WindowMinimizeEvent windowMinimizeEvent;
+					pWindow->eventCallbackFn(windowMinimizeEvent);
+					break;
+				}
+				case SC_RESTORE: {
+					EventSystem::WindowRestoreEvent windowRestoreEvent;
+					pWindow->eventCallbackFn(windowRestoreEvent);
+					break;
+				}
+				case SC_MAXIMIZE: {
+					EventSystem::WindowMaxmimizeEvent windowMaximizeEvent;
+					pWindow->eventCallbackFn(windowMaximizeEvent);
+					break;
+				}
+				}
+				break;
+			}
+			
+			default:
+				return DefWindowProc(hwnd, msg, wParam, lParam);
+			}
+			}
+			return DefWindowProc(hwnd, msg, wParam, lParam);
+			
 		}
-		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 	void Window::SetEventCallback(EventCallback callbackFn)
 	{
