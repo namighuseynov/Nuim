@@ -37,11 +37,29 @@ namespace NuimDemo {
 			switch (msg) {
 			case WM_SIZE: {
 				if (pWindow->eventCallbackFn) {
-					int width = LOWORD(lParam);
-					int height = HIWORD(lParam);
+					int width = GET_X_LPARAM(lParam);
+					int height = GET_Y_LPARAM(lParam);
 					EventSystem::WindowSizeEvent windowSizeEvent(width, height);
 					pWindow->eventCallbackFn(windowSizeEvent);
 				}
+				break;
+			}
+			case WM_MBUTTONDOWN: {
+				EventSystem::MouseMiddleButtonDown mouseMiddleButtonDown(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+				pWindow->eventCallbackFn(mouseMiddleButtonDown);
+				break;
+			}
+			case WM_MBUTTONUP: {
+				EventSystem::MouseMiddleButtonRelease mouseMiddleButtonRelease(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+				pWindow->eventCallbackFn(mouseMiddleButtonRelease);
+				break;
+			}
+			case WM_LBUTTONDOWN: {
+				EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_LEFT, LOWORD(lParam), HIWORD(lParam));
+				pWindow->eventCallbackFn(mousePressEvent);
+				break;
+			}
+			case WM_LBUTTONUP: {
 				break;
 			}
 			case WM_SETFOCUS: {
@@ -51,6 +69,7 @@ namespace NuimDemo {
 				}
 				break;
 			}
+			
 			case WM_KILLFOCUS: {
 				EventSystem::WindowLostFocusEvent windowLostFocusEvent;
 				if (pWindow->eventCallbackFn) {
@@ -59,17 +78,13 @@ namespace NuimDemo {
 				break;
 			}
 			case WM_MOUSEMOVE:{
-				int x = (int)(short)LOWORD(lParam);
-				int y = (int)(short)HIWORD(lParam);
+				int x = (int)(short)GET_X_LPARAM(lParam);
+				int y = (int)(short)GET_Y_LPARAM(lParam);
 				EventSystem::MouseMoveEvent mouseMoveEvent(x, y);
 				pWindow->eventCallbackFn(mouseMoveEvent);
 				break;
 			}
-			case WM_LBUTTONDOWN: {
-				EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_LEFT, LOWORD(lParam), HIWORD(lParam));
-				pWindow->eventCallbackFn(mousePressEvent);
-				break;
-			}
+			
 			case WM_KEYDOWN: {
 				EventSystem::KeyPressEvent keyPressEvent(static_cast<int>(wParam));
 				pWindow->eventCallbackFn(keyPressEvent);

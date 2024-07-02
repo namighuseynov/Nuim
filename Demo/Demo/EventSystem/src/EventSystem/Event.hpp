@@ -10,7 +10,7 @@ namespace EventSystem {
 
 	enum class EVENTSYSTEMLIBRARY_API EventType {
 		KeyPressEvent, KeyReleaseEvent,
-		MousePressEvent, MouseReleaseEvent, MouseMoveEvent, MouseScrollEvent,
+		MousePressEvent, MouseReleaseEvent, MouseMoveEvent, MouseMiddleButtonDownEvent, MouseMiddleButtonReleaseEvent, MouseScrollEvent,
 		ApplicationStartEvent, ApplicationCloseEvent,
 		WindowSizeEvent, WindowMinimizeEvent, WindowMaxmimizeEvent, WindowRestoreEvent, WindowGotFocus, WindowLostFocus
 

@@ -76,6 +76,50 @@ namespace EventSystem {
 		UINT coordY = 0;
 	};
 
+	class EVENTSYSTEMLIBRARY_API MouseMiddleButtonDown :
+		public Event {
+	public:
+		MouseMiddleButtonDown(const UINT& coordX, const UINT& coordY) : coordX(coordX), coordY(coordY) {};
+	public:
+		std::string GetName() const override {
+			return "MouseMiddleButtonDown";
+		}
+		EventType GetType() const  override {
+			return EventType::MouseMiddleButtonDownEvent;
+		}
+		const UINT& GetX() {
+			return this->coordX;
+		}
+		const UINT& GetY() {
+			return this->coordY;
+		}
+	private:
+		UINT coordX = 0;
+		UINT coordY = 0;
+	};
+
+	class EVENTSYSTEMLIBRARY_API MouseMiddleButtonRelease :
+		public Event {
+	public:
+		MouseMiddleButtonRelease(const UINT& coordX, const UINT& coordY) : coordX(coordX), coordY(coordY) {};
+	public:
+		std::string GetName() const override {
+			return "MouseMiddleButtonRelease";
+		}
+		EventType GetType() const  override {
+			return EventType::MouseMiddleButtonReleaseEvent;
+		}
+		const UINT& GetX() {
+			return this->coordX;
+		}
+		const UINT& GetY() {
+			return this->coordY;
+		}
+	private:
+		UINT coordX = 0;
+		UINT coordY = 0;
+	};
+
 	class EVENTSYSTEMLIBRARY_API MouseScrollEvent :
 		public Event {
 

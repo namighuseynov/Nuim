@@ -7,9 +7,11 @@ namespace EventSystem {
 		listeners[eventType].push_back(listener);
 	}
 	void EventDispatcher::Dispatch(Event& e) {
-		auto item = listeners.find(e.GetName());
-		for (const auto& listener : listeners[e.GetName()]) {
-			listener(e);
+		auto it = listeners.find(e.GetName());
+		if (it != listeners.end()) {
+			for (const auto& listener : it->second) {
+				listener(e);
+			}
 		}
 	}
 }
