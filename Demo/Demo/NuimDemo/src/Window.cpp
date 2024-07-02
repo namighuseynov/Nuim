@@ -61,7 +61,7 @@ namespace NuimDemo {
 				break;
 			}
 			case WM_KEYDOWN: {
-				EventSystem::KeyPressEvent keyPressEvent(static_cast<int>(lParam));
+				EventSystem::KeyPressEvent keyPressEvent(static_cast<int>(wParam));
 				pWindow->eventCallbackFn(keyPressEvent);
 				break;
 			}

@@ -21,6 +21,9 @@ namespace EventSystem {
 		EventType GetType() const override {
 			return EventType::KeyPressEvent;
 		}
+		const UINT& GetKeyCode() {
+			return keyCode;
+		}
 	private:
 		UINT keyCode = 0;
 	};
@@ -36,6 +39,9 @@ namespace EventSystem {
 		}
 		EventType GetType() const override {
 			return EventType::KeyReleaseEvent;
+		}
+		const UINT& GetKeyCode() {
+			return keyCode;
 		}
 	private:
 		UINT keyCode = 0;
