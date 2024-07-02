@@ -44,6 +44,10 @@ namespace NuimDemo {
 				}
 				break;
 			}
+			case WM_MOUSELEAVE: {
+				MessageBox(nullptr, L"MouseLeaved", L"Message", 0);
+				break;
+			}
 			case WM_MBUTTONDOWN: {
 				EventSystem::MouseMiddleButtonDown mouseMiddleButtonDown(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 				pWindow->eventCallbackFn(mouseMiddleButtonDown);
