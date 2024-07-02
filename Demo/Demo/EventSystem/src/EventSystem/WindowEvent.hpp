@@ -66,4 +66,32 @@ namespace EventSystem {
 		}
 	private:
 	};
+
+	class WindowGotFocusEvent :
+		public Event {
+	public:
+		WindowGotFocusEvent() {};
+	public:
+		std::string GetName() const override {
+			return "WindowGotFocus";
+		}
+		EventType GetType() const override {
+			return EventType::WindowGotFocus;
+		}
+	private:
+	};
+
+	class WindowLostFocusEvent :
+		public Event {
+	public:
+		WindowLostFocusEvent() {};
+	public:
+		std::string GetName() const override {
+			return "WindowLostFocus";
+		}
+		EventType GetType() const override {
+			return EventType::WindowLostFocus;
+		}
+	private:
+	};
 }

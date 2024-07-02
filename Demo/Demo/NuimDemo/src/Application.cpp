@@ -35,7 +35,9 @@ namespace NuimDemo {
 			EventSystem::KeyPressEvent* keyPressEvent = dynamic_cast<EventSystem::KeyPressEvent*>(&e);
 			char a;
 			a = keyPressEvent->GetKeyCode();
+			std::string msg = "Key" + std::to_string(a);
 			//std::cout << keyPressEvent->GetKeyCode() << std::endl;
+			std::cout << "Key Pressed: ";
 			std::cout << a << std::endl;
 		}
 		else {
