@@ -1,8 +1,6 @@
 #include "NuimDemoPCH.h"
 #include "Application.hpp"
 
-int isRunning = 0;
-
 namespace NuimDemo {
 	
 	Application::Application(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow) {
@@ -10,7 +8,6 @@ namespace NuimDemo {
 		this->nCmdShow = nCmdShow;
 		this->m_window = std::unique_ptr<Window>(new Window(hInstance));
 		this->m_window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
-		isRunning = 1;
 	};
 	void Application::Run() {
 		this->m_window->OnUpdate();
@@ -36,7 +33,6 @@ namespace NuimDemo {
 			char a;
 			a = keyPressEvent->GetKeyCode();
 			std::string msg = "Key" + std::to_string(a);
-			//std::cout << keyPressEvent->GetKeyCode() << std::endl;
 			std::cout << "Key Pressed: ";
 			std::cout << a << std::endl;
 		}

@@ -10,8 +10,6 @@ namespace NuimDemo {
 	public:
 		void Run();
 		void OnEvent(EventSystem::Event& e);
-	public:
-
 	private:
 		std::unique_ptr<Window> m_window;
 		HINSTANCE hInstance;

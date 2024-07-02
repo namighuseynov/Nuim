@@ -2,7 +2,6 @@
 #include "Window.hpp"
 
 namespace NuimDemo {
-	int count = 0;
 	Window::Window(HINSTANCE hInstance) : Height(600), Width(600)
 	{
 		WNDCLASSEX wcex = {};
@@ -37,14 +36,25 @@ namespace NuimDemo {
 			if (pWindow) {
 			switch (msg) {
 			case WM_SIZE: {
-				if (count == 1) {
+				if (pWindow->eventCallbackFn) {
 					int width = LOWORD(lParam);
 					int height = HIWORD(lParam);
 					EventSystem::WindowSizeEvent windowSizeEvent(width, height);
 					pWindow->eventCallbackFn(windowSizeEvent);
 				}
-				else {
-					count += 1;
+				break;
+			}
+			case WM_SETFOCUS: {
+				EventSystem::WindowGotFocusEvent windowGotFocusEvent;
+				if (pWindow->eventCallbackFn) {
+					pWindow->eventCallbackFn(windowGotFocusEvent);
+				}
+				break;
+			}
+			case WM_KILLFOCUS: {
+				EventSystem::WindowLostFocusEvent windowLostFocusEvent;
+				if (pWindow->eventCallbackFn) {
+					pWindow->eventCallbackFn(windowLostFocusEvent);
 				}
 				break;
 			}
