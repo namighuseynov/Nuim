@@ -28,14 +28,42 @@ namespace EventSystem {
 	class WindowMinimizeEvent :
 		public Event {
 	public:
+		WindowMinimizeEvent() {};
 	public:
+		std::string GetName() const override {
+			return "WindowMinimize";
+		}
+		EventType GetType() const override {
+			return EventType::WindowMinimizeEvent;
+		}
+	private:
+	};
+
+	class WindowRestoreEvent :
+		public Event {
+	public:
+		WindowRestoreEvent() {};
+	public:
+		std::string GetName() const override {
+			return "WindowRestore";
+		}
+		EventType GetType() const override {
+			return EventType::WindowRestoreEvent;
+		}
 	private:
 	};
 
 	class WindowMaxmimizeEvent :
 		public Event {
 	public:
+		WindowMaxmimizeEvent() {};
 	public:
+		std::string GetName() const override {
+			return "WindowMaxmimize";
+		}
+		EventType GetType() const override {
+			return EventType::WindowMaxmimizeEvent;
+		}
 	private:
 	};
 }

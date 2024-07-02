@@ -12,7 +12,7 @@ namespace EventSystem {
 	class EVENTSYSTEMLIBRARY_API MousePressEvent :
 		public Event {
 	public:
-		MousePressEvent(const int& mouseButton) : mouseButton(mouseButton) {};
+		MousePressEvent(const int& mouseButton, const int& coordX, const int&   coordY) : mouseButton(mouseButton), coordX(coordX), coordY(coordY) {};
 	public:
 		std::string GetName() const override {
 			return "MousePress";
@@ -23,8 +23,16 @@ namespace EventSystem {
 		int GetMouseButton() {
 			return mouseButton;
 		}
+		const int& GetX() {
+			return coordX;
+		}
+		const int& GetY() {
+			return coordY;
+		}
 	private:
 		int mouseButton;
+		int coordX;
+		int coordY;
 	};
 
 	class EVENTSYSTEMLIBRARY_API MouseReleaseEvent :
@@ -49,7 +57,7 @@ namespace EventSystem {
 	class EVENTSYSTEMLIBRARY_API MouseMoveEvent :
 		public Event {
 	public:
-		MouseMoveEvent() {};
+		MouseMoveEvent(const UINT& coordX, const UINT& coordY) : coordX(coordX), coordY(coordY) {};
 	public:
 		std::string GetName() const override {
 			return "MouseMove";
@@ -57,6 +65,15 @@ namespace EventSystem {
 		EventType GetType() const  override {
 			return EventType::MouseMoveEvent;
 		}
+		const UINT& GetX() {
+			return this->coordX;
+		}
+		const UINT& GetY() {
+			return this->coordY;
+		}
+	private:
+		UINT coordX = 0;
+		UINT coordY = 0;
 	};
 
 	class EVENTSYSTEMLIBRARY_API MouseScrollEvent :
