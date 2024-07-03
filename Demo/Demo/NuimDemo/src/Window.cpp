@@ -34,97 +34,99 @@ namespace NuimDemo {
 		else {
 			Window* pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 			if (pWindow) {
-			switch (msg) {
-			case WM_SIZE: {
-				if (pWindow->eventCallbackFn) {
-					int width = GET_X_LPARAM(lParam);
-					int height = GET_Y_LPARAM(lParam);
-					EventSystem::WindowSizeEvent windowSizeEvent(width, height);
-					pWindow->eventCallbackFn(windowSizeEvent);
-				}
-				break;
-			}
-			case WM_MOUSELEAVE: {
-				MessageBox(nullptr, L"MouseLeaved", L"Message", 0);
-				break;
-			}
-			case WM_MBUTTONDOWN: {
-				EventSystem::MouseMiddleButtonDown mouseMiddleButtonDown(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-				pWindow->eventCallbackFn(mouseMiddleButtonDown);
-				break;
-			}
-			case WM_MBUTTONUP: {
-				EventSystem::MouseMiddleButtonRelease mouseMiddleButtonRelease(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-				pWindow->eventCallbackFn(mouseMiddleButtonRelease);
-				break;
-			}
-			case WM_LBUTTONDOWN: {
-				EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_LEFT, LOWORD(lParam), HIWORD(lParam));
-				pWindow->eventCallbackFn(mousePressEvent);
-				break;
-			}
-			case WM_LBUTTONUP: {
-				break;
-			}
-			case WM_SETFOCUS: {
-				EventSystem::WindowGotFocusEvent windowGotFocusEvent;
-				if (pWindow->eventCallbackFn) {
-					pWindow->eventCallbackFn(windowGotFocusEvent);
-				}
-				break;
-			}
-			
-			case WM_KILLFOCUS: {
-				EventSystem::WindowLostFocusEvent windowLostFocusEvent;
-				if (pWindow->eventCallbackFn) {
-					pWindow->eventCallbackFn(windowLostFocusEvent);
-				}
-				break;
-			}
-			case WM_MOUSEMOVE:{
-				int x = (int)(short)GET_X_LPARAM(lParam);
-				int y = (int)(short)GET_Y_LPARAM(lParam);
-				EventSystem::MouseMoveEvent mouseMoveEvent(x, y);
-				pWindow->eventCallbackFn(mouseMoveEvent);
-				break;
-			}
-			
-			case WM_KEYDOWN: {
-				EventSystem::KeyPressEvent keyPressEvent(static_cast<int>(wParam));
-				pWindow->eventCallbackFn(keyPressEvent);
-				break;
-			}
-			case WM_DESTROY: {
-				PostQuitMessage(0);
-				break;
-			}
-			case WM_SYSCOMMAND: {
-				switch (wParam & 0xFFF0) {
-				case SC_MINIMIZE: {
-					EventSystem::WindowMinimizeEvent windowMinimizeEvent;
-					pWindow->eventCallbackFn(windowMinimizeEvent);
+				switch (msg) {
+				case WM_SIZE: {
+					if (pWindow->eventCallbackFn) {
+						int width = GET_X_LPARAM(lParam);
+						int height = GET_Y_LPARAM(lParam);
+						EventSystem::WindowSizeEvent windowSizeEvent(width, height);
+						pWindow->eventCallbackFn(windowSizeEvent);
+					}
 					break;
 				}
-				case SC_RESTORE: {
-					EventSystem::WindowRestoreEvent windowRestoreEvent;
-					pWindow->eventCallbackFn(windowRestoreEvent);
+				case WM_MOUSELEAVE: {
+					MessageBox(nullptr, L"MouseLeaved", L"Message", 0);
 					break;
 				}
-				case SC_MAXIMIZE: {
-					EventSystem::WindowMaxmimizeEvent windowMaximizeEvent;
-					pWindow->eventCallbackFn(windowMaximizeEvent);
+				case WM_MBUTTONDOWN: {
+					EventSystem::MouseMiddleButtonDown mouseMiddleButtonDown(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+					pWindow->eventCallbackFn(mouseMiddleButtonDown);
 					break;
 				}
+				case WM_MBUTTONUP: {
+					EventSystem::MouseMiddleButtonRelease mouseMiddleButtonRelease(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+					pWindow->eventCallbackFn(mouseMiddleButtonRelease);
+					break;
 				}
-				break;
-			}
+				case WM_LBUTTONDOWN: {
+					EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_LEFT, LOWORD(lParam), HIWORD(lParam));
+					pWindow->eventCallbackFn(mousePressEvent);
+					break;
+				}
+				case WM_LBUTTONUP: {
+					break;
+				}
+				case WM_SETFOCUS: {
+					EventSystem::WindowGotFocusEvent windowGotFocusEvent;
+					if (pWindow->eventCallbackFn) {
+						pWindow->eventCallbackFn(windowGotFocusEvent);
+					}
+					break;
+				}
 			
-			default:
-				return DefWindowProc(hwnd, msg, wParam, lParam);
-			}
+				case WM_KILLFOCUS: {
+					EventSystem::WindowLostFocusEvent windowLostFocusEvent;
+					if (pWindow->eventCallbackFn) {
+						pWindow->eventCallbackFn(windowLostFocusEvent);
+					}
+					break;
+				}
+				case WM_MOUSEMOVE:{
+					int x = (int)(short)GET_X_LPARAM(lParam);
+					int y = (int)(short)GET_Y_LPARAM(lParam);
+					EventSystem::MouseMoveEvent mouseMoveEvent(x, y);
+					pWindow->eventCallbackFn(mouseMoveEvent);
+					break;
+				}
+			
+				case WM_KEYDOWN: {
+					EventSystem::KeyPressEvent keyPressEvent(static_cast<int>(wParam));
+					pWindow->eventCallbackFn(keyPressEvent);
+					break;
+				}
+				case WM_DESTROY: {
+					PostQuitMessage(0);
+					break;
+				}
+				case WM_SYSCOMMAND: {
+					switch (wParam & 0xFFF0) {
+					case SC_MINIMIZE: {
+						EventSystem::WindowMinimizeEvent windowMinimizeEvent;
+						pWindow->eventCallbackFn(windowMinimizeEvent);
+						break;
+					}
+					case SC_RESTORE: {
+						EventSystem::WindowRestoreEvent windowRestoreEvent;
+						pWindow->eventCallbackFn(windowRestoreEvent);
+						break;
+					}
+					case SC_MAXIMIZE: {
+						EventSystem::WindowMaxmimizeEvent windowMaximizeEvent;
+						pWindow->eventCallbackFn(windowMaximizeEvent);
+						break;
+					}
+					}
+					break;
+				}
+				case WM_CLOSE: {
+					std::cout << "Closing.." << std::endl;
+					break;
+				}
+				default:
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+				}
 			}
 			return DefWindowProc(hwnd, msg, wParam, lParam);
-			
 		}
 	}
 	void Window::SetEventCallback(EventCallback callbackFn)

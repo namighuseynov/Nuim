@@ -6,8 +6,12 @@ namespace NuimDemo {
 	Application::Application(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow) {
 		this->hInstance = hInstance;
 		this->nCmdShow = nCmdShow;
-		this->m_window = std::unique_ptr<Window>(new Window(hInstance));
+		this->m_window = std::shared_ptr<Window>(new Window(hInstance));
 		this->m_window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
+		this->d3d_app = std::unique_ptr<D3DApp>(new D3DApp(this->m_window));
+		if (this->d3d_app->CreateDevice()) {
+			MessageBox(nullptr, L"Device is Created", L"Message", 0);
+		};
 	};
 	void Application::Run() {
 		this->m_window->OnUpdate();

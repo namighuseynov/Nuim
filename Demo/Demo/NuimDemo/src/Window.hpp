@@ -15,6 +15,7 @@ namespace NuimDemo {
 			LPARAM lParam
 		);
 		void SetEventCallback(EventCallback callbackFn);
+		HWND GetHWND() { return this->hwnd; }
 		void OnUpdate();
 	public:
 		UINT Width;
