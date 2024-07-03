@@ -15,6 +15,8 @@ namespace NuimDemo {
 		};
 	public:
 		bool CreateDevice();
+		ComPtr<ID3D11Device> GetDevice() { return d3d_device; }
+		ComPtr<ID3D11DeviceContext> GetContext() { return d3d_context; }
 	private:
 		ComPtr<ID3D11Device> d3d_device;
 		ComPtr<ID3D11DeviceContext> d3d_context;

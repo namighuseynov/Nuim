@@ -1,5 +1,6 @@
 #include "NuimDemoPCH.h"
 #include "Application.hpp"
+#include "ImGuiLayer.hpp"
 
 namespace NuimDemo {
 	
@@ -12,6 +13,10 @@ namespace NuimDemo {
 		if (this->d3d_app->CreateDevice()) {
 			MessageBox(nullptr, L"Device is Created", L"Message", 0);
 		};
+		//std::unique_ptr<ImGuiLayer> imGuiLayer;
+		//imGuiLayer->Begin(this);
+		//layerStack->PushLayer((Layer*)imGuiLayer.get());
+
 	};
 	void Application::Run() {
 		this->m_window->OnUpdate();
