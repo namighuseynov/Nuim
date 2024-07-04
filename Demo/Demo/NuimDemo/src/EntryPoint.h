@@ -7,10 +7,10 @@
 #include "Application.hpp"
 
 
-int WINAPI WinMain(
+int WINAPI wWinMain(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
-	LPSTR pCmdLine,
+	PWSTR  pCmdLine,
 	int nCmdShow
 ) {
 	auto app = std::unique_ptr<NuimDemo::Application>(new NuimDemo::Application(hInstance, hPrevInstance, pCmdLine, nCmdShow));

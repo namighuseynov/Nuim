@@ -30,7 +30,18 @@ namespace NuimDemo {
 		if (FAILED(hr)) {
 			return 0;
 		}
+		CreateRenderTarget();
 		return 1;
 
+	}
+	void D3DApp::CreateRenderTarget()
+	{
+		ComPtr<ID3D11Texture2D> pBackBuffer;
+		this->dxgi_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+		this->d3d_device->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &this->d3d_renderTarget);
+	}
+	void D3DApp::CleanupRenderTarget()
+	{
+		
 	}
 }

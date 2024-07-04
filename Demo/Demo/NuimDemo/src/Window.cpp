@@ -1,6 +1,7 @@
 #include "NuimDemoPCH.h"
 #include "Window.hpp"
 
+
 namespace NuimDemo {
 	Window::Window(HINSTANCE hInstance) : Height(600), Width(600)
 	{
@@ -22,6 +23,7 @@ namespace NuimDemo {
 			MessageBox(nullptr, L"create window error", L"Error", 0);
 		}
 		ShowWindow(this->hwnd, 1);
+		UpdateWindow(this->hwnd);
 	}
 	LRESULT Window::WndProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
@@ -132,13 +134,5 @@ namespace NuimDemo {
 	void Window::SetEventCallback(EventCallback callbackFn)
 	{
 		this->eventCallbackFn = callbackFn;
-	}
-	void Window::OnUpdate()
-	{
-		MSG msg;
-		while (GetMessage(&msg, 0, 0, 0)) {
-			TranslateMessage(&msg);
-			DispatchMessageW(&msg);
-		}
 	}
 }

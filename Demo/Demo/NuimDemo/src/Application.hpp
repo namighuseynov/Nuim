@@ -2,13 +2,13 @@
 #include "Window.hpp"
 #include "EventSystem.hpp"
 #include "D3DApp.hpp"
-#include "LayerStack.hpp"
+#include "ImGuiLayer.hpp"
 
 namespace NuimDemo {
 	class Application
 	{
 	public:
-		Application(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow);
+		Application(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow);
 	public:
 		void Run();
 		void OnEvent(EventSystem::Event& e);
@@ -20,8 +20,9 @@ namespace NuimDemo {
 		}
 	private:
 		std::shared_ptr<Window> m_window;
-		std::unique_ptr<D3DApp> d3d_app;
-		std::unique_ptr<LayerStack> layerStack;
+		std::shared_ptr<D3DApp> d3d_app;
+
+		std::vector<ImGuiLayer*> layers;
 		HINSTANCE hInstance;
 		int nCmdShow;
 	};

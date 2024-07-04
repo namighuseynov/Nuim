@@ -1,10 +1,10 @@
 #include "NuimDemoPCH.h"
 #include "Application.hpp"
-#include "ImGuiLayer.hpp"
+
 
 namespace NuimDemo {
 	
-	Application::Application(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow) {
+	Application::Application(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR  pCmdLine, int nCmdShow) {
 		this->hInstance = hInstance;
 		this->nCmdShow = nCmdShow;
 		this->m_window = std::shared_ptr<Window>(new Window(hInstance));
@@ -13,13 +13,21 @@ namespace NuimDemo {
 		if (this->d3d_app->CreateDevice()) {
 			MessageBox(nullptr, L"Device is Created", L"Message", 0);
 		};
-		//std::unique_ptr<ImGuiLayer> imGuiLayer;
-		//imGuiLayer->Begin(this);
-		//layerStack->PushLayer((Layer*)imGuiLayer.get());
-
+		ImGuiLayer* layer = new ImGuiLayer();
+		layers.push_back(layer);
+		layer->Begin(this->d3d_app.get());
 	};
 	void Application::Run() {
-		this->m_window->OnUpdate();
+		MSG msg;
+		while (GetMessage(&msg, 0, 0, 0)) {
+			
+			TranslateMessage(&msg);
+			DispatchMessageW(&msg);
+
+			for (auto item : layers) {
+				item->OnUpdate();
+			}
+		}
 	}
 	void Application::OnEvent(EventSystem::Event& e) {
 		AllocConsole();
@@ -47,6 +55,9 @@ namespace NuimDemo {
 		}
 		else {
 			std::cout << e.GetName() << std::endl;
+		}
+		for (auto item : layers) {
+			item->OnEvent(e);
 		}
 	}
 }

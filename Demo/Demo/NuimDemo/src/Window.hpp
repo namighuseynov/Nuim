@@ -16,7 +16,6 @@ namespace NuimDemo {
 		);
 		void SetEventCallback(EventCallback callbackFn);
 		HWND GetHWND() { return this->hwnd; }
-		void OnUpdate();
 	public:
 		UINT Width;
 		UINT Height;
