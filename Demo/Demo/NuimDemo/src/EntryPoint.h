@@ -13,8 +13,9 @@ int WINAPI wWinMain(
 	PWSTR  pCmdLine,
 	int nCmdShow
 ) {
-	auto app = std::unique_ptr<NuimDemo::Application>(new NuimDemo::Application(hInstance, hPrevInstance, pCmdLine, nCmdShow));
+	auto app = new NuimDemo::Application(hInstance);
 	app->Run();
+	delete app;
 }
 
 #else
