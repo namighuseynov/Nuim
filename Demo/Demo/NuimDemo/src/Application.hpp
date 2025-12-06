@@ -8,6 +8,10 @@ namespace NuimDemo {
     class Application {
     public:
         Application(const HINSTANCE& instance) : instance(instance) {};
+        ~Application() {
+            if (window) delete window;
+            if (renderer) delete renderer;
+        }
     public:
         void Run() {
             AllocConsole();
@@ -19,7 +23,7 @@ namespace NuimDemo {
 
 
             ImGuiRenderer* layer = new ImGuiRenderer(renderer);
-            layer->Begin();
+            layer->Initialize();
 
             bool done = false;
 
@@ -41,10 +45,8 @@ namespace NuimDemo {
 
                 // Present
                 HRESULT hr = renderer->GetSwapChain()->Present(1, 0);   // Present with vsync
-                //HRESULT hr = g_pSwapChain->Present(0, 0); // Present without vsync
-
             }
-            layer->End();
+            layer->ShutDown();
         }
     public:
         void OnEvent(EventSystem::Event& e) {
