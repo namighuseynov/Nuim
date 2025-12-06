@@ -7,9 +7,9 @@
 namespace NuimDemo {
     class ImGuiRenderer {
     public:
-        ImGuiRenderer(Renderer* renderer) : renderer(renderer) {}
+        ImGuiRenderer(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context) { Initialize(hwnd, device, context); }
 
-        void Initialize() {
+        void Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context) {
             IMGUI_CHECKVERSION();
             ImGui::CreateContext();
             ImGuiIO& io = ImGui::GetIO();
@@ -20,8 +20,8 @@ namespace NuimDemo {
             ImGui::StyleColorsDark();
 
             // Setup Platform/Renderer backends
-            ImGui_ImplWin32_Init(renderer->GetWnd()->GetHWND());
-            ImGui_ImplDX11_Init(renderer->GetDevice(), renderer->GetContext());
+            ImGui_ImplWin32_Init(hwnd);
+            ImGui_ImplDX11_Init(device, context);
         }
 
         void BeginFrame() {
@@ -32,9 +32,7 @@ namespace NuimDemo {
 
         void EndFrame() {
             ImGui::Render();
-            renderer->BeginRender();  // Clear + RTV
             ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-            renderer->EndRender();    // SwapChain Present
         }
 
         void ShutDown() {
@@ -42,7 +40,5 @@ namespace NuimDemo {
             ImGui_ImplWin32_Shutdown();
             ImGui::DestroyContext();
         }
-    private:
-        Renderer* renderer = nullptr;
     };
 }

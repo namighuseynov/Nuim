@@ -4,6 +4,7 @@
 #include "Renderer.hpp"
 #include "ImGuiLayer.hpp"
 #include <d3d11.h>
+#include "Cube.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -20,11 +21,9 @@ namespace NuimDemo {
 
             window = new Window();
             this->window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
-            renderer = new Renderer(window);
+            renderer = new Renderer(window->GetHWND());
 
-
-            ImGuiRenderer* layer = new ImGuiRenderer(renderer);
-            layer->Initialize();
+            ImGuiRenderer* layer = new ImGuiRenderer(window->GetHWND(), renderer->GetDevice(), renderer->GetContext());
 
             bool done = false;
 
@@ -41,11 +40,21 @@ namespace NuimDemo {
                 if (done)
                     break;
 
+                static Cube cube(renderer->GetDevice());
+
                 layer->BeginFrame();
 
                 ImGui::ShowDemoWindow();
 
-                layer->EndFrame();
+                float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+                renderer->BeginRender(clearColor);
+                cube.Draw(renderer->GetContext());
+
+                ImGui::Render();
+                ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+                renderer->EndRender(); 
+
             }
             layer->ShutDown();
         }

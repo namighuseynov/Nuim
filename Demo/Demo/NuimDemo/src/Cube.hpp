@@ -19,13 +19,13 @@ public:
 		};
 
 		USHORT indices[] = {
-		0,1,2, 0,2,3,
-		4,6,5, 4,7,6,
-		4,5,1, 4,1,0,
-		3,2,6, 3,6,7,
-		1,5,6, 1,6,2,
-		4,0,3, 4,3,7
-		};
+			 		0,1,2, 0,2,3,
+			 		4,6,5, 4,7,6,
+			 		4,5,1, 4,1,0,
+			 		3,2,6, 3,6,7,
+			 		1,5,6, 1,6,2,
+			 		4,0,3, 4,3,7
+			 };
 
 		D3D11_BUFFER_DESC vbd = {};
 		vbd.Usage = D3D11_USAGE_DEFAULT;
@@ -47,7 +47,7 @@ public:
 		D3D11_SUBRESOURCE_DATA iinitData = {};
 		iinitData.pSysMem = indices;
 
-		HRESULT hr = device->CreateBuffer(&ibd, &iinitData, &indexBuffer);
+		hr = device->CreateBuffer(&ibd, &iinitData, &indexBuffer);
 	}
 	~Cube() {
 		if (vertexBuffer) vertexBuffer->Release();
@@ -55,8 +55,16 @@ public:
 	}
 
 
-	void Draw(ID3D11DeviceContext* context, const DirectX::XMMATRIX& viewProjMatrix) {
+	void Draw(ID3D11DeviceContext* context) {
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
+		context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		context->DrawIndexed(36, 0, 0);
 	}
 
 private:
