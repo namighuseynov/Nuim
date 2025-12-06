@@ -1,3 +1,8 @@
+cbuffer ConstantBuffer : register(b0)
+{
+    float4x4 wvp;
+}
+
 struct VSInput
 {
     float3 position : POSITION;
@@ -11,6 +16,7 @@ struct VSOutput
 VSOutput main(VSInput input)
 {
     VSOutput output;
-    output.position = float4(input.position, 1.0);
+    float4 position = float4(input.position, 1.0);
+    output.position = mul(position, wvp);
     return output;
 }

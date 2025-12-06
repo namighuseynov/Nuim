@@ -32,6 +32,7 @@ public:
 
 
 	void Draw(ID3D11DeviceContext* context) {
+		
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 		context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);

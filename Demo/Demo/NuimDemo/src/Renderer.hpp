@@ -1,5 +1,6 @@
 #pragma once
 #include "Window.hpp"
+#include "ConstantBufferData.hpp"
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
@@ -17,6 +18,7 @@ public:
         {
             MessageBox(nullptr, L"Failed to load shaders!", L"Error", MB_OK);
         }
+        CreateConstantBuffer();
     }
 
     bool InitD3D(HWND hWnd, int width, int height)
@@ -102,6 +104,35 @@ public:
 
     void BeginRender(const float clearColor[4] = nullptr) 
     {
+        static float angle = 0.0f;
+        angle += 0.01f; // rotate object
+
+        DirectX::XMMATRIX world = DirectX::XMMatrixRotationZ(angle);
+
+        DirectX::XMMATRIX view =
+            DirectX::XMMatrixLookAtLH(
+                DirectX::XMVectorSet(0.0f, 0.0f, -2.0f, 1.0f),
+                DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
+                DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
+            );
+
+        DirectX::XMMATRIX projection =
+            DirectX::XMMatrixPerspectiveFovLH(
+                DirectX::XMConvertToRadians(60.0f),
+                1280.0f / 720.0f,
+                0.1f,
+                100.0f
+            );
+
+        DirectX::XMMATRIX wvp = world * view * projection;
+        wvp = DirectX::XMMatrixTranspose(wvp);
+
+        ConstantBufferData cbData;
+        cbData.wvp = wvp;
+
+        g_pd3dDeviceContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cbData, 0, 0);
+        g_pd3dDeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+
         float defaultColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
         float* color = clearColor ? (float*)clearColor : defaultColor;
 
@@ -139,6 +170,18 @@ public:
         }
 
         CreateRenderTarget();
+    }
+
+    bool CreateConstantBuffer()
+    {
+        D3D11_BUFFER_DESC cbd = {};
+        cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        cbd.Usage = D3D11_USAGE_DEFAULT;
+        cbd.ByteWidth = sizeof(ConstantBufferData);
+        cbd.CPUAccessFlags = 0;
+
+        HRESULT hr = g_pd3dDevice->CreateBuffer(&cbd, nullptr, &g_pConstantBuffer);
+        return SUCCEEDED(hr);
     }
 public:
     ID3D11Device* GetDevice() { return g_pd3dDevice; }
@@ -257,5 +300,6 @@ private:
     ID3D11VertexShader* g_pVertexShader = nullptr;
     ID3D11PixelShader* g_pPixelShader = nullptr;
     ID3D11InputLayout* g_pInputLayout = nullptr;
+    ID3D11Buffer* g_pConstantBuffer = nullptr;
 };
 
