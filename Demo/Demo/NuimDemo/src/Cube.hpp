@@ -5,53 +5,29 @@
 
 class Cube {
 public:
-	Cube(ID3D11Device* device) : vertexBuffer(nullptr), indexBuffer(nullptr)
+	Cube(ID3D11Device* device) : vertexBuffer(nullptr)
 	{
 		Vertex vertices[] = {
-			{{-1, -1, -1}, {1, 0, 0}},
-			{{-1, +1, -1}, {0, 1, 0}},
-			{{+1, +1, -1}, {0, 0, 1}},
-			{{+1, -1, -1}, {1, 1, 0}},
-			{{-1, -1, +1}, {1, 0, 1}},
-			{{-1, +1, +1}, {0, 1, 1}},
-			{{+1, +1, +1}, {1, 1, 1}},
-			{{+1, -1, +1}, {0, 0, 0}},
+			{ {  0.0f,  0.5f, 0.0f }},
+			{{  0.5f, -0.5f, 0.0f }},
+			{{ -0.5f, -0.5f, 0.0f }},
 		};
 
-		USHORT indices[] = {
-			 		0,1,2, 0,2,3,
-			 		4,6,5, 4,7,6,
-			 		4,5,1, 4,1,0,
-			 		3,2,6, 3,6,7,
-			 		1,5,6, 1,6,2,
-			 		4,0,3, 4,3,7
-			 };
+		D3D11_BUFFER_DESC bd = {};
 
-		D3D11_BUFFER_DESC vbd = {};
-		vbd.Usage = D3D11_USAGE_DEFAULT;
-		vbd.ByteWidth = sizeof(vertices);
-		vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vbd.CPUAccessFlags = 0;
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.ByteWidth = sizeof(vertices);
+		bd.CPUAccessFlags = 0;
+		bd.StructureByteStride = sizeof(Vertex);
 
-		D3D11_SUBRESOURCE_DATA vinitData = {};
-		vinitData.pSysMem = vertices;
+		D3D11_SUBRESOURCE_DATA initData = {};
+		initData.pSysMem = vertices;
 
-		HRESULT hr = device->CreateBuffer(&vbd, &vinitData, &vertexBuffer);
-
-		D3D11_BUFFER_DESC ibd = {};
-		ibd.Usage = D3D11_USAGE_DEFAULT;
-		ibd.ByteWidth = sizeof(indices);
-		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		ibd.CPUAccessFlags = 0;
-
-		D3D11_SUBRESOURCE_DATA iinitData = {};
-		iinitData.pSysMem = indices;
-
-		hr = device->CreateBuffer(&ibd, &iinitData, &indexBuffer);
+		HRESULT hr = device->CreateBuffer(&bd, &initData, &vertexBuffer);
 	}
 	~Cube() {
 		if (vertexBuffer) vertexBuffer->Release();
-		if (indexBuffer) indexBuffer->Release();
 	}
 
 
@@ -59,16 +35,11 @@ public:
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 		context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-
-		context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		context->DrawIndexed(36, 0, 0);
+		context->Draw(3, 0);
 	}
 
 private:
 	ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* indexBuffer;
 	
 };

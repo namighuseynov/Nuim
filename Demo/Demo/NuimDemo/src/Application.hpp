@@ -19,9 +19,9 @@ namespace NuimDemo {
             AllocConsole();
             freopen("CONOUT$", "w", stdout);
 
-            window = new Window();
+            window = new Window(1280, 800);
             this->window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
-            renderer = new Renderer(window->GetHWND());
+            renderer = new Renderer(window->GetHWND(), window->GetWidth(), window->GetHeight());
 
             ImGuiRenderer* layer = new ImGuiRenderer(window->GetHWND(), renderer->GetDevice(), renderer->GetContext());
 

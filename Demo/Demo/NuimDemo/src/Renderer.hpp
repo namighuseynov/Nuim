@@ -7,13 +7,97 @@
 
 class Renderer {
 public:
-    Renderer(HWND hwnd) {
+    Renderer(HWND hwnd, int width, int height) {
         // Initialize Direct3D
-        if (!CreateDeviceD3D(hwnd))
+        if (!InitD3D(hwnd, width, height))
         {
             CleanupDeviceD3D();
         }
-        CompileShaders();
+        if (!LoadShaders())
+        {
+            MessageBox(nullptr, L"Failed to load shaders!", L"Error", MB_OK);
+        }
+    }
+
+    bool InitD3D(HWND hWnd, int width, int height)
+    {
+        // 1. Swap chain desc
+        DXGI_SWAP_CHAIN_DESC scd = {};
+        scd.BufferCount = 1;                                
+        scd.BufferDesc.Width = width;                       
+        scd.BufferDesc.Height = height;                  
+        scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; 
+        scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; 
+        scd.OutputWindow = hWnd;                          
+        scd.SampleDesc.Count = 1;                      
+        scd.Windowed = TRUE;                            
+
+        UINT createDeviceFlags = 0;
+
+        D3D_FEATURE_LEVEL featureLevels[] =
+        {
+            D3D_FEATURE_LEVEL_11_0,
+            D3D_FEATURE_LEVEL_10_1,
+            D3D_FEATURE_LEVEL_10_0
+        };
+
+        D3D_FEATURE_LEVEL createdFeatureLevel;
+
+        HRESULT hr = D3D11CreateDeviceAndSwapChain(
+            nullptr,                    
+            D3D_DRIVER_TYPE_HARDWARE,   
+            nullptr,                   
+            createDeviceFlags,          
+            featureLevels,           
+            ARRAYSIZE(featureLevels), 
+            D3D11_SDK_VERSION,       
+            &scd,                      
+            &g_pSwapChain,              
+            &g_pd3dDevice,
+            &createdFeatureLevel,       
+            &g_pd3dDeviceContext               
+        );
+
+        if (FAILED(hr))
+        {
+            MessageBox(hWnd, L"Failed to create device and swap chain!", L"Error D3D11", MB_OK);
+            return false;
+        }
+
+        // 2. Getting back buffer from swap chain
+        ID3D11Texture2D* backBuffer = nullptr;
+        hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+        if (FAILED(hr))
+        {
+            MessageBox(hWnd, L"Failed to receive back buffer!", L"Error D3D11", MB_OK);
+            return false;
+        }
+
+        // 3. Create Render Target View based on back buffer
+        hr = g_pd3dDevice->CreateRenderTargetView(backBuffer, nullptr, &g_mainRenderTargetView);
+        backBuffer->Release();
+
+        if (FAILED(hr))
+        {
+            MessageBox(hWnd, L"Failed to create Render Target View!", L"Error D3D11", MB_OK);
+            return false;
+        }
+
+        // 4. We talk to the context: we draw in this RTV
+        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
+
+        // 5. We set up the viewport - the area where we draw
+        D3D11_VIEWPORT vp = {};
+        vp.TopLeftX = 0;
+        vp.TopLeftY = 0;
+        vp.Width = static_cast<FLOAT>(width);
+        vp.Height = static_cast<FLOAT>(height);
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+
+        g_pd3dDeviceContext->RSSetViewports(1, &vp);
+
+        return true;
     }
 
     void BeginRender(const float clearColor[4] = nullptr) 
@@ -38,7 +122,7 @@ public:
     {
         if (!g_pSwapChain) return;
         g_pd3dDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
-        CleanupRenderTarget();
+        if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
 
         HRESULT hr = g_pSwapChain->ResizeBuffers(
             2,
@@ -61,42 +145,10 @@ public:
     ID3D11DeviceContext* GetContext() { return g_pd3dDeviceContext; }
     IDXGISwapChain* GetSwapChain() { return g_pSwapChain; }
     ID3D11RenderTargetView* GetTargetView() { return g_mainRenderTargetView; }
-    bool CreateDeviceD3D(HWND hWnd)
-    {
-        // Setup swap chain
-        DXGI_SWAP_CHAIN_DESC sd;
-        ZeroMemory(&sd, sizeof(sd));
-        sd.BufferCount = 2;
-        sd.BufferDesc.Width = 0;
-        sd.BufferDesc.Height = 0;
-        sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        sd.BufferDesc.RefreshRate.Numerator = 60;
-        sd.BufferDesc.RefreshRate.Denominator = 1;
-        sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-        sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.OutputWindow = hWnd;
-        sd.SampleDesc.Count = 1;
-        sd.SampleDesc.Quality = 0;
-        sd.Windowed = TRUE;
-        sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
-
-        UINT createDeviceFlags = 0;
-        D3D_FEATURE_LEVEL featureLevel;
-        const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
-        HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
-        if (res == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
-            res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
-        if (res != S_OK)
-            return false;
-
-        CreateRenderTarget();
-        return true;
-    }
 
     void CleanupDeviceD3D()
     {
-        CleanupRenderTarget();
+		if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
         if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = nullptr; }
         if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = nullptr; }
         if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = nullptr; }
@@ -110,80 +162,90 @@ public:
         pBackBuffer->Release();
     }
 
-    void CleanupRenderTarget()
-    {
-        if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
-    }
+    bool LoadShaders() {
+        HRESULT hr;
 
-    void CompileShaders() {
         ID3DBlob* vsBlob = nullptr;
-        ID3DBlob* psBlob = nullptr;
         ID3DBlob* errorBlob = nullptr;
 
-        // Vertex shader compile
-        HRESULT hr = D3DCompileFromFile(
-            L"Shaders/VertexShader.hlsl",
-            nullptr, nullptr,
-            "main", "vs_5_0",
-            0, 0,
+		hr = D3DCompileFromFile(
+			L"Shaders/VertexShader.hlsl",
+			nullptr, nullptr,
+			"main", "vs_5_0",
+			0, 0,
 			&vsBlob, &errorBlob
-        );
+		);
 
-        if (FAILED(hr)) {
-            std::wstring msg = L"Error loading shader. Current directory: ";
-            wchar_t buffer[MAX_PATH];
-            GetCurrentDirectoryW(MAX_PATH, buffer);
-            std::wcout << L"Current Working Directory: " << buffer << std::endl;
-
-            msg += buffer;
-            msg += L"\n";
-
-            OutputDebugStringW(msg.c_str());
+        if (FAILED(hr))
+        {
+            if (errorBlob)
+            {
+                MessageBoxA(nullptr, (char*)errorBlob->GetBufferPointer(), "VS Compile Error", MB_OK);
+            }
+            return false;
         }
 
-        // Pixel shader compile
-        D3DCompileFromFile(
-            L"Shaders/PixelShader.hlsl",
-            nullptr, nullptr,
-            "main", "ps_5_0",
-            0, 0,
-            &psBlob, nullptr
-        );
-
-		// Create shader objects
-        g_pd3dDevice->CreateVertexShader(
+        hr = g_pd3dDevice->CreateVertexShader(
             vsBlob->GetBufferPointer(),
             vsBlob->GetBufferSize(),
-            nullptr, &g_pVertexShader
+            nullptr,
+            &g_pVertexShader
         );
 
-        g_pd3dDevice->CreatePixelShader(
-            psBlob->GetBufferPointer(),
-            psBlob->GetBufferSize(),
-            nullptr, &g_pPixelShader
-        );
-
-        D3D11_INPUT_ELEMENT_DESC layout[] =
+        if (FAILED(hr))
         {
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
-              0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            return false;
+        }
 
-              { "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
-                12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        D3D11_INPUT_ELEMENT_DESC layoutDesc[] =
+        {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,
+              0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
         };
 
-        UINT numElements = ARRAYSIZE(layout);
-
-        g_pd3dDevice->CreateInputLayout(
-            layout,
-            numElements,
+        hr = g_pd3dDevice->CreateInputLayout(
+            layoutDesc,
+            ARRAYSIZE(layoutDesc),
             vsBlob->GetBufferPointer(),
             vsBlob->GetBufferSize(),
             &g_pInputLayout
         );
 
+        if (FAILED(hr))
+        {
+            return false;
+        }
         vsBlob->Release();
+
+        ID3DBlob* psBlob = nullptr;
+		hr = D3DCompileFromFile(
+			L"Shaders/PixelShader.hlsl",
+			nullptr, nullptr,
+			"main", "ps_5_0",
+			0, 0,
+			&psBlob, &errorBlob
+		);
+
+        if (FAILED(hr))
+        {
+            if (errorBlob)
+                MessageBoxA(nullptr, (char*)errorBlob->GetBufferPointer(), "PS Compile Error", MB_OK);
+            return false;
+        }
+
+        hr = g_pd3dDevice->CreatePixelShader(
+            psBlob->GetBufferPointer(),
+            psBlob->GetBufferSize(),
+            nullptr,
+            &g_pPixelShader
+        );
         psBlob->Release();
+
+        if (FAILED(hr))
+        {
+            return false;
+        }
+        return true;
     }
 private:
     // Data

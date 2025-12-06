@@ -10,10 +10,10 @@ namespace NuimDemo {
     class Window {
         using EventCallback = std::function<void(EventSystem::Event& e)>;
     public:
-        Window() {
+        Window(const int width, const int height) : width(width), height(height) {
             WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"NuimDemo", nullptr };
             ::RegisterClassExW(&wc);
-            hwnd = ::CreateWindowW(wc.lpszClassName, L"NuimDemo", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, nullptr, nullptr, wc.hInstance, this);
+            hwnd = ::CreateWindowW(wc.lpszClassName, L"NuimDemo", WS_OVERLAPPEDWINDOW, 100, 100, width, height, nullptr, nullptr, wc.hInstance, this);
 
             // Show the window
             ::ShowWindow(hwnd, SW_SHOWDEFAULT);
@@ -23,6 +23,8 @@ namespace NuimDemo {
         void SetEventCallback(EventCallback callbackFn) {
             this->eventCallbackFn = callbackFn;
         }
+		int GetWidth() const { return this->width; }
+		int GetHeight() const { return this->height; }
         const HWND& GetHWND() { return this->hwnd; }
         static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
@@ -129,5 +131,7 @@ namespace NuimDemo {
     private:
         HWND hwnd;
         EventCallback eventCallbackFn;
+		int width = 1280;
+		int height = 800;
     };
 }
