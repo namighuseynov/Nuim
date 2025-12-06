@@ -3,6 +3,7 @@
 #include "EventSystem.hpp"
 #include "Renderer.hpp"
 #include "ImGuiLayer.hpp"
+#include <d3d11.h>
 
 namespace NuimDemo {
     class Application {
@@ -40,17 +41,32 @@ namespace NuimDemo {
                 if (done)
                     break;
 
+                layer->BeginFrame();
 
-                layer->OnUpdate();
+                ImGui::ShowDemoWindow();
 
-                // Present
-                HRESULT hr = renderer->GetSwapChain()->Present(1, 0);   // Present with vsync
+                layer->EndFrame();
             }
             layer->ShutDown();
+        }
+
+        void OnWindowResize(uint32_t width, uint32_t height)
+        {
+            if (width == 0 || height == 0)
+                return;
+
+            if (renderer)
+                renderer->Resize(width, height);
         }
     public:
         void OnEvent(EventSystem::Event& e) {
             std::cout << e.GetName() << std::endl;
+
+            if (e.GetType() == EventSystem::EventType::WindowSizeEvent)
+            {
+                auto& ws = (EventSystem::WindowSizeEvent&)e;
+                OnWindowResize(ws.GetWidth(), ws.GetHeight());
+            }
         }
     private:
         Window* window = nullptr;

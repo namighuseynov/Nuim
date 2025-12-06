@@ -11,6 +11,43 @@ public:
             CleanupDeviceD3D();
         }
     }
+
+    void BeginRender(const float clearColor[4] = nullptr) 
+    {
+        float defaultColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+        float* color = clearColor ? (float*)clearColor : defaultColor;
+
+        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
+        g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, color);
+    }
+
+    void EndRender()
+    {
+        g_pSwapChain->Present(1, 0);
+    }
+
+    void Resize(UINT width, UINT height)
+    {
+        if (!g_pSwapChain) return;
+        g_pd3dDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+        CleanupRenderTarget();
+
+        HRESULT hr = g_pSwapChain->ResizeBuffers(
+            2,
+            width,
+            height,
+            DXGI_FORMAT_R8G8B8A8_UNORM,
+            DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
+        );
+
+        if (FAILED(hr))
+        {
+            std::cout << "ResizeBuffers failed: " << hr << std::endl;
+            return;
+        }
+
+        CreateRenderTarget();
+    }
 public:
     ID3D11Device* GetDevice() { return g_pd3dDevice; }
     ID3D11DeviceContext* GetContext() { return g_pd3dDeviceContext; }

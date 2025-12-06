@@ -10,10 +10,9 @@ namespace NuimDemo {
         ImGuiRenderer(Renderer* renderer) : renderer(renderer) {}
 
         void Initialize() {
-            // Setup Dear ImGui context
             IMGUI_CHECKVERSION();
             ImGui::CreateContext();
-            ImGuiIO& io = ImGui::GetIO(); (void)io;
+            ImGuiIO& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -23,13 +22,6 @@ namespace NuimDemo {
             // Setup Platform/Renderer backends
             ImGui_ImplWin32_Init(renderer->GetWnd()->GetHWND());
             ImGui_ImplDX11_Init(renderer->GetDevice(), renderer->GetContext());
-            ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-        }
-
-        void ShutDown() {
-            ImGui_ImplDX11_Shutdown();
-            ImGui_ImplWin32_Shutdown();
-            ImGui::DestroyContext();
         }
 
         void BeginFrame() {
@@ -38,29 +30,18 @@ namespace NuimDemo {
             ImGui::NewFrame();
         }
 
-        void Render() {
+        void EndFrame() {
             ImGui::Render();
+            renderer->BeginRender();  // Clear + RTV
             ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+            renderer->EndRender();    // SwapChain Present
         }
 
-        void OnUpdate() {
-            BeginFrame();
-
-            // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-
-            ImGui::ShowDemoWindow();
-
-
-            // Rendering
-            ImGui::Render();
-            ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-            const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-            auto targetView = renderer->GetTargetView();
-            renderer->GetContext()->OMSetRenderTargets(1, &targetView, nullptr);
-            renderer->GetContext()->ClearRenderTargetView(targetView, clear_color_with_alpha);
-            ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+        void ShutDown() {
+            ImGui_ImplDX11_Shutdown();
+            ImGui_ImplWin32_Shutdown();
+            ImGui::DestroyContext();
         }
-
     private:
         Renderer* renderer = nullptr;
     };

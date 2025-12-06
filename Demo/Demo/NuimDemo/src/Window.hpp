@@ -40,8 +40,8 @@ namespace NuimDemo {
                 if (pWindow->eventCallbackFn) {
                     int width = GET_X_LPARAM(lParam);
                     int height = GET_Y_LPARAM(lParam);
-                    EventSystem::WindowSizeEvent windowSizeEvent(width, height);
-                    pWindow->eventCallbackFn(windowSizeEvent);
+                    EventSystem::WindowSizeEvent evt(width, height);
+                    pWindow->eventCallbackFn(evt);
                 }
                 break;
             }
