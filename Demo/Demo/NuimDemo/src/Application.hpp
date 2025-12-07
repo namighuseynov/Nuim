@@ -6,6 +6,7 @@
 #include <d3d11.h>
 #include "Cube.hpp"
 #include "Cube3d.hpp"
+#include "CubeColored3d.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -41,7 +42,7 @@ namespace NuimDemo {
                 if (done)
                     break;
 
-                static Cube3d cube(renderer->GetDevice());
+                static CubeColored3d cube(renderer->GetDevice());
 
                 layer->BeginFrame();
 
