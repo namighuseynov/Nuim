@@ -23,80 +23,40 @@ public:
 
     bool InitD3D(HWND hWnd, int width, int height)
     {
-        // 1. Swap chain desc
         DXGI_SWAP_CHAIN_DESC scd = {};
-        scd.BufferCount = 1;                                
-        scd.BufferDesc.Width = width;                       
-        scd.BufferDesc.Height = height;                  
-        scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; 
-        scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; 
-        scd.OutputWindow = hWnd;                          
-        scd.SampleDesc.Count = 1;                      
-        scd.Windowed = TRUE;                            
-
-        UINT createDeviceFlags = 0;
-
-        D3D_FEATURE_LEVEL featureLevels[] =
-        {
-            D3D_FEATURE_LEVEL_11_0,
-            D3D_FEATURE_LEVEL_10_1,
-            D3D_FEATURE_LEVEL_10_0
-        };
-
-        D3D_FEATURE_LEVEL createdFeatureLevel;
+        scd.BufferCount = 1;
+        scd.BufferDesc.Width = width;
+        scd.BufferDesc.Height = height;
+        scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        scd.OutputWindow = hWnd;
+        scd.SampleDesc.Count = 1;
+        scd.Windowed = TRUE;
 
         HRESULT hr = D3D11CreateDeviceAndSwapChain(
-            nullptr,                    
-            D3D_DRIVER_TYPE_HARDWARE,   
-            nullptr,                   
-            createDeviceFlags,          
-            featureLevels,           
-            ARRAYSIZE(featureLevels), 
-            D3D11_SDK_VERSION,       
-            &scd,                      
-            &g_pSwapChain,              
-            &g_pd3dDevice,
-            &createdFeatureLevel,       
-            &g_pd3dDeviceContext               
+            nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
+            nullptr, 0, D3D11_SDK_VERSION,
+            &scd, &g_pSwapChain, &g_pd3dDevice, nullptr, &g_pd3dDeviceContext
         );
 
-        if (FAILED(hr))
-        {
-            MessageBox(hWnd, L"Failed to create device and swap chain!", L"Error D3D11", MB_OK);
-            return false;
-        }
+        if (FAILED(hr)) return false;
 
-        // 2. Getting back buffer from swap chain
         ID3D11Texture2D* backBuffer = nullptr;
-        hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-        if (FAILED(hr))
-        {
-            MessageBox(hWnd, L"Failed to receive back buffer!", L"Error D3D11", MB_OK);
-            return false;
-        }
-
-        // 3. Create Render Target View based on back buffer
-        hr = g_pd3dDevice->CreateRenderTargetView(backBuffer, nullptr, &g_mainRenderTargetView);
+        g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer));
+        g_pd3dDevice->CreateRenderTargetView(backBuffer, nullptr, &g_mainRenderTargetView);
         backBuffer->Release();
 
-        if (FAILED(hr))
-        {
-            MessageBox(hWnd, L"Failed to create Render Target View!", L"Error D3D11", MB_OK);
-            return false;
+        if (!CreateDepthStencil(width, height)) {
+			std::cout << "error creating depth stencil" << std::endl;
         }
 
-        // 4. We talk to the context: we draw in this RTV
-        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
+        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, g_pDepthStencilView);
 
-        // 5. We set up the viewport - the area where we draw
         D3D11_VIEWPORT vp = {};
-        vp.TopLeftX = 0;
-        vp.TopLeftY = 0;
-        vp.Width = static_cast<FLOAT>(width);
-        vp.Height = static_cast<FLOAT>(height);
+        vp.Width = (float)width;
+        vp.Height = (float)height;
         vp.MinDepth = 0.0f;
         vp.MaxDepth = 1.0f;
-
         g_pd3dDeviceContext->RSSetViewports(1, &vp);
 
         return true;
@@ -107,11 +67,14 @@ public:
         static float angle = 0.0f;
         angle += 0.01f; // rotate object
 
-        DirectX::XMMATRIX world = DirectX::XMMatrixRotationZ(angle);
+        DirectX::XMMATRIX world =
+            DirectX::XMMatrixRotationX(angle * 0.7f) *
+            DirectX::XMMatrixRotationY(angle * 0.9f) *
+            DirectX::XMMatrixRotationZ(angle * 0.5f);
 
         DirectX::XMMATRIX view =
             DirectX::XMMatrixLookAtLH(
-                DirectX::XMVectorSet(0.0f, 0.0f, -2.0f, 1.0f),
+                DirectX::XMVectorSet(0.0f, 0.0f, -4.0f, 1.0f),
                 DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
                 DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
             );
@@ -136,8 +99,9 @@ public:
         float defaultColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
         float* color = clearColor ? (float*)clearColor : defaultColor;
 
-        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
+        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, g_pDepthStencilView);
         g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, color);
+        g_pd3dDeviceContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
         g_pd3dDeviceContext->IASetInputLayout(g_pInputLayout);
         g_pd3dDeviceContext->VSSetShader(g_pVertexShader, nullptr, 0);
@@ -170,6 +134,11 @@ public:
         }
 
         CreateRenderTarget();
+
+        if (g_pDepthStencilView) { g_pDepthStencilView->Release(); g_pDepthStencilView = nullptr; }
+        if (g_pDepthStencil) { g_pDepthStencil->Release(); g_pDepthStencil = nullptr; }
+
+        CreateDepthStencil(width, height);
     }
 
     bool CreateConstantBuffer()
@@ -183,6 +152,37 @@ public:
         HRESULT hr = g_pd3dDevice->CreateBuffer(&cbd, nullptr, &g_pConstantBuffer);
         return SUCCEEDED(hr);
     }
+
+    bool CreateDepthStencil(int width, int height) {
+        D3D11_TEXTURE2D_DESC desc = {};
+        desc.Width = width;
+        desc.Height = height;
+        desc.MipLevels = 1;
+        desc.ArraySize = 1;
+        desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        desc.SampleDesc.Count = 1;
+        desc.Usage = D3D11_USAGE_DEFAULT;
+        desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+        HRESULT hr = g_pd3dDevice->CreateTexture2D(&desc, NULL, &g_pDepthStencil);
+        if (FAILED(hr)) return false;
+
+        hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, NULL, &g_pDepthStencilView);
+        if (FAILED(hr)) return false;
+
+
+        D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+        dsDesc.DepthEnable = TRUE;
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+        dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+        ID3D11DepthStencilState* pDSState;
+        hr = g_pd3dDevice->CreateDepthStencilState(&dsDesc, &pDSState);
+        if (FAILED(hr)) return false;
+        g_pd3dDeviceContext->OMSetDepthStencilState(pDSState, 1);
+
+        return true;
+    }
 public:
     ID3D11Device* GetDevice() { return g_pd3dDevice; }
     ID3D11DeviceContext* GetContext() { return g_pd3dDeviceContext; }
@@ -195,6 +195,9 @@ public:
         if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = nullptr; }
         if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = nullptr; }
         if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = nullptr; }
+		if (g_pConstantBuffer) { g_pConstantBuffer->Release(); g_pConstantBuffer = nullptr; }
+		if (g_pDepthStencil) { g_pDepthStencil->Release(); g_pDepthStencil = nullptr; }
+		if (g_pDepthStencilView) { g_pDepthStencilView->Release(); g_pDepthStencilView = nullptr; }
     }
 
     void CreateRenderTarget()
@@ -296,6 +299,8 @@ private:
     ID3D11DeviceContext* g_pd3dDeviceContext = nullptr;
     IDXGISwapChain* g_pSwapChain = nullptr;
     ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;
+    ID3D11Texture2D* g_pDepthStencil = nullptr;
+    ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
 
     ID3D11VertexShader* g_pVertexShader = nullptr;
     ID3D11PixelShader* g_pPixelShader = nullptr;
