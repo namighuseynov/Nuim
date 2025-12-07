@@ -26,6 +26,23 @@ namespace NuimDemo {
             this->window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
             renderer = new Renderer(window->GetHWND(), window->GetWidth(), window->GetHeight());
 
+            DirectX::XMMATRIX view =
+                DirectX::XMMatrixLookAtLH(
+                    DirectX::XMVectorSet(0, 0, -4, 1),
+                    DirectX::XMVectorSet(0, 0, 0, 1),
+                    DirectX::XMVectorSet(0, 1, 0, 0)
+                );
+
+            DirectX::XMMATRIX proj =
+                DirectX::XMMatrixPerspectiveFovLH(
+                    DirectX::XMConvertToRadians(60.f),
+                    1280.f / 720.f,
+                    0.1f,
+                    100.f
+                );
+
+            renderer->SetCamera(view, proj);
+
 
             struct VertexColored {
                 DirectX::XMFLOAT3 position;
@@ -110,7 +127,11 @@ namespace NuimDemo {
                 float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
                 renderer->BeginRender(clearColor);
                 
-				cubeModel.Draw(renderer->GetContext());
+				cubeModel.Draw(renderer->GetContext(),
+                    renderer->GetConstantBuffer(),
+                    renderer->GetView(),
+                    renderer->GetProj()
+                );
 
                 ImGui::Render();
                 ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

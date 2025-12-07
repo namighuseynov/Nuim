@@ -2,8 +2,6 @@
 #include "Window.hpp"
 #include "ConstantBufferData.hpp"
 #include <d3d11.h>
-#include <d3dcompiler.h>
-#pragma comment(lib, "d3dcompiler.lib")
 
 
 class Renderer {
@@ -13,10 +11,6 @@ public:
         if (!InitD3D(hwnd, width, height))
         {
             CleanupDeviceD3D();
-        }
-        if (!LoadShaders())
-        {
-            MessageBox(nullptr, L"Failed to load shaders!", L"Error", MB_OK);
         }
         CreateConstantBuffer();
     }
@@ -64,38 +58,6 @@ public:
 
     void BeginRender(const float clearColor[4] = nullptr) 
     {
-        static float angle = 0.0f;
-        angle += 0.01f; // rotate object
-
-        DirectX::XMMATRIX world =
-            DirectX::XMMatrixRotationX(angle * 0.7f) *
-            DirectX::XMMatrixRotationY(angle * 0.9f) *
-            DirectX::XMMatrixRotationZ(angle * 0.5f);
-
-        DirectX::XMMATRIX view =
-            DirectX::XMMatrixLookAtLH(
-                DirectX::XMVectorSet(0.0f, 0.0f, -4.0f, 1.0f),
-                DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
-                DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
-            );
-
-        DirectX::XMMATRIX projection =
-            DirectX::XMMatrixPerspectiveFovLH(
-                DirectX::XMConvertToRadians(60.0f),
-                1280.0f / 720.0f,
-                0.1f,
-                100.0f
-            );
-
-        DirectX::XMMATRIX wvp = world * view * projection;
-        wvp = DirectX::XMMatrixTranspose(wvp);
-
-        ConstantBufferData cbData;
-        cbData.wvp = wvp;
-
-        g_pd3dDeviceContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cbData, 0, 0);
-        g_pd3dDeviceContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
-
         float defaultColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
         float* color = clearColor ? (float*)clearColor : defaultColor;
 
@@ -204,96 +166,16 @@ public:
         pBackBuffer->Release();
     }
 
-    bool LoadShaders() {
-        HRESULT hr;
-
-        ID3DBlob* vsBlob = nullptr;
-        ID3DBlob* errorBlob = nullptr;
-
-		hr = D3DCompileFromFile(
-			L"Shaders/VertexShader.hlsl",
-			nullptr, nullptr,
-			"main", "vs_5_0",
-			0, 0,
-			&vsBlob, &errorBlob
-		);
-
-        if (FAILED(hr))
-        {
-            if (errorBlob)
-            {
-                MessageBoxA(nullptr, (char*)errorBlob->GetBufferPointer(), "VS Compile Error", MB_OK);
-            }
-            return false;
-        }
-
-        hr = g_pd3dDevice->CreateVertexShader(
-            vsBlob->GetBufferPointer(),
-            vsBlob->GetBufferSize(),
-            nullptr,
-            &g_pVertexShader
-        );
-
-        if (FAILED(hr))
-        {
-            return false;
-        }
-
-		D3D11_INPUT_ELEMENT_DESC layoutDesc[] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
-		};
-
-        //D3D11_INPUT_ELEMENT_DESC layoutDesc[] = {
-        //{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        //{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        //};
-
-        hr = g_pd3dDevice->CreateInputLayout(
-            layoutDesc,
-            ARRAYSIZE(layoutDesc),
-            vsBlob->GetBufferPointer(),
-            vsBlob->GetBufferSize(),
-            &g_pInputLayout
-        );
-
-        if (FAILED(hr))
-        {
-            std::cout << "Failed to create input layout" << std::endl;
-            return false;
-        }
-        vsBlob->Release();
-
-        ID3DBlob* psBlob = nullptr;
-		hr = D3DCompileFromFile(
-			L"Shaders/PixelShader.hlsl",
-			nullptr, nullptr,
-			"main", "ps_5_0",
-			0, 0,
-			&psBlob, &errorBlob
-		);
-
-        if (FAILED(hr))
-        {
-            if (errorBlob)
-                MessageBoxA(nullptr, (char*)errorBlob->GetBufferPointer(), "PS Compile Error", MB_OK);
-            return false;
-        }
-
-        hr = g_pd3dDevice->CreatePixelShader(
-            psBlob->GetBufferPointer(),
-            psBlob->GetBufferSize(),
-            nullptr,
-            &g_pPixelShader
-        );
-        psBlob->Release();
-
-        if (FAILED(hr))
-        {
-            return false;
-        }
-        return true;
+    void SetCamera(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& proj)
+    {
+        DirectX::XMStoreFloat4x4(&m_view, DirectX::XMMatrixTranspose(view));
+        DirectX::XMStoreFloat4x4(&m_proj, DirectX::XMMatrixTranspose(proj));
     }
+
+    ID3D11Buffer* GetConstantBuffer() { return g_pConstantBuffer; }
+    const DirectX::XMFLOAT4X4& GetView() const { return m_view; }
+    const DirectX::XMFLOAT4X4& GetProj() const { return m_proj; }
+
 private:
     // Data
     ID3D11Device* g_pd3dDevice = nullptr;
@@ -303,9 +185,9 @@ private:
     ID3D11Texture2D* g_pDepthStencil = nullptr;
     ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
 
-    ID3D11VertexShader* g_pVertexShader = nullptr;
-    ID3D11PixelShader* g_pPixelShader = nullptr;
-    ID3D11InputLayout* g_pInputLayout = nullptr;
     ID3D11Buffer* g_pConstantBuffer = nullptr;
+
+    DirectX::XMFLOAT4X4 m_view;
+    DirectX::XMFLOAT4X4 m_proj;
 };
 

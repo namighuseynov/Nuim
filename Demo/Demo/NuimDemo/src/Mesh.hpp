@@ -57,7 +57,6 @@ public:
 		return true;
 	}
 	
-
 	void Draw(ID3D11DeviceContext* context) {
 		UINT offset = 0;
 		context->IASetVertexBuffers(0, 1, &m_vertexBuffer, &m_vertexStride, &offset);
