@@ -102,9 +102,6 @@ public:
         g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, g_pDepthStencilView);
         g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, color);
         g_pd3dDeviceContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-        g_pd3dDeviceContext->IASetInputLayout(g_pInputLayout);
-        g_pd3dDeviceContext->VSSetShader(g_pVertexShader, nullptr, 0);
-        g_pd3dDeviceContext->PSSetShader(g_pPixelShader, nullptr, 0);
     }
 
     void EndRender()

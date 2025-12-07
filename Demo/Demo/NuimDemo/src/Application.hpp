@@ -4,9 +4,10 @@
 #include "Renderer.hpp"
 #include "ImGuiLayer.hpp"
 #include <d3d11.h>
-#include "Cube.hpp"
-#include "Cube3d.hpp"
-#include "CubeColored3d.hpp"
+
+#include "Mesh.hpp"
+#include "Material.hpp"
+#include "Model.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -25,6 +26,66 @@ namespace NuimDemo {
             this->window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
             renderer = new Renderer(window->GetHWND(), window->GetWidth(), window->GetHeight());
 
+
+            struct VertexColored {
+                DirectX::XMFLOAT3 position;
+                DirectX::XMFLOAT4 color;
+            };
+
+            VertexColored vertices[] = {
+            { { -0.5f, -0.5f, -0.5f }, {1.0f, 0.0f, 0.0f, 1.0f} },
+            { { -0.5f,  0.5f, -0.5f }, {0.0f, 1.0f, 0.0f, 1.0f} },
+            { {  0.5f,  0.5f, -0.5f }, {0.0f, 0.0f, 1.0f, 1.0f} },
+            { {  0.5f, -0.5f, -0.5f }, {1.0f, 1.0f, 0.0f, 1.0f} },
+            { { -0.5f, -0.5f,  0.5f }, {1.0f, 0.0f, 1.0f, 1.0f} },
+            { { -0.5f,  0.5f,  0.5f }, {0.0f, 1.0f, 1.0f, 1.0f} },
+            { {  0.5f,  0.5f,  0.5f }, {1.0f, 1.0f, 1.0f, 1.0f} },
+            { {  0.5f, -0.5f,  0.5f }, {0.0f, 0.0f, 0.0f, 1.0f} },
+            };
+
+            UINT indices[] = {
+            0,1,2,  0,2,3,
+            4,6,5,  4,7,6,
+            4,5,1,  4,1,0,
+            3,2,6,  3,6,7,
+            1,5,6,  1,6,2,
+            4,0,3,  4,3,7
+            };
+
+
+            
+            Mesh cubeMesh;
+            if (!cubeMesh.Init(
+                renderer->GetDevice(),
+                vertices,
+                sizeof(VertexColored),
+                _countof(vertices),
+                indices,
+                _countof(indices))) {
+                std::cout << "Failed to init cube mesh\n";
+            }
+
+            D3D11_INPUT_ELEMENT_DESC layoutDesc[] = {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,
+              0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,
+              0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                };
+
+			Material cubeMaterial;
+            if (cubeMaterial.Init(
+				renderer->GetDevice(),
+				L"Shaders/VertexShader.hlsl",
+				L"Shaders/PixelShader.hlsl",
+				layoutDesc,
+				_countof(layoutDesc)) == false) {
+				std::cout << "Failed to init cube material\n";
+			}
+
+            Model cubeModel(&cubeMesh, &cubeMaterial);
+
+
+
             ImGuiRenderer* layer = new ImGuiRenderer(window->GetHWND(), renderer->GetDevice(), renderer->GetContext());
 
             bool done = false;
@@ -42,15 +103,14 @@ namespace NuimDemo {
                 if (done)
                     break;
 
-                static CubeColored3d cube(renderer->GetDevice());
-
                 layer->BeginFrame();
 
                 ImGui::ShowDemoWindow();
 
                 float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
                 renderer->BeginRender(clearColor);
-                cube.Draw(renderer->GetContext());
+                
+				cubeModel.Draw(renderer->GetContext());
 
                 ImGui::Render();
                 ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
