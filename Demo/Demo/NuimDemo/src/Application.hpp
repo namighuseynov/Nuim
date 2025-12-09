@@ -101,8 +101,6 @@ namespace NuimDemo {
 
             Model cubeModel(&cubeMesh, &cubeMaterial);
 
-
-
             ImGuiRenderer* layer = new ImGuiRenderer(window->GetHWND(), renderer->GetDevice(), renderer->GetContext());
 
             bool done = false;
