@@ -8,6 +8,7 @@
 #include "Mesh.hpp"
 #include "Material.hpp"
 #include "Model.hpp"
+#include "Camera.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -26,23 +27,18 @@ namespace NuimDemo {
             this->window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
             renderer = new Renderer(window->GetHWND(), window->GetWidth(), window->GetHeight());
 
-            DirectX::XMMATRIX view =
-                DirectX::XMMatrixLookAtLH(
-                    DirectX::XMVectorSet(0, 0, -4, 1),
-                    DirectX::XMVectorSet(0, 0, 0, 1),
-                    DirectX::XMVectorSet(0, 1, 0, 0)
-                );
+			float aspect = static_cast<float>(window->GetWidth()) / static_cast<float>(window->GetHeight());
+            m_camera.SetPerspective(60.0f, aspect, 0.1f, 100.0f);
+            m_camera.LookAt(
+                DirectX::XMFLOAT3(0.0f, 0.0f, -4.0f),
+                DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+                DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f)
+            );
 
-            DirectX::XMMATRIX proj =
-                DirectX::XMMatrixPerspectiveFovLH(
-                    DirectX::XMConvertToRadians(60.f),
-                    1280.f / 720.f,
-                    0.1f,
-                    100.f
-                );
-
-            renderer->SetCamera(view, proj);
-
+			renderer->SetCamera(
+				m_camera.GetViewMatrix(),
+				m_camera.GetProjMatrix()
+			);
 
             struct VertexColored {
                 DirectX::XMFLOAT3 position;
@@ -147,6 +143,14 @@ namespace NuimDemo {
 
             if (renderer)
                 renderer->Resize(width, height);
+
+            float aspect = static_cast<float>(width) / static_cast<float>(height);
+            m_camera.SetPerspective(60.0f, aspect, 0.1f, 100.0f);
+
+            renderer->SetCamera(
+                m_camera.GetViewMatrix(),
+                m_camera.GetProjMatrix()
+            );
         }
     public:
         void OnEvent(EventSystem::Event& e) {
@@ -161,6 +165,7 @@ namespace NuimDemo {
     private:
         Window* window = nullptr;
         Renderer* renderer = nullptr;
+        Camera m_camera;
         HINSTANCE instance;
     };
 }
