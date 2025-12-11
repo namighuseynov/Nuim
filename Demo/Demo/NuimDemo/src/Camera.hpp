@@ -20,14 +20,29 @@ public:
 
 	DirectX::XMFLOAT3 GetPosition() const { return m_position; }
 
+	void SetPosition(const DirectX::XMFLOAT3& pos);
+
+	void SetYawPitch(float yawRadians, float pitchRadians);
+
+	void AddYawPitch(float deltaYaw, float deltaPitch); 
+
+	void MoveLocal(float forward, float right, float up);
+
+
 private:
 	void UpdateView();
 	void UpdateProj();
+	void RecalculateDirection();
 
 private:
 	DirectX::XMFLOAT3 m_position;
-	DirectX::XMFLOAT3 m_target;
+
+	DirectX::XMFLOAT3 m_forward;
+	DirectX::XMFLOAT3 m_right;
 	DirectX::XMFLOAT3 m_up;
+
+	float m_yaw;  
+	float m_pitch;	
 
 	float m_fovY;   // radians
 	float m_aspect;

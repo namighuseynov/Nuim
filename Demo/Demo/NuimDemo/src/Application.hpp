@@ -28,17 +28,16 @@ namespace NuimDemo {
             renderer = new Renderer(window->GetHWND(), window->GetWidth(), window->GetHeight());
 
 			float aspect = static_cast<float>(window->GetWidth()) / static_cast<float>(window->GetHeight());
+			m_camera.SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, -4.0f));
+            m_camera.SetYawPitch(0.0f, 0.0f);
             m_camera.SetPerspective(60.0f, aspect, 0.1f, 100.0f);
-            m_camera.LookAt(
-                DirectX::XMFLOAT3(0.0f, 0.0f, -4.0f),
-                DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-                DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f)
-            );
 
 			renderer->SetCamera(
 				m_camera.GetViewMatrix(),
 				m_camera.GetProjMatrix()
 			);
+
+            float angle = 0.0f;
 
             struct VertexColored {
                 DirectX::XMFLOAT3 position;
@@ -113,6 +112,26 @@ namespace NuimDemo {
                 }
                 if (done)
                     break;
+
+                angle += 0.02f; 
+
+                float radius = 4.0f;
+                float x = sinf(angle) * radius;
+                float z = cosf(angle) * radius;
+
+                m_camera.SetPosition(DirectX::XMFLOAT3(x, 0.0f, z));
+
+                m_camera.LookAt(
+                    DirectX::XMFLOAT3(x, 0.0f, z),
+                    DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+                    DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f)
+                );
+
+
+                renderer->SetCamera(
+                    m_camera.GetViewMatrix(),
+                    m_camera.GetProjMatrix()
+                );
 
                 layer->BeginFrame();
 
