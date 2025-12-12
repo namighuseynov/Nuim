@@ -3,7 +3,8 @@
 namespace EventSystem {
 	enum MouseButton {
 		NM_LEFT = 0,
-		NM_RIGHT
+		NM_RIGHT,
+		NM_MIDDLE
 	};
 	enum KeyCode {
 		NM_KEY_Q = 81,

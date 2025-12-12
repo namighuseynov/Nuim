@@ -10,6 +10,7 @@
 #include "Model.hpp"
 #include "Camera.hpp"
 #include "Time.hpp"
+#include "Input.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -25,6 +26,7 @@ namespace NuimDemo {
             freopen("CONOUT$", "w", stdout);
 
             NuimDemo::Time::Init();
+            NuimDemo::Input::Init();
 
             window = new Window(1280, 800);
             this->window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
@@ -67,8 +69,6 @@ namespace NuimDemo {
             4,0,3,  4,3,7
             };
 
-
-            
             Mesh cubeMesh;
             if (!cubeMesh.Init(
                 renderer->GetDevice(),
@@ -105,6 +105,8 @@ namespace NuimDemo {
 
             while (!done) {
                 NuimDemo::Time::Tick();
+                NuimDemo::Input::NewFrame();
+
                 MSG msg;
                 while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
                 {
@@ -115,8 +117,6 @@ namespace NuimDemo {
                 }
                 if (done)
                     break;
-
-				std::cout << Time::GetDeltaTime() << std::endl;
 
                 angle += 0.02f; 
 
@@ -158,6 +158,7 @@ namespace NuimDemo {
 
             }
             layer->ShutDown();
+            delete layer;
         }
 
         void OnWindowResize(uint32_t width, uint32_t height)
@@ -180,12 +181,79 @@ namespace NuimDemo {
         void OnEvent(EventSystem::Event& e) {
             std::cout << e.GetName() << std::endl;
 
-            if (e.GetType() == EventSystem::EventType::WindowSizeEvent)
+            using namespace EventSystem;
+
+            switch (e.GetType())
             {
-                auto& ws = (EventSystem::WindowSizeEvent&)e;
+            case EventType::WindowSizeEvent:
+            {
+                auto& ws = static_cast<WindowSizeEvent&>(e);
                 OnWindowResize(ws.GetWidth(), ws.GetHeight());
+                break;
+            }
+            case EventType::MousePressEvent:
+            {
+                auto& me = static_cast<MousePressEvent&>(e);
+                auto btn = me.GetMouseButton(); // int
+
+                if (btn == (int)EventSystem::MouseButton::NM_LEFT)
+                    NuimDemo::Input::OnMouseButtonDown(NuimDemo::MouseButton::Left);
+                else if (btn == (int)EventSystem::MouseButton::NM_RIGHT)
+                    NuimDemo::Input::OnMouseButtonDown(NuimDemo::MouseButton::Right);
+                else if (btn == (int)EventSystem::MouseButton::NM_MIDDLE)
+                    NuimDemo::Input::OnMouseButtonDown(NuimDemo::MouseButton::Middle);
+
+                break;
+            }
+            case EventType::KeyReleaseEvent:
+            {
+                auto& ke = static_cast<KeyReleaseEvent&>(e);
+                int keyCode = ke.GetKeyCode();
+                NuimDemo::Input::OnKeyUp(keyCode);
+                break;
+            }
+            case EventType::KeyPressEvent:
+            {
+                auto& ke = static_cast<KeyPressEvent&>(e);
+                int keyCode = ke.GetKeyCode();
+                NuimDemo::Input::OnKeyDown(keyCode);
+                break;
+            }
+
+            case EventType::MouseMoveEvent:
+            {
+                auto& me = static_cast<MouseMoveEvent&>(e);
+                NuimDemo::Input::OnMouseMove(me.GetX(), me.GetY());
+                break;
+            }
+            case EventType::MouseReleaseEvent:
+            {
+                auto& me = static_cast<MouseReleaseEvent&>(e);
+                auto btn = me.GetMouseButton();
+
+                if (btn == (int)EventSystem::MouseButton::NM_LEFT)
+                    NuimDemo::Input::OnMouseButtonUp(NuimDemo::MouseButton::Left);
+                else if (btn == (int)EventSystem::MouseButton::NM_RIGHT)
+                    NuimDemo::Input::OnMouseButtonUp(NuimDemo::MouseButton::Right);
+                else if (btn == (int)EventSystem::MouseButton::NM_MIDDLE)
+                    NuimDemo::Input::OnMouseButtonUp(NuimDemo::MouseButton::Middle);
+                break;
+            }
+            case EventType::MouseMiddleButtonDownEvent:
+            {
+                NuimDemo::Input::OnMouseButtonDown(NuimDemo::MouseButton::Middle);
+                break;
+            }
+            case EventType::MouseMiddleButtonReleaseEvent:
+            {
+                NuimDemo::Input::OnMouseButtonUp(NuimDemo::MouseButton::Middle);
+                break;
+            }
+            default:
+                break;
             }
         }
+
     private:
         Window* window = nullptr;
         Renderer* renderer = nullptr;

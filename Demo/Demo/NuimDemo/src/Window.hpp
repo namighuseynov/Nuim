@@ -28,9 +28,12 @@ namespace NuimDemo {
         const HWND& GetHWND() { return this->hwnd; }
         static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
-            if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-                return true;
+            ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
+
             Window* pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+            if (!pWindow && msg != WM_CREATE)
+                return ::DefWindowProcW(hWnd, msg, wParam, lParam);
+         
             switch (msg) {
             case WM_CREATE: {
                 LPCREATESTRUCT pCreate = reinterpret_cast<LPCREATESTRUCT>(lParam);
@@ -63,8 +66,22 @@ namespace NuimDemo {
                 break;
             }
             case WM_LBUTTONUP: {
+                EventSystem::MouseReleaseEvent mouseReleaseEvent(EventSystem::MouseButton::NM_LEFT);
+                pWindow->eventCallbackFn(mouseReleaseEvent);
                 break;
             }
+            case WM_RBUTTONUP: { 
+                EventSystem::MouseReleaseEvent mouseReleaseEvent(EventSystem::MouseButton::NM_RIGHT);
+                pWindow->eventCallbackFn(mouseReleaseEvent);
+                break;
+            }
+            case WM_RBUTTONDOWN: {
+                EventSystem::MousePressEvent mousePressEvent(EventSystem::MouseButton::NM_RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                pWindow->eventCallbackFn(mousePressEvent);
+                break;
+            }
+
+
             case WM_SETFOCUS: {
                 EventSystem::WindowGotFocusEvent windowGotFocusEvent;
                 if (pWindow->eventCallbackFn) {
@@ -85,6 +102,12 @@ namespace NuimDemo {
                 int y = (int)(short)GET_Y_LPARAM(lParam);
                 EventSystem::MouseMoveEvent mouseMoveEvent(x, y);
                 pWindow->eventCallbackFn(mouseMoveEvent);
+                break;
+            }
+
+            case WM_KEYUP: {
+                EventSystem::KeyReleaseEvent keyReleaseEvent(static_cast<int>(wParam));
+                pWindow->eventCallbackFn(keyReleaseEvent);
                 break;
             }
 
@@ -121,10 +144,8 @@ namespace NuimDemo {
                 std::cout << "Closing.." << std::endl;
                 break;
             }
-            default: {
-                return DefWindowProc(hWnd, msg, wParam, lParam);
-            }
-
+            default: 
+                break;
             }
             return ::DefWindowProcW(hWnd, msg, wParam, lParam);
         }

@@ -26,7 +26,7 @@ namespace EventSystem {
 		std::string GetName() const override {
 			return "ApplicationStart";
 		}
-		EventType GetType() {
+		EventType GetType() const override {
 			return EventType::ApplicationStartEvent;
 		}
 	};
