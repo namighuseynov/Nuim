@@ -9,6 +9,7 @@
 #include "Material.hpp"
 #include "Model.hpp"
 #include "Camera.hpp"
+#include "Time.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -22,6 +23,8 @@ namespace NuimDemo {
         void Run() {
             AllocConsole();
             freopen("CONOUT$", "w", stdout);
+
+            NuimDemo::Time::Init();
 
             window = new Window(1280, 800);
             this->window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
@@ -101,7 +104,7 @@ namespace NuimDemo {
             bool done = false;
 
             while (!done) {
-
+                NuimDemo::Time::Tick();
                 MSG msg;
                 while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
                 {
@@ -112,6 +115,8 @@ namespace NuimDemo {
                 }
                 if (done)
                     break;
+
+				std::cout << Time::GetDeltaTime() << std::endl;
 
                 angle += 0.02f; 
 
