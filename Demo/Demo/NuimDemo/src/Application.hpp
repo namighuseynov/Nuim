@@ -42,8 +42,6 @@ namespace NuimDemo {
 				m_camera.GetProjMatrix()
 			);
 
-            float angle = 0.0f;
-
             struct VertexColored {
                 DirectX::XMFLOAT3 position;
                 DirectX::XMFLOAT4 color;
@@ -118,21 +116,44 @@ namespace NuimDemo {
                 if (done)
                     break;
 
-                angle += 0.02f; 
+                // Camera movement
+				/////////////////////////////////////////////////
 
-                float radius = 4.0f;
-                float x = sinf(angle) * radius;
-                float z = cosf(angle) * radius;
+                const float dt = NuimDemo::Time::GetDeltaTime();
+                const float cameraSpeed = 5.0f;
+				float horizontal = 0.0f;
+                float vertical = 0.0f;
+				if (NuimDemo::Input::IsKeyDown('W')) vertical += 1.0f;
+                if (NuimDemo::Input::IsKeyDown('S')) vertical += -1.0f;
+                if (NuimDemo::Input::IsKeyDown('A')) horizontal += -1.0f;
+                if (NuimDemo::Input::IsKeyDown('D')) horizontal += 1.0f;
 
-                m_camera.SetPosition(DirectX::XMFLOAT3(x, 0.0f, z));
+                float mouseSensX = 8.0f, mouseSensY = 8.0f;
+                float yaw = 0.0f, pitch = 0.0f;
+                int mouseX, mouseY;
+                NuimDemo::Input::GetMouseDelta(mouseX, mouseY);
 
-                m_camera.LookAt(
-                    DirectX::XMFLOAT3(x, 0.0f, z),
-                    DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-                    DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f)
-                );
+                if (NuimDemo::Input::IsMouseButtonDown(NuimDemo::MouseButton::Right)) {
+                    yaw += mouseX * dt * mouseSensX;
+                    pitch += mouseY * dt * mouseSensY;
 
+                    m_camera.AddYawPitch(
+                        DirectX::XMConvertToRadians(yaw),
+                        DirectX::XMConvertToRadians(-pitch)
+                    );
+                }
+                else if (NuimDemo::Input::IsMouseButtonDown(NuimDemo::MouseButton::Middle)) {
+                    yaw -= mouseX * dt * mouseSensX;
+                    pitch += mouseY * dt * mouseSensY;
 
+                    m_camera.MoveLocal(0.0f, yaw * cameraSpeed * dt, pitch * cameraSpeed * dt);
+                    std::cout << "here" << std::endl;
+                }
+
+                m_camera.MoveLocal(vertical* cameraSpeed* dt, horizontal* cameraSpeed* dt, 0.0f);
+
+                /////////////////////////////////////////////////
+                
                 renderer->SetCamera(
                     m_camera.GetViewMatrix(),
                     m_camera.GetProjMatrix()
@@ -155,7 +176,6 @@ namespace NuimDemo {
                 ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
                 renderer->EndRender(); 
-
             }
             layer->ShutDown();
             delete layer;
