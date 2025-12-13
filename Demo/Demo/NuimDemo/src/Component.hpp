@@ -1,7 +1,8 @@
 #pragma once
-#include "GameObject.hpp"
+
 
 namespace NuimDemo {
+	class GameObject;
 
 	class Component
 	{

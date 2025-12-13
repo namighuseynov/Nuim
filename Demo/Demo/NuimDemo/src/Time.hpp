@@ -2,7 +2,7 @@
 #include <chrono>
 
 namespace NuimDemo {
-	static class Time
+	class Time
 	{
 	public:
 		static void Init();

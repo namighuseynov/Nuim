@@ -7,10 +7,11 @@
 
 #include "Mesh.hpp"
 #include "Material.hpp"
-#include "Model.hpp"
 #include "Camera.hpp"
 #include "Time.hpp"
 #include "Input.hpp"
+#include "GameObject.hpp"
+#include "MeshRenderer.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -95,7 +96,9 @@ namespace NuimDemo {
 				std::cout << "Failed to init cube material\n";
 			}
 
-            Model cubeModel(&cubeMesh, &cubeMaterial);
+            GameObject cube;
+            cube.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 0));
+            cube.AddComponent<MeshRenderer>(renderer, &cubeMesh, &cubeMaterial);
 
             ImGuiRenderer* layer = new ImGuiRenderer(window->GetHWND(), renderer->GetDevice(), renderer->GetContext());
 
@@ -147,7 +150,6 @@ namespace NuimDemo {
                     pitch += mouseY * dt * mouseSensY;
 
                     m_camera.MoveLocal(0.0f, yaw * cameraSpeed * dt, pitch * cameraSpeed * dt);
-                    std::cout << "here" << std::endl;
                 }
 
                 m_camera.MoveLocal(vertical* cameraSpeed* dt, horizontal* cameraSpeed* dt, 0.0f);
@@ -165,12 +167,8 @@ namespace NuimDemo {
 
                 float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
                 renderer->BeginRender(clearColor);
-                
-				cubeModel.Draw(renderer->GetContext(),
-                    renderer->GetConstantBuffer(),
-                    renderer->GetView(),
-                    renderer->GetProj()
-                );
+
+                cube.Draw();
 
                 ImGui::Render();
                 ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

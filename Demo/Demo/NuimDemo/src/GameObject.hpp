@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <utility>
 #include <type_traits>
 #include "Transform.hpp"
 #include "Component.hpp"
@@ -29,16 +30,12 @@ namespace NuimDemo {
 
 			ref.OnCreate();
 
-			return ref;
+			return &ref;
 		}
 
 		void Update(float dt);
 
 		void Draw();
-
-
-
-
 	private:
 		std::vector<std::unique_ptr<Component>> m_components;
 
