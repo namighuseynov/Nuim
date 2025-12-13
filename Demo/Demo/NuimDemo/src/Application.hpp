@@ -12,6 +12,7 @@
 #include "Input.hpp"
 #include "GameObject.hpp"
 #include "MeshRenderer.hpp"
+#include "Scene.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -96,9 +97,10 @@ namespace NuimDemo {
 				std::cout << "Failed to init cube material\n";
 			}
 
-            GameObject cube;
-            cube.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 0));
-            cube.AddComponent<MeshRenderer>(renderer, &cubeMesh, &cubeMaterial);
+            NuimDemo::Scene scene; 
+            NuimDemo::GameObject& cube = scene.CreateObject();
+			cube.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 0));
+			cube.AddComponent<MeshRenderer>(renderer, &cubeMesh, &cubeMaterial);
 
             ImGuiRenderer* layer = new ImGuiRenderer(window->GetHWND(), renderer->GetDevice(), renderer->GetContext());
 
@@ -168,7 +170,7 @@ namespace NuimDemo {
                 float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
                 renderer->BeginRender(clearColor);
 
-                cube.Draw();
+                scene.Draw();
 
                 ImGui::Render();
                 ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
