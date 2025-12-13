@@ -35,7 +35,7 @@ namespace NuimDemo {
 			float aspect = static_cast<float>(window->GetWidth()) / static_cast<float>(window->GetHeight());
 			m_camera.SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, -4.0f));
             m_camera.SetYawPitch(0.0f, 0.0f);
-            m_camera.SetPerspective(60.0f, aspect, 0.1f, 100.0f);
+            m_camera.SetPerspective(45.0f, aspect, 0.1f, 100.0f);
 
 			renderer->SetCamera(
 				m_camera.GetViewMatrix(),
@@ -120,7 +120,7 @@ namespace NuimDemo {
 				/////////////////////////////////////////////////
 
                 const float dt = NuimDemo::Time::GetDeltaTime();
-                const float cameraSpeed = 5.0f;
+                const float cameraSpeed = 4.0f;
 				float horizontal = 0.0f;
                 float vertical = 0.0f;
 				if (NuimDemo::Input::IsKeyDown('W')) vertical += 1.0f;
@@ -128,7 +128,7 @@ namespace NuimDemo {
                 if (NuimDemo::Input::IsKeyDown('A')) horizontal += -1.0f;
                 if (NuimDemo::Input::IsKeyDown('D')) horizontal += 1.0f;
 
-                float mouseSensX = 8.0f, mouseSensY = 8.0f;
+                float mouseSensX = 6.0f, mouseSensY = 6.0f;
                 float yaw = 0.0f, pitch = 0.0f;
                 int mouseX, mouseY;
                 NuimDemo::Input::GetMouseDelta(mouseX, mouseY);
@@ -209,6 +209,7 @@ namespace NuimDemo {
             {
                 auto& ws = static_cast<WindowSizeEvent&>(e);
                 OnWindowResize(ws.GetWidth(), ws.GetHeight());
+				std::cout << "width: " << ws.GetWidth() << "height" << ws.GetHeight() << std::endl;
                 break;
             }
             case EventType::MousePressEvent:

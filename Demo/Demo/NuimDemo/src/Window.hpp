@@ -11,9 +11,46 @@ namespace NuimDemo {
         using EventCallback = std::function<void(EventSystem::Event& e)>;
     public:
         Window(const int width, const int height) : width(width), height(height) {
-            WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"NuimDemo", nullptr };
+            WNDCLASSEXW wc = { 
+                sizeof(wc), 
+                CS_CLASSDC, 
+                WndProc, 
+                0L, 
+                0L, 
+                GetModuleHandle(nullptr), 
+                nullptr, 
+                nullptr, 
+                nullptr, 
+                nullptr, 
+                L"NuimDemo", 
+                nullptr 
+            };
+
             ::RegisterClassExW(&wc);
-            hwnd = ::CreateWindowW(wc.lpszClassName, L"NuimDemo", WS_OVERLAPPEDWINDOW, 100, 100, width, height, nullptr, nullptr, wc.hInstance, this);
+
+            DWORD style = WS_OVERLAPPEDWINDOW;
+            DWORD exStyle = 0;
+
+            RECT rc = { 0, 0, width, height };
+            ::AdjustWindowRectEx(&rc, style, FALSE, exStyle);
+
+            int winW = rc.right - rc.left;
+            int winH = rc.bottom - rc.top;
+
+
+            hwnd = ::CreateWindowW(
+                wc.lpszClassName, 
+                L"NuimDemo", 
+                WS_OVERLAPPEDWINDOW, 
+                100, 
+                100, 
+                winW,
+                winH,
+                nullptr, 
+                nullptr, 
+                wc.hInstance, 
+                this
+            );
 
             // Show the window
             ::ShowWindow(hwnd, SW_SHOWDEFAULT);
@@ -42,10 +79,17 @@ namespace NuimDemo {
                 break;
             }
             case WM_SIZE: {
+                if (wParam == SIZE_MINIMIZED)
+                    break;
+
+                int newW = static_cast<int>(LOWORD(lParam));
+                int newH = static_cast<int>(HIWORD(lParam));
+
+                pWindow->width = newW;
+                pWindow->height = newH;
+
                 if (pWindow->eventCallbackFn) {
-                    int width = GET_X_LPARAM(lParam);
-                    int height = GET_Y_LPARAM(lParam);
-                    EventSystem::WindowSizeEvent evt(width, height);
+                    EventSystem::WindowSizeEvent evt(newW, newH);
                     pWindow->eventCallbackFn(evt);
                 }
                 break;
