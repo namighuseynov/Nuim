@@ -41,7 +41,7 @@ namespace NuimDemo {
             const float sens = 6.0f;
 
             m_yaw += DirectX::XMConvertToRadians(dx * sens * dt);
-            m_pitch += DirectX::XMConvertToRadians(-dy * sens * dt);
+            m_pitch += DirectX::XMConvertToRadians(dy * sens * dt);
 
             const float limit = DirectX::XMConvertToRadians(89.0f);
             if (m_pitch > limit) m_pitch = limit;

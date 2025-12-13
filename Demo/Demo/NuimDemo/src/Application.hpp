@@ -7,12 +7,12 @@
 
 #include "Mesh.hpp"
 #include "Material.hpp"
-#include "Camera.hpp"
 #include "Time.hpp"
 #include "Input.hpp"
 #include "GameObject.hpp"
 #include "MeshRenderer.hpp"
 #include "Scene.hpp"
+#include "CameraComponent.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -35,14 +35,6 @@ namespace NuimDemo {
             renderer = new Renderer(window->GetHWND(), window->GetWidth(), window->GetHeight());
 
 			float aspect = static_cast<float>(window->GetWidth()) / static_cast<float>(window->GetHeight());
-			m_camera.SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, -4.0f));
-            m_camera.SetYawPitch(0.0f, 0.0f);
-            m_camera.SetPerspective(45.0f, aspect, 0.1f, 100.0f);
-
-			renderer->SetCamera(
-				m_camera.GetViewMatrix(),
-				m_camera.GetProjMatrix()
-			);
 
             struct VertexColored {
                 DirectX::XMFLOAT3 position;
@@ -97,8 +89,11 @@ namespace NuimDemo {
 				std::cout << "Failed to init cube material\n";
 			}
 
-            NuimDemo::Scene scene; 
-            NuimDemo::GameObject& cube = scene.CreateObject();
+			NuimDemo::GameObject& cameraObject = m_scene.CreateObject();
+			CameraComponent* cameraComponent = cameraObject.AddComponent<CameraComponent>(renderer, aspect);
+            m_scene.SetMainCamera(cameraComponent);
+
+            NuimDemo::GameObject& cube = m_scene.CreateObject();
 			cube.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 0));
 			cube.AddComponent<MeshRenderer>(renderer, &cubeMesh, &cubeMaterial);
 
@@ -109,6 +104,7 @@ namespace NuimDemo {
             while (!done) {
                 NuimDemo::Time::Tick();
                 NuimDemo::Input::NewFrame();
+                float dt = Time::GetDeltaTime();
 
                 MSG msg;
                 while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
@@ -121,56 +117,17 @@ namespace NuimDemo {
                 if (done)
                     break;
 
-                // Camera movement
-				/////////////////////////////////////////////////
-
-                const float dt = NuimDemo::Time::GetDeltaTime();
-                const float cameraSpeed = 4.0f;
-				float horizontal = 0.0f;
-                float vertical = 0.0f;
-				if (NuimDemo::Input::IsKeyDown('W')) vertical += 1.0f;
-                if (NuimDemo::Input::IsKeyDown('S')) vertical += -1.0f;
-                if (NuimDemo::Input::IsKeyDown('A')) horizontal += -1.0f;
-                if (NuimDemo::Input::IsKeyDown('D')) horizontal += 1.0f;
-
-                float mouseSensX = 6.0f, mouseSensY = 6.0f;
-                float yaw = 0.0f, pitch = 0.0f;
-                int mouseX, mouseY;
-                NuimDemo::Input::GetMouseDelta(mouseX, mouseY);
-
-                if (NuimDemo::Input::IsMouseButtonDown(NuimDemo::MouseButton::Right)) {
-                    yaw += mouseX * dt * mouseSensX;
-                    pitch += mouseY * dt * mouseSensY;
-
-                    m_camera.AddYawPitch(
-                        DirectX::XMConvertToRadians(yaw),
-                        DirectX::XMConvertToRadians(-pitch)
-                    );
-                }
-                else if (NuimDemo::Input::IsMouseButtonDown(NuimDemo::MouseButton::Middle)) {
-                    yaw -= mouseX * dt * mouseSensX;
-                    pitch += mouseY * dt * mouseSensY;
-
-                    m_camera.MoveLocal(0.0f, yaw * cameraSpeed * dt, pitch * cameraSpeed * dt);
-                }
-
-                m_camera.MoveLocal(vertical* cameraSpeed* dt, horizontal* cameraSpeed* dt, 0.0f);
-
-                /////////////////////////////////////////////////
-                
-                renderer->SetCamera(
-                    m_camera.GetViewMatrix(),
-                    m_camera.GetProjMatrix()
-                );
-
                 layer->BeginFrame();
 
                 ImGui::ShowDemoWindow();
 
                 float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+
+                m_scene.Update(dt);
+
                 renderer->BeginRender(clearColor);
 
-                scene.Draw();
+                m_scene.Draw();
 
                 ImGui::Render();
                 ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -189,13 +146,10 @@ namespace NuimDemo {
             if (renderer)
                 renderer->Resize(width, height);
 
-            float aspect = static_cast<float>(width) / static_cast<float>(height);
-            m_camera.SetPerspective(60.0f, aspect, 0.1f, 100.0f);
+            if (auto cam = m_scene.GetMainCamera())
+                cam->OnResize(width, height);
 
-            renderer->SetCamera(
-                m_camera.GetViewMatrix(),
-                m_camera.GetProjMatrix()
-            );
+            float aspect = static_cast<float>(width) / static_cast<float>(height);
         }
     public:
         void OnEvent(EventSystem::Event& e) {
@@ -210,6 +164,7 @@ namespace NuimDemo {
                 auto& ws = static_cast<WindowSizeEvent&>(e);
                 OnWindowResize(ws.GetWidth(), ws.GetHeight());
 				std::cout << "width: " << ws.GetWidth() << "height" << ws.GetHeight() << std::endl;
+                
                 break;
             }
             case EventType::MousePressEvent:
@@ -278,7 +233,7 @@ namespace NuimDemo {
     private:
         Window* window = nullptr;
         Renderer* renderer = nullptr;
-        Camera m_camera;
         HINSTANCE instance;
+        Scene m_scene;
     };
 }
