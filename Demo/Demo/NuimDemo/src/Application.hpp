@@ -13,6 +13,7 @@
 #include "MeshRenderer.hpp"
 #include "Scene.hpp"
 #include "CameraComponent.hpp"
+#include "FlyCameraController.hpp"
 
 namespace NuimDemo {
     class Application {
@@ -92,6 +93,7 @@ namespace NuimDemo {
 			NuimDemo::GameObject& cameraObject = m_scene.CreateObject();
 			CameraComponent* cameraComponent = cameraObject.AddComponent<CameraComponent>(renderer, aspect);
             m_scene.SetMainCamera(cameraComponent);
+			cameraObject.AddComponent<FlyCameraController>(4.0f, 6.0f);
 
             NuimDemo::GameObject& cube = m_scene.CreateObject();
 			cube.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 0));

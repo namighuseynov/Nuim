@@ -41,7 +41,7 @@ namespace NuimDemo {
 
 		void Update(float dt) override {
 			// Example update logic
-			std::cout << "MeshRenderer updating for GameObject at " << m_owner << " with dt: " << dt << std::endl;
+
 		}
 
 	private:

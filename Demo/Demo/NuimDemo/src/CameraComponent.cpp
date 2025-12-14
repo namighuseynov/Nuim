@@ -5,7 +5,6 @@ namespace NuimDemo {
 	void CameraComponent::OnCreate()
 	{
 		m_owner->transform.SetPosition({ 0.0f, 0.0f, -5.0f });
-		ApplyRotation();
 		UpdateRendererMatrices(); 
 	}
 
@@ -17,48 +16,7 @@ namespace NuimDemo {
 
     void CameraComponent::Update(float dt)
     {
-        const float speed = 4.0f;
-
-        float forward = 0.0f;
-        float right = 0.0f;
-
-        if (Input::IsKeyDown('W')) forward += 1.0f;
-        if (Input::IsKeyDown('S')) forward -= 1.0f;
-        if (Input::IsKeyDown('D')) right += 1.0f;
-        if (Input::IsKeyDown('A')) right -= 1.0f;
-
-        m_owner->transform.TranslateLocal(
-            right * speed * dt,
-            0.0f,
-            forward * speed * dt
-        );
-
-        int dx, dy;
-        Input::GetMouseDelta(dx, dy);
-
-        if (Input::IsMouseButtonDown(MouseButton::Right))
-        {
-            const float sens = 6.0f;
-
-            m_yaw += DirectX::XMConvertToRadians(dx * sens * dt);
-            m_pitch += DirectX::XMConvertToRadians(dy * sens * dt);
-
-            const float limit = DirectX::XMConvertToRadians(89.0f);
-            if (m_pitch > limit) m_pitch = limit;
-            if (m_pitch < -limit) m_pitch = -limit;
-
-            ApplyRotation();
-        }
-
         UpdateRendererMatrices();
-    }
-
-    void CameraComponent::ApplyRotation()
-    {
-        DirectX::XMVECTOR q = DirectX::XMQuaternionRotationRollPitchYaw(m_pitch, m_yaw, 0.0f);
-        DirectX::XMFLOAT4 rot;
-        DirectX::XMStoreFloat4(&rot, q);
-        m_owner->transform.SetRotation(rot);
     }
 
     void CameraComponent::UpdateRendererMatrices()

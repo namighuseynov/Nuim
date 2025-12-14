@@ -22,7 +22,6 @@ namespace NuimDemo {
         void Update(float dt);
 
     private:
-        void ApplyRotation();
         void UpdateRendererMatrices();
 
 
@@ -34,9 +33,5 @@ namespace NuimDemo {
         float m_aspect = 16.0f / 9.0f;
         float m_nearZ = 0.1f;
         float m_farZ = 100.0f;
-
-        // Control
-        float m_yaw = 0.0f;
-        float m_pitch = 0.0f;
 	};
 }
