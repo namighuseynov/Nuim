@@ -54,6 +54,19 @@ namespace Nuim {
 		Shutdown();
 	}
 
+	void Engine::LoadScene(std::unique_ptr<IScene> scene)
+	{
+		if (m_activeScene)
+			m_activeScene->OnUnload();
+
+		m_scene.Clear();
+
+		m_activeScene = std::move(scene);
+
+		if (m_activeScene)
+			m_activeScene->OnLoad(*this);
+	}
+
 	void Engine::Shutdown()
 	{
 		m_imgui.reset();

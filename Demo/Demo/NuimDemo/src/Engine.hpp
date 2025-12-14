@@ -7,6 +7,7 @@
 #include "ImGuiLayer.hpp"
 #include "Scene.hpp"
 #include "CameraComponent.hpp"
+#include "IScene.hpp"
 
 namespace Nuim {
     class Engine {
@@ -16,7 +17,10 @@ namespace Nuim {
         void Shutdown();
 
         Scene& GetScene() { return m_scene; }
-        Renderer* GetRenderer() { return m_renderer.get(); }
+        Renderer* GetRenderer() const { return m_renderer.get(); }
+        const EngineConfig& GetConfig() const { return m_config; }
+
+        void LoadScene(std::unique_ptr<IScene> scene);
 
     private:
         void ProcessEvents();
@@ -36,5 +40,6 @@ namespace Nuim {
         std::unique_ptr<ImGuiRenderer> m_imgui;
 
         Scene m_scene;
+        std::unique_ptr<IScene> m_activeScene;
     };
 }
