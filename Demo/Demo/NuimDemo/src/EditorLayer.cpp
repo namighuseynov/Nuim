@@ -13,6 +13,32 @@ namespace Nuim {
         DrawStats(engine.GetRenderer());
         DrawHierarchy(engine.GetScene());
         DrawInspector(engine);
+
+        if (m_showAssets)
+            DrawAssetBrowser(engine);
+    }
+
+    void EditorLayer::DrawAssetBrowser(Engine& engine)
+    {
+        ImGui::Begin("Asset Browser", &m_showAssets);
+
+        auto& rm = engine.GetResources();
+
+        if (ImGui::CollapsingHeader("Meshes", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            auto names = rm.GetMeshNames();
+            for (auto& n : names)
+                ImGui::BulletText("%s", n.c_str());
+        }
+
+        if (ImGui::CollapsingHeader("Materials", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            auto names = rm.GetMaterialNames();
+            for (auto& n : names)
+                ImGui::BulletText("%s", n.c_str());
+        }
+
+        ImGui::End();
     }
 
     void EditorLayer::DrawStats(Renderer* renderer)
@@ -110,8 +136,69 @@ namespace Nuim {
                     if (ImGui::DragFloat("Speed (rad/s)", &sp, 0.05f))
                         rotC->SetSpeed(sp);
                 }
+
+
+                if (auto mr = dynamic_cast<MeshRenderer*>(c))
+                {
+                    auto& rm = engine.GetResources();
+
+                    // --- Mesh combo ---
+                    auto meshNames = rm.GetMeshNames();
+                    int meshIndex = -1;
+
+                    std::string curMeshName = "(none)";
+                    if (mr->GetMesh())
+                    {
+                        for (int i = 0; i < (int)meshNames.size(); ++i)
+                            if (rm.GetMesh(meshNames[i]).get() == mr->GetMesh().get())
+                                meshIndex = i;
+                        if (meshIndex >= 0) curMeshName = meshNames[meshIndex];
+                    }
+
+                    if (ImGui::BeginCombo("Mesh", curMeshName.c_str()))
+                    {
+                        for (int i = 0; i < (int)meshNames.size(); ++i)
+                        {
+                            bool isSel = (i == meshIndex);
+                            if (ImGui::Selectable(meshNames[i].c_str(), isSel))
+                                mr->SetMesh(rm.GetMesh(meshNames[i]));
+                            if (isSel) ImGui::SetItemDefaultFocus();
+                        }
+                        ImGui::EndCombo();
+                    }
+
+                    // --- Material combo ---
+                    auto matNames = rm.GetMaterialNames();
+                    int matIndex = -1;
+
+                    std::string curMatName = "(none)";
+                    if (mr->GetMaterial())
+                    {
+                        for (int i = 0; i < (int)matNames.size(); ++i)
+                            if (rm.GetMaterial(matNames[i]).get() == mr->GetMaterial().get())
+                                matIndex = i;
+                        if (matIndex >= 0) curMatName = matNames[matIndex];
+                    }
+
+                    if (ImGui::BeginCombo("Material", curMatName.c_str()))
+                    {
+                        for (int i = 0; i < (int)matNames.size(); ++i)
+                        {
+                            bool isSel = (i == matIndex);
+                            if (ImGui::Selectable(matNames[i].c_str(), isSel))
+                                mr->SetMaterial(rm.GetMaterial(matNames[i]));
+                            if (isSel) ImGui::SetItemDefaultFocus();
+                        }
+                        ImGui::EndCombo();
+                    }
+                }
             }
+
+            
+
         }
+
+
 
         // --- Add Component popup ---
         if (ImGui::Button("Add Component..."))

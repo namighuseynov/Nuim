@@ -38,6 +38,12 @@ namespace Nuim {
 
 		}
 
+		std::shared_ptr<Mesh> GetMesh() const { return m_mesh; }
+		std::shared_ptr<Material> GetMaterial() const { return m_material; }
+
+		void SetMesh(std::shared_ptr<Mesh> mesh) { m_mesh = std::move(mesh); }
+		void SetMaterial(std::shared_ptr<Material> mat) { m_material = std::move(mat); }
+
 	private:
 		std::shared_ptr<Mesh> m_mesh;
 		std::shared_ptr<Material> m_material;

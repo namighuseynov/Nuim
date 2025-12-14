@@ -20,6 +20,8 @@ namespace Nuim {
 
     private:
         GameObject* m_selected = nullptr;
+        void DrawAssetBrowser(Engine& engine);
+        bool m_showAssets = true;
     };
 
 }
