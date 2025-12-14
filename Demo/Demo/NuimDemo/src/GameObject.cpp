@@ -10,6 +10,14 @@ namespace NuimDemo {
 		}
 	}
 
+	void GameObject::LateUpdate(float dt)
+	{
+		for (auto& c : m_components) {
+			if (c->IsEnabled())
+				c->LateUpdate(dt);
+		}
+	}
+
 	void GameObject::Draw()
 	{
 		for (auto& c : m_components)

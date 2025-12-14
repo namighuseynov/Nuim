@@ -17,6 +17,8 @@ namespace NuimDemo {
 		GameObject& CreateObject();
 
 		void Update(float dt);
+
+		void LateUpdate(float dt);
 		
 		void Draw();
 

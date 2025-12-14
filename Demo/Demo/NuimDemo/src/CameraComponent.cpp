@@ -14,7 +14,7 @@ namespace NuimDemo {
 		m_aspect = float(w) / float(h);
 	}
 
-    void CameraComponent::Update(float dt)
+    void CameraComponent::LateUpdate(float dt)
     {
         UpdateRendererMatrices();
     }

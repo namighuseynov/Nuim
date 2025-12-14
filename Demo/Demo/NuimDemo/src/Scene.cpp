@@ -26,6 +26,12 @@ namespace NuimDemo {
 		}
 	}
 
+	void Scene::LateUpdate(float dt)
+	{
+		for (auto& obj : m_objects)
+			obj->LateUpdate(dt);
+	}
+
 	void Scene::Clear()
 	{
 		m_objects.clear();

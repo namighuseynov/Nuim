@@ -34,6 +34,8 @@ namespace NuimDemo {
 		}
 
 		void Update(float dt);
+		
+		void LateUpdate(float dt);
 
 		void Draw();
 	private:

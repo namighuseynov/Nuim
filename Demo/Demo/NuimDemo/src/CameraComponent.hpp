@@ -19,7 +19,7 @@ namespace NuimDemo {
 
 		void OnResize(uint32_t  width, uint32_t  height);
 
-        void Update(float dt);
+		void LateUpdate(float dt) override;
 
     private:
         void UpdateRendererMatrices();
