@@ -30,6 +30,7 @@ namespace Nuim {
 
         void OnEvent(EventSystem::Event& e);
         void OnWindowResize(uint32_t w, uint32_t h);
+        void DrawEditorUI();
     private:
         bool m_running = false;
 
@@ -41,5 +42,6 @@ namespace Nuim {
 
         Scene m_scene;
         std::unique_ptr<IScene> m_activeScene;
+        GameObject* m_selected = nullptr;
     };
 }

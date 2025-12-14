@@ -34,6 +34,8 @@ namespace Nuim {
 
 		CameraComponent* GetMainCamera() const { return m_mainCamera; }
 
+		const std::vector<std::unique_ptr<GameObject>>& GetObjects() const { return m_objects; }
+
 	private:
 		std::vector<std::unique_ptr<GameObject>> m_objects;
 		CameraComponent* m_mainCamera = nullptr;

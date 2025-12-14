@@ -87,6 +87,82 @@ namespace Nuim {
 		}
 	}
 
+	void Engine::DrawEditorUI()
+	{
+		ImGui::Begin("Engine Stats");
+
+		float dt = Time::GetDeltaTime();
+		float fps = (dt > 0.0f) ? (1.0f / dt) : 0.0f;
+
+		ImGui::Text("FPS: %.1f", fps);
+		ImGui::Text("dt: %.3f ms", dt * 1000.0f);
+
+		const auto& st = m_renderer->GetStats();
+		ImGui::Separator();
+		ImGui::Text("Draw Calls: %u", st.drawCalls);
+		ImGui::Text("Triangles:  %u", st.triangles);
+
+		ImGui::End();
+
+		// --- Hierarchy ---
+		ImGui::Begin("Hierarchy");
+
+		for (const auto& uptr : m_scene.GetObjects())
+		{
+			GameObject* obj = uptr.get();
+			bool selected = (m_selected == obj);
+
+			std::string label = obj->GetName() + "##" + std::to_string(obj->GetId());
+
+			if (ImGui::Selectable(label.c_str(), selected))
+				m_selected = obj;
+		}
+
+		ImGui::End();
+
+		// --- Inspector ---
+		ImGui::Begin("Inspector");
+
+		if (!m_selected)
+		{
+			ImGui::Text("Select an object in Hierarchy.");
+			ImGui::End();
+			return;
+		}
+
+		// Name
+		char nameBuf[128];
+		std::strncpy(nameBuf, m_selected->GetName().c_str(), sizeof(nameBuf));
+		nameBuf[sizeof(nameBuf) - 1] = '\0';
+
+		if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf)))
+			m_selected->SetName(nameBuf);
+
+		ImGui::Separator();
+		ImGui::Text("Transform");
+
+		// Position
+		auto pos = m_selected->transform.GetPosition();
+		float p[3] = { pos.x, pos.y, pos.z };
+		if (ImGui::DragFloat3("Position", p, 0.05f))
+			m_selected->transform.SetPosition({ p[0], p[1], p[2] });
+
+		// Rotation (Quaternion) 
+		auto rot = m_selected->transform.GetRotation();
+		float q[4] = { rot.x, rot.y, rot.z, rot.w };
+		if (ImGui::DragFloat4("Rotation (quat)", q, 0.01f))
+			m_selected->transform.SetRotation({ q[0], q[1], q[2], q[3] });
+
+		// Scale
+		auto sc = m_selected->transform.GetScale();
+		float s[3] = { sc.x, sc.y, sc.z };
+		if (ImGui::DragFloat3("Scale", s, 0.05f))
+			m_selected->transform.SetScale({ s[0], s[1], s[2] });
+
+		ImGui::End();
+	}
+
+
 	void Engine::Update(float dt)
 	{
 		m_scene.Update(dt);
@@ -102,22 +178,8 @@ namespace Nuim {
 		float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 		m_imgui->BeginFrame();
-		ImGui::ShowDemoWindow();
 
-		ImGui::Begin("Engine Stats");
-
-		float dt = Time::GetDeltaTime();
-		float fps = (dt > 0.0f) ? (1.0f / dt) : 0.0f;
-
-		ImGui::Text("FPS: %.1f", fps);
-		ImGui::Text("dt: %.3f ms", dt * 1000.0f);
-
-		const auto& st = m_renderer->GetStats();
-		ImGui::Separator();
-		ImGui::Text("Draw Calls: %u", st.drawCalls);
-		ImGui::Text("Triangles:  %u", st.triangles);
-
-		ImGui::End();
+		DrawEditorUI();
 
 		m_renderer->BeginFrame(clearColor);
 		m_scene.Render(m_renderer.get());

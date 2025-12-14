@@ -2,6 +2,8 @@
 #include "GameObject.hpp"
 
 namespace Nuim {
+	uint64_t GameObject::s_nextId = 1;
+
 	void GameObject::Update(float dt)
 	{
 		for (auto& c : m_components) {
