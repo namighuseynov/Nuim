@@ -10,9 +10,8 @@ namespace Nuim {
 		public Component
 	{
 	public:
-		MeshRenderer(Mesh* mesh, Material* material)
-			: m_mesh(mesh), m_material(material)
-		{}
+		MeshRenderer(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material)
+			: m_mesh(std::move(mesh)), m_material(std::move(material)) {}
 
 		const char* GetTypeName() const override { return "MeshRenderer"; }
 
@@ -21,8 +20,8 @@ namespace Nuim {
 			if (!m_mesh || !m_material || !m_owner) return;
 
 			RenderItem item;
-			item.mesh = m_mesh;
-			item.material = m_material;
+			item.mesh = m_mesh.get();
+			item.material = m_material.get();
 
 			// Transform -> world matrix
 			DirectX::XMStoreFloat4x4(&item.world, m_owner->transform.GetWorldMatrix());
@@ -40,7 +39,7 @@ namespace Nuim {
 		}
 
 	private:
-		Mesh* m_mesh;
-		Material* m_material; 
+		std::shared_ptr<Mesh> m_mesh;
+		std::shared_ptr<Material> m_material;
 	};
 }

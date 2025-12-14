@@ -2,6 +2,7 @@
 #include "Engine.hpp"
 #include "RotatorComponent.hpp"
 #include "FlyCameraController.hpp"
+#include "MeshRenderer.hpp"
 
 namespace Nuim {
 	bool Engine::Init(const EngineConfig& config)
@@ -198,6 +199,14 @@ namespace Nuim {
 
 			if (ImGui::MenuItem("FlyCameraController"))
 				m_selected->AddComponent<FlyCameraController>(4.0f, 6.0f);
+
+			if (ImGui::MenuItem("MeshRenderer (Cube/VertexColor)"))
+			{
+				auto mesh = m_resources.GetMesh("Cube");
+				auto mat = m_resources.GetMaterial("VertexColor");
+				if (mesh && mat)
+					m_selected->AddComponent<MeshRenderer>(mesh, mat);
+			}
 
 			ImGui::EndPopup();
 		}

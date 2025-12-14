@@ -8,6 +8,7 @@
 #include "Scene.hpp"
 #include "CameraComponent.hpp"
 #include "IScene.hpp"
+#include "ResourceManager.hpp"
 
 namespace Nuim {
     class Engine {
@@ -18,6 +19,10 @@ namespace Nuim {
 
         Scene& GetScene() { return m_scene; }
         Renderer* GetRenderer() const { return m_renderer.get(); }
+
+        ResourceManager& GetResources() { return m_resources; }
+        const ResourceManager& GetResources() const { return m_resources; }
+
         const EngineConfig& GetConfig() const { return m_config; }
 
         void LoadScene(std::unique_ptr<IScene> scene);
@@ -43,5 +48,6 @@ namespace Nuim {
         Scene m_scene;
         std::unique_ptr<IScene> m_activeScene;
         GameObject* m_selected = nullptr;
+        ResourceManager m_resources;
     };
 }

@@ -33,16 +33,6 @@ namespace Nuim {
         4,0,3,  4,3,7
         };
 
-        if (!m_cubeMesh.Init(
-            engine.GetRenderer()->GetDevice(),
-            vertices,
-            sizeof(VertexColored),
-            _countof(vertices),
-            indices,
-            _countof(indices))) {
-            std::cout << "Failed to init cube mesh\n";
-        }
-
         D3D11_INPUT_ELEMENT_DESC layoutDesc[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,
           0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -50,14 +40,22 @@ namespace Nuim {
           0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         };
 
-        if (m_cubeMat.Init(
+        auto& rm = engine.GetResources();
+
+        auto mesh = rm.CreateMesh(
+            "Cube",
+            engine.GetRenderer()->GetDevice(),
+            vertices, sizeof(VertexColored), _countof(vertices),
+            indices, _countof(indices)
+        );
+
+        auto mat = rm.CreateMaterial(
+            "VertexColor",
             engine.GetRenderer()->GetDevice(),
             L"Shaders/VertexShader.hlsl",
             L"Shaders/PixelShader.hlsl",
-            layoutDesc,
-            _countof(layoutDesc)) == false) {
-            std::cout << "Failed to init cube material\n";
-        }
+            layoutDesc, _countof(layoutDesc)
+        );
         
         Scene& scene = engine.GetScene();
         const EngineConfig& cfg = engine.GetConfig();
@@ -69,6 +67,6 @@ namespace Nuim {
 
         Nuim::GameObject& cube = scene.CreateObject();
         cube.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 0));
-        cube.AddComponent<MeshRenderer>(&m_cubeMesh, &m_cubeMat);
+        cube.AddComponent<MeshRenderer>(mesh, mat);
 	}
 }
