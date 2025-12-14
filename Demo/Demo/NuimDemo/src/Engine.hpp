@@ -9,6 +9,7 @@
 #include "CameraComponent.hpp"
 #include "IScene.hpp"
 #include "ResourceManager.hpp"
+#include "EditorLayer.hpp"
 
 namespace Nuim {
     class Engine {
@@ -49,5 +50,6 @@ namespace Nuim {
         std::unique_ptr<IScene> m_activeScene;
         GameObject* m_selected = nullptr;
         ResourceManager m_resources;
+        EditorLayer m_editor;
     };
 }
