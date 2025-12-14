@@ -1,7 +1,7 @@
 #include "NuimDemoPCH.h"
 #include "Time.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
 	Time::clock::time_point Time::s_prevTime;
 
 	Time::clock::time_point Time::s_startTime;

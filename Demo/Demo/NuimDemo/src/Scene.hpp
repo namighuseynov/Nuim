@@ -4,9 +4,9 @@
 
 #include "GameObject.hpp"
 #include "RenderQueue.hpp"
-#include "Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
 
 	class CameraComponent;
 

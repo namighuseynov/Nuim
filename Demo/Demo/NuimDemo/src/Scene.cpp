@@ -2,8 +2,8 @@
 #include "Scene.hpp"
 
 
-namespace NuimDemo {
-	GameObject& NuimDemo::Scene::CreateObject()
+namespace Nuim {
+	GameObject& Scene::CreateObject()
 	{
 		auto obj = std::make_unique<GameObject>();
 

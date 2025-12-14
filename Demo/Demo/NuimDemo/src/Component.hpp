@@ -1,6 +1,6 @@
 #pragma once
 
-namespace NuimDemo {
+namespace Nuim {
 	class GameObject;
 
 	class RenderQueue; 

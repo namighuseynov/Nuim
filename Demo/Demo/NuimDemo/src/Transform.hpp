@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 
-namespace NuimDemo {
+namespace Nuim {
 	class Transform
 	{
 	public:

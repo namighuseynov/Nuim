@@ -6,7 +6,7 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-namespace NuimDemo {
+namespace Nuim {
     class Window {
         using EventCallback = std::function<void(EventSystem::Event& e)>;
     public:
@@ -22,7 +22,7 @@ namespace NuimDemo {
                 nullptr, 
                 nullptr, 
                 nullptr, 
-                L"NuimDemo", 
+                L"Nuim Engine", 
                 nullptr 
             };
 
@@ -40,7 +40,7 @@ namespace NuimDemo {
 
             hwnd = ::CreateWindowW(
                 wc.lpszClassName, 
-                L"NuimDemo", 
+                L"Nuim Engine", 
                 WS_OVERLAPPEDWINDOW, 
                 100, 
                 100, 

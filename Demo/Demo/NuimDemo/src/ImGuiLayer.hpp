@@ -2,9 +2,9 @@
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
-#include "Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
     class ImGuiRenderer {
     public:
         ImGuiRenderer(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context) { Initialize(hwnd, device, context); }

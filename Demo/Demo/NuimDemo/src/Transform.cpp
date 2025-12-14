@@ -1,7 +1,7 @@
 #include "NuimDemoPCH.h"
 #include "Transform.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
 	Transform::Transform() : m_position(0.0f, 0.0f, 0.0f),
 		m_rotation(0.0f, 0.0f, 0.0f, 1.0f),
 		m_scale(1.0f, 1.0f, 1.0f)
@@ -29,13 +29,13 @@ namespace NuimDemo {
 		m_dirty = false;
 	}
 
-	void NuimDemo::Transform::SetPosition(const DirectX::XMFLOAT3& p)
+	void Transform::SetPosition(const DirectX::XMFLOAT3& p)
 	{
 		m_position = p;
 		MarkDirty();
 	}
 
-	void NuimDemo::Transform::SetRotation(const DirectX::XMFLOAT4& q)
+	void Transform::SetRotation(const DirectX::XMFLOAT4& q)
 	{
 		DirectX::XMVECTOR vq = DirectX::XMLoadFloat4(&q);
 		vq = DirectX::XMQuaternionNormalize(vq);
@@ -44,7 +44,7 @@ namespace NuimDemo {
 		MarkDirty();
 	}
 
-	void NuimDemo::Transform::SetScale(const DirectX::XMFLOAT3& s)
+	void Transform::SetScale(const DirectX::XMFLOAT3& s)
 	{
 		m_scale = s;
 		MarkDirty(); 

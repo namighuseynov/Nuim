@@ -7,7 +7,7 @@
 #include "Component.hpp"
 #include "RenderQueue.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
 	class GameObject
 	{
 	public:

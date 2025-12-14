@@ -1,7 +1,7 @@
 #include "NuimDemoPCH.h"
 #include "CameraComponent.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
 	void CameraComponent::OnCreate()
 	{
 		m_owner->transform.SetPosition({ 0.0f, 0.0f, -5.0f });

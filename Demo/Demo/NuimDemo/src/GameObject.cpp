@@ -1,7 +1,7 @@
 #include "NuimDemoPCH.h"
 #include "GameObject.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
 	void GameObject::Update(float dt)
 	{
 		for (auto& c : m_components) {

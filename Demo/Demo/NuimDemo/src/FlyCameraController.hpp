@@ -4,7 +4,7 @@
 #include "Component.hpp"
 #include "Input.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
 	class FlyCameraController :
 		public Component
 	{

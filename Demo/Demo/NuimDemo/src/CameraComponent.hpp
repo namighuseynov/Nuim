@@ -2,10 +2,10 @@
 #include <DirectXMath.h>
 #include "GameObject.hpp"
 #include "Component.hpp"
-#include "Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Input.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
 	class CameraComponent : 
 		public Component
 	{

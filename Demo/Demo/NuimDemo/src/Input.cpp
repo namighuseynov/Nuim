@@ -2,7 +2,7 @@
 #include "Input.hpp"
 #include <cstring>
 
-namespace NuimDemo {
+namespace Nuim {
 
 	bool Input::s_keysDown[s_maxKeys];
 	bool Input::s_keysPressed[s_maxKeys];

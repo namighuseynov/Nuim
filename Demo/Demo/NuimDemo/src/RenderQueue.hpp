@@ -5,7 +5,7 @@
 #include "Mesh.hpp"
 #include "Material.hpp"
 
-namespace NuimDemo
+namespace Nuim
 {
     struct RenderItem
     {

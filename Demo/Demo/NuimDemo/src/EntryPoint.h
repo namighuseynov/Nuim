@@ -13,7 +13,7 @@ int WINAPI wWinMain(
 	PWSTR  pCmdLine,
 	int nCmdShow
 ) {
-	auto app = new NuimDemo::Application(hInstance);
+	auto app = new Nuim::Application(hInstance);
 	app->Run();
 	delete app;
 }

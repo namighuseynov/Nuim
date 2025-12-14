@@ -1,6 +1,6 @@
 #pragma once
 
-namespace NuimDemo {
+namespace Nuim {
 
 	enum class MouseButton {
 		Left = 0,

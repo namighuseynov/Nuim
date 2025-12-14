@@ -1,11 +1,11 @@
 #pragma once
 #include "Component.hpp"
-#include "Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Mesh.hpp"
 #include "Material.hpp"
 #include "GameObject.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
 	class MeshRenderer : 
 		public Component
 	{

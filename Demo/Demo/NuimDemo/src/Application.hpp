@@ -1,7 +1,7 @@
 #pragma once
 #include "Window.hpp"
 #include "EventSystem.hpp"
-#include "Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 #include "ImGuiLayer.hpp"
 #include <d3d11.h>
 
@@ -15,25 +15,23 @@
 #include "CameraComponent.hpp"
 #include "FlyCameraController.hpp"
 
-namespace NuimDemo {
+namespace Nuim {
     class Application {
     public:
         Application(const HINSTANCE& instance) : instance(instance) {};
-        ~Application() {
-            if (window) delete window;
-            if (renderer) delete renderer;
-        }
+        ~Application() = default;
     public:
         void Run() {
             AllocConsole();
             freopen("CONOUT$", "w", stdout);
 
-            NuimDemo::Time::Init();
-            NuimDemo::Input::Init();
+            Nuim::Time::Init();
+            Nuim::Input::Init();
 
-            window = new Window(1280, 800);
-            this->window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
-            renderer = new Renderer(window->GetHWND(), window->GetWidth(), window->GetHeight());
+			window = std::make_unique<Window>(1280, 800);
+			window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
+			renderer = std::make_unique<Renderer>();
+            renderer->Init(window->GetHWND(), window->GetWidth(), window->GetHeight());
 
 			float aspect = static_cast<float>(window->GetWidth()) / static_cast<float>(window->GetHeight());
 
@@ -90,22 +88,24 @@ namespace NuimDemo {
 				std::cout << "Failed to init cube material\n";
 			}
 
-			NuimDemo::GameObject& cameraObject = m_scene.CreateObject();
-			CameraComponent* cameraComponent = cameraObject.AddComponent<CameraComponent>(renderer, aspect);
+			Nuim::GameObject& cameraObject = m_scene.CreateObject();
+			CameraComponent* cameraComponent = cameraObject.AddComponent<CameraComponent>(renderer.get(), aspect);
             m_scene.SetMainCamera(cameraComponent);
 			cameraObject.AddComponent<FlyCameraController>(4.0f, 6.0f);
 
-            NuimDemo::GameObject& cube = m_scene.CreateObject();
+            Nuim::GameObject& cube = m_scene.CreateObject();
 			cube.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 0));
 			cube.AddComponent<MeshRenderer>(&cubeMesh, &cubeMaterial);
 
-            ImGuiRenderer* layer = new ImGuiRenderer(window->GetHWND(), renderer->GetDevice(), renderer->GetContext());
+            std::unique_ptr<ImGuiRenderer> layer;
+
+            layer = std::make_unique<ImGuiRenderer>(window->GetHWND(), renderer->GetDevice(), renderer->GetContext());
 
             bool done = false;
 
             while (!done) {
-                NuimDemo::Time::Tick();
-                NuimDemo::Input::NewFrame();
+                Nuim::Time::Tick();
+                Nuim::Input::NewFrame();
                 float dt = Time::GetDeltaTime();
 
                 MSG msg;
@@ -128,17 +128,16 @@ namespace NuimDemo {
                 m_scene.Update(dt);
                 m_scene.LateUpdate(dt);
 
-                renderer->BeginRender(clearColor);
+                renderer->BeginFrame(clearColor);
 
-                m_scene.Render(renderer);
+                m_scene.Render(renderer.get());
 
                 ImGui::Render();
                 ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-                renderer->EndRender(); 
+                renderer->EndFrame(); 
             }
             layer->ShutDown();
-            delete layer;
         }
 
         void OnWindowResize(uint32_t width, uint32_t height)
@@ -176,11 +175,11 @@ namespace NuimDemo {
                 auto btn = me.GetMouseButton(); // int
 
                 if (btn == (int)EventSystem::MouseButton::NM_LEFT)
-                    NuimDemo::Input::OnMouseButtonDown(NuimDemo::MouseButton::Left);
+                    Nuim::Input::OnMouseButtonDown(Nuim::MouseButton::Left);
                 else if (btn == (int)EventSystem::MouseButton::NM_RIGHT)
-                    NuimDemo::Input::OnMouseButtonDown(NuimDemo::MouseButton::Right);
+                    Nuim::Input::OnMouseButtonDown(Nuim::MouseButton::Right);
                 else if (btn == (int)EventSystem::MouseButton::NM_MIDDLE)
-                    NuimDemo::Input::OnMouseButtonDown(NuimDemo::MouseButton::Middle);
+                    Nuim::Input::OnMouseButtonDown(Nuim::MouseButton::Middle);
 
                 break;
             }
@@ -188,21 +187,21 @@ namespace NuimDemo {
             {
                 auto& ke = static_cast<KeyReleaseEvent&>(e);
                 int keyCode = ke.GetKeyCode();
-                NuimDemo::Input::OnKeyUp(keyCode);
+                Nuim::Input::OnKeyUp(keyCode);
                 break;
             }
             case EventType::KeyPressEvent:
             {
                 auto& ke = static_cast<KeyPressEvent&>(e);
                 int keyCode = ke.GetKeyCode();
-                NuimDemo::Input::OnKeyDown(keyCode);
+                Nuim::Input::OnKeyDown(keyCode);
                 break;
             }
 
             case EventType::MouseMoveEvent:
             {
                 auto& me = static_cast<MouseMoveEvent&>(e);
-                NuimDemo::Input::OnMouseMove(me.GetX(), me.GetY());
+                Nuim::Input::OnMouseMove(me.GetX(), me.GetY());
                 break;
             }
             case EventType::MouseReleaseEvent:
@@ -211,21 +210,21 @@ namespace NuimDemo {
                 auto btn = me.GetMouseButton();
 
                 if (btn == (int)EventSystem::MouseButton::NM_LEFT)
-                    NuimDemo::Input::OnMouseButtonUp(NuimDemo::MouseButton::Left);
+                    Nuim::Input::OnMouseButtonUp(Nuim::MouseButton::Left);
                 else if (btn == (int)EventSystem::MouseButton::NM_RIGHT)
-                    NuimDemo::Input::OnMouseButtonUp(NuimDemo::MouseButton::Right);
+                    Nuim::Input::OnMouseButtonUp(Nuim::MouseButton::Right);
                 else if (btn == (int)EventSystem::MouseButton::NM_MIDDLE)
-                    NuimDemo::Input::OnMouseButtonUp(NuimDemo::MouseButton::Middle);
+                    Nuim::Input::OnMouseButtonUp(Nuim::MouseButton::Middle);
                 break;
             }
             case EventType::MouseMiddleButtonDownEvent:
             {
-                NuimDemo::Input::OnMouseButtonDown(NuimDemo::MouseButton::Middle);
+                Nuim::Input::OnMouseButtonDown(Nuim::MouseButton::Middle);
                 break;
             }
             case EventType::MouseMiddleButtonReleaseEvent:
             {
-                NuimDemo::Input::OnMouseButtonUp(NuimDemo::MouseButton::Middle);
+                Nuim::Input::OnMouseButtonUp(Nuim::MouseButton::Middle);
                 break;
             }
             default:
@@ -234,8 +233,8 @@ namespace NuimDemo {
         }
 
     private:
-        Window* window = nullptr;
-        Renderer* renderer = nullptr;
+        std::unique_ptr<Window> window;
+        std::unique_ptr<Renderer> renderer;
         HINSTANCE instance;
         Scene m_scene;
     };
