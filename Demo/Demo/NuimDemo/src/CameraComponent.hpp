@@ -18,6 +18,8 @@ namespace Nuim {
 
         const char* GetTypeName() const override { return "CameraComponent"; }
 
+        virtual bool RunInEditor() const { return true; }
+
         void OnCreate() override;
 
 		void OnResize(uint32_t  width, uint32_t  height);

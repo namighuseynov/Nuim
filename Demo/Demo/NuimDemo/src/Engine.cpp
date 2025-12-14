@@ -36,6 +36,8 @@ namespace Nuim {
 			m_renderer->GetContext()
 		);
 
+		m_mode = EngineMode::Editor;
+
 		m_running = true;
 		return true;
 	}
@@ -92,12 +94,14 @@ namespace Nuim {
 
 	void Engine::Update(float dt)
 	{
-		m_scene.Update(dt);
+		bool isEditor = (m_mode == EngineMode::Editor);
+		m_scene.Update(dt, isEditor);
 	}
 
 	void Engine::LateUpdate(float dt)
 	{
-		m_scene.LateUpdate(dt);
+		bool isEditor = (m_mode == EngineMode::Editor);
+		m_scene.LateUpdate(dt, isEditor);
 	}
 
 	void Engine::Render()

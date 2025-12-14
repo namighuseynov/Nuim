@@ -20,17 +20,17 @@ namespace Nuim {
 			o->Draw();
 	}
 
-	void Scene::Update(float dt)
+	void Scene::Update(float dt, bool isEditor)
 	{
 		for (auto& obj : m_objects) {
-			obj->Update(dt);
+			obj->Update(dt, isEditor);
 		}
 	}
 
-	void Scene::LateUpdate(float dt)
+	void Scene::LateUpdate(float dt, bool isEditor)
 	{
 		for (auto& obj : m_objects)
-			obj->LateUpdate(dt);
+			obj->LateUpdate(dt, isEditor);
 	}
 
 	void Scene::Clear()

@@ -18,9 +18,9 @@ namespace Nuim {
 
 		GameObject& CreateObject();
 
-		void Update(float dt);
+		void Update(float dt, bool isEditor);
 
-		void LateUpdate(float dt);
+		void LateUpdate(float dt, bool isEditor);
 		
 		void Draw();
 

@@ -12,6 +12,8 @@
 #include "EditorLayer.hpp"
 
 namespace Nuim {
+    enum class EngineMode { Editor, Play };
+
     class Engine {
     public:
         bool Init(const EngineConfig& config);
@@ -28,6 +30,10 @@ namespace Nuim {
 
         void LoadScene(std::unique_ptr<IScene> scene);
 
+        EngineMode GetMode() const { return m_mode; }
+
+        void SetMode(EngineMode m) { m_mode = m; }
+
     private:
         void ProcessEvents();
         void Update(float dt);
@@ -36,7 +42,6 @@ namespace Nuim {
 
         void OnEvent(EventSystem::Event& e);
         void OnWindowResize(uint32_t w, uint32_t h);
-        void DrawEditorUI();
     private:
         bool m_running = false;
 
@@ -45,6 +50,8 @@ namespace Nuim {
         std::unique_ptr<Window> m_window;
         std::unique_ptr<Renderer> m_renderer;
         std::unique_ptr<ImGuiRenderer> m_imgui;
+
+        EngineMode m_mode = EngineMode::Editor;
 
         Scene m_scene;
         std::unique_ptr<IScene> m_activeScene;

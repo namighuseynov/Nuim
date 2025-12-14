@@ -11,6 +11,7 @@ namespace Nuim {
 		virtual ~Component() = default;
 
 		virtual const char* GetTypeName() const { return "Component"; }
+		virtual bool RunInEditor() const { return false; }
 
 		bool IsEnabled() const { return m_enabled; }
 		void SetEnabled(bool v) { m_enabled = v; }

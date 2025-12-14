@@ -56,9 +56,9 @@ namespace Nuim {
 			return &ref;
 		}
 
-		void Update(float dt);
-		
-		void LateUpdate(float dt);
+		void Update(float dt, bool isEditor);
+
+		void LateUpdate(float dt, bool isEditor);
 
 		void Submit(RenderQueue& q);
 

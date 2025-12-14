@@ -14,6 +14,8 @@ namespace Nuim {
 
         const char* GetTypeName() const override { return "FlyCameraController"; }
 
+        bool RunInEditor() const override { return true; }
+
         void Update(float dt) override
         {
             if (!m_owner) return;
@@ -32,6 +34,8 @@ namespace Nuim {
                 0.0f,
                 forward * m_moveSpeed * dt
             );
+
+            std::cout << Input::IsKeyDown('W') << std::endl;
 
             // --- mouse (RMB) yaw/pitch ---
             int dx, dy;
