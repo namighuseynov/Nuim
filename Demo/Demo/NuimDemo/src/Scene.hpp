@@ -3,6 +3,8 @@
 #include <memory>
 
 #include "GameObject.hpp"
+#include "RenderQueue.hpp"
+#include "Renderer.hpp"
 
 namespace NuimDemo {
 
@@ -24,6 +26,8 @@ namespace NuimDemo {
 
 		void Clear();
 
+		void Render(Renderer* renderer);
+
 		size_t GetObjectCount() const { return m_objects.size(); }
 
 		void SetMainCamera(CameraComponent* cam) { m_mainCamera = cam; }
@@ -33,6 +37,7 @@ namespace NuimDemo {
 	private:
 		std::vector<std::unique_ptr<GameObject>> m_objects;
 		CameraComponent* m_mainCamera = nullptr;
+		RenderQueue m_renderQueue;
 
 	};
 }

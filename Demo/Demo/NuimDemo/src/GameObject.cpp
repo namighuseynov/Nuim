@@ -18,6 +18,15 @@ namespace NuimDemo {
 		}
 	}
 
+	void GameObject::Submit(RenderQueue& q)
+	{
+		for (auto& c : m_components)
+		{
+			if (c->IsEnabled())
+				c->Submit(q);
+		}
+	}
+
 	void GameObject::Draw()
 	{
 		for (auto& c : m_components)

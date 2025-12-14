@@ -10,29 +10,22 @@ namespace NuimDemo {
 		public Component
 	{
 	public:
-		MeshRenderer(Renderer* renderer, Mesh* mesh, Material* material)
-			: m_renderer(renderer), m_mesh(mesh), m_material(material)
+		MeshRenderer(Mesh* mesh, Material* material)
+			: m_mesh(mesh), m_material(material)
 		{}
 
-		void Draw() override {
-			if (!m_renderer || !m_mesh || !m_material) return;
+		void Submit(RenderQueue& q) override
+		{
+			if (!m_mesh || !m_material || !m_owner) return;
 
-			ID3D11DeviceContext* ctx = m_renderer->GetContext();
-			ID3D11Buffer* cb = m_renderer->GetConstantBuffer();
+			RenderItem item;
+			item.mesh = m_mesh;
+			item.material = m_material;
 
-			DirectX::XMMATRIX world = m_owner->transform.GetWorldMatrix();
+			// Transform -> world matrix
+			DirectX::XMStoreFloat4x4(&item.world, m_owner->transform.GetWorldMatrix());
 
-			ConstantBufferData data{};
-			DirectX::XMStoreFloat4x4(&data.world, DirectX::XMMatrixTranspose(world));
-			data.view = m_renderer->GetView();
-			data.proj = m_renderer->GetProj();
-
-			ctx->UpdateSubresource(cb, 0, nullptr, &data, 0, 0);
-
-			ctx->VSSetConstantBuffers(0, 1, &cb);
-
-			m_material->Bind(ctx);
-			m_mesh->Draw(ctx);
+			q.Add(item);
 		}
 
 		void OnCreate() override {
@@ -45,7 +38,6 @@ namespace NuimDemo {
 		}
 
 	private:
-		Renderer* m_renderer;
 		Mesh* m_mesh;
 		Material* m_material; 
 	};

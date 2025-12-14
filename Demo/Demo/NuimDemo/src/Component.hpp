@@ -3,6 +3,8 @@
 namespace NuimDemo {
 	class GameObject;
 
+	class RenderQueue; 
+
 	class Component
 	{
 	public:
@@ -17,6 +19,7 @@ namespace NuimDemo {
 		virtual void Update(float dt) {}
 		virtual void LateUpdate(float dt) {}
 		virtual void Draw() {}
+		virtual void Submit(RenderQueue& q) {}
 
 	protected:
 		GameObject* m_owner = nullptr;

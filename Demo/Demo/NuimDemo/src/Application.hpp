@@ -97,7 +97,7 @@ namespace NuimDemo {
 
             NuimDemo::GameObject& cube = m_scene.CreateObject();
 			cube.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 0));
-			cube.AddComponent<MeshRenderer>(renderer, &cubeMesh, &cubeMaterial);
+			cube.AddComponent<MeshRenderer>(&cubeMesh, &cubeMaterial);
 
             ImGuiRenderer* layer = new ImGuiRenderer(window->GetHWND(), renderer->GetDevice(), renderer->GetContext());
 
@@ -130,7 +130,7 @@ namespace NuimDemo {
 
                 renderer->BeginRender(clearColor);
 
-                m_scene.Draw();
+                m_scene.Render(renderer);
 
                 ImGui::Render();
                 ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

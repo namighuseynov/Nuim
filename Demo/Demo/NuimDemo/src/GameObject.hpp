@@ -5,6 +5,7 @@
 #include <type_traits>
 #include "Transform.hpp"
 #include "Component.hpp"
+#include "RenderQueue.hpp"
 
 namespace NuimDemo {
 	class GameObject
@@ -36,6 +37,8 @@ namespace NuimDemo {
 		void Update(float dt);
 		
 		void LateUpdate(float dt);
+
+		void Submit(RenderQueue& q);
 
 		void Draw();
 	private:

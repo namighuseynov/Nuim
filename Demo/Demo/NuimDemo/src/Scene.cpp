@@ -1,6 +1,7 @@
 #include "NuimDemoPCH.h"
 #include "Scene.hpp"
 
+
 namespace NuimDemo {
 	GameObject& NuimDemo::Scene::CreateObject()
 	{
@@ -35,5 +36,16 @@ namespace NuimDemo {
 	void Scene::Clear()
 	{
 		m_objects.clear();
+	}
+	void Scene::Render(Renderer* renderer)
+	{
+		if (!renderer) return;
+
+		m_renderQueue.Clear();
+		for (auto& obj : m_objects)
+			obj->Submit(m_renderQueue);
+
+		for (const auto& item : m_renderQueue.Items())
+			renderer->DrawItem(item);
 	}
 }

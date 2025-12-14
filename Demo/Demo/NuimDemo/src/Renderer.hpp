@@ -1,6 +1,7 @@
 #pragma once
 #include "Window.hpp"
 #include "ConstantBufferData.hpp"
+#include "RenderQueue.hpp"
 #include <d3d11.h>
 
 
@@ -54,6 +55,27 @@ public:
         g_pd3dDeviceContext->RSSetViewports(1, &vp);
 
         return true;
+    }
+
+    void DrawItem(const NuimDemo::RenderItem& item) {
+        if (!item.mesh || !item.material) return;
+
+        ID3D11DeviceContext* ctx = GetContext();
+        ID3D11Buffer* cb = GetConstantBuffer();
+
+        ConstantBufferData data{};
+
+        DirectX::XMMATRIX W = DirectX::XMLoadFloat4x4(&item.world);
+        DirectX::XMStoreFloat4x4(&data.world, DirectX::XMMatrixTranspose(W));
+
+        data.view = GetView();
+        data.proj = GetProj();
+
+        ctx->UpdateSubresource(cb, 0, nullptr, &data, 0, 0);
+        ctx->VSSetConstantBuffers(0, 1, &cb);
+
+        item.material->Bind(ctx);
+        item.mesh->Draw(ctx);
     }
 
     void BeginRender(const float clearColor[4] = nullptr) 
