@@ -3,6 +3,7 @@
 #include "SwapChain.hpp"
 #include "FrameBuffers.hpp"
 #include "RenderContext.hpp"
+#include "RenderStats.hpp"
 
 namespace Nuim {
     class Renderer {
@@ -24,10 +25,16 @@ namespace Nuim {
         ID3D11Device* GetDevice() { return m_device.Device(); }
         ID3D11DeviceContext* GetContext() { return m_device.Context(); }
 
+    public:
+        const RenderStats& GetStats() const { return m_stats; }
+        void ResetStats() { m_stats.Reset(); }
+
     private:
         GraphicsDevice m_device;
         SwapChain m_swapChain;
         FrameBuffers m_frameBuffers;
         RenderContext m_renderContext;
+
+        RenderStats m_stats;
     };
 }

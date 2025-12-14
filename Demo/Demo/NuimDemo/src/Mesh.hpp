@@ -56,6 +56,8 @@ public:
 
 		return true;
 	}
+
+	UINT GetIndexCount() const { return m_indexCount; }
 	
 	void Draw(ID3D11DeviceContext* context) {
 		UINT offset = 0;

@@ -21,6 +21,8 @@ namespace Nuim {
 
     void Renderer::BeginFrame(const float clearColor[4])
     {
+        m_stats.Reset();
+
         auto* ctx = m_device.Context();
 
         m_frameBuffers.Bind(ctx, m_swapChain.RTV());
@@ -52,5 +54,9 @@ namespace Nuim {
             m_device.Context(),
             item
         );
+
+        m_stats.drawCalls += 1;
+
+        m_stats.triangles += item.mesh ? (item.mesh->GetIndexCount() / 3) : 0;
     }
 }

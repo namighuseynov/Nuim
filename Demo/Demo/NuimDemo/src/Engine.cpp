@@ -104,6 +104,21 @@ namespace Nuim {
 		m_imgui->BeginFrame();
 		ImGui::ShowDemoWindow();
 
+		ImGui::Begin("Engine Stats");
+
+		float dt = Time::GetDeltaTime();
+		float fps = (dt > 0.0f) ? (1.0f / dt) : 0.0f;
+
+		ImGui::Text("FPS: %.1f", fps);
+		ImGui::Text("dt: %.3f ms", dt * 1000.0f);
+
+		const auto& st = m_renderer->GetStats();
+		ImGui::Separator();
+		ImGui::Text("Draw Calls: %u", st.drawCalls);
+		ImGui::Text("Triangles:  %u", st.triangles);
+
+		ImGui::End();
+
 		m_renderer->BeginFrame(clearColor);
 		m_scene.Render(m_renderer.get());
 
