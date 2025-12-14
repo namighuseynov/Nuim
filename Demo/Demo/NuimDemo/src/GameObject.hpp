@@ -15,6 +15,18 @@ namespace Nuim {
 		GameObject(const std::string& name = "GameObject")
 			: m_id(s_nextId++), m_name(name) {}
 
+		const std::vector<std::unique_ptr<Component>>& GetComponents() const { return m_components; }
+
+		template<typename T>
+		T* GetComponent()
+		{
+			static_assert(std::is_base_of_v<Component, T>);
+			for (auto& c : m_components)
+				if (auto casted = dynamic_cast<T*>(c.get()))
+					return casted;
+			return nullptr;
+		}
+
 		uint64_t GetId() const { return m_id; }
 
 		const std::string& GetName() const { return m_name; }

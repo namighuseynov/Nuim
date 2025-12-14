@@ -1,5 +1,7 @@
 #include "NuimDemoPCH.h"
 #include "Engine.hpp"
+#include "RotatorComponent.hpp"
+#include "FlyCameraController.hpp"
 
 namespace Nuim {
 	bool Engine::Init(const EngineConfig& config)
@@ -158,6 +160,48 @@ namespace Nuim {
 		float s[3] = { sc.x, sc.y, sc.z };
 		if (ImGui::DragFloat3("Scale", s, 0.05f))
 			m_selected->transform.SetScale({ s[0], s[1], s[2] });
+
+		ImGui::Separator();
+		ImGui::Text("Components");
+
+		// List of components
+		for (const auto& cptr : m_selected->GetComponents())
+		{
+			Component* c = cptr.get();
+			bool enabled = c->IsEnabled();
+
+			// Header of component
+			std::string header = std::string(c->GetTypeName()) + "##" + std::to_string((uintptr_t)c);
+
+			if (ImGui::CollapsingHeader(header.c_str()))
+			{
+				if (ImGui::Checkbox("Enabled", &enabled))
+					c->SetEnabled(enabled);
+
+				if (auto rot = dynamic_cast<RotatorComponent*>(c))
+				{
+					float sp = rot->GetSpeed();
+					if (ImGui::DragFloat("Speed (rad/s)", &sp, 0.05f))
+						rot->SetSpeed(sp);
+				}
+
+			}
+		}
+
+		if (ImGui::Button("Add Component..."))
+			ImGui::OpenPopup("AddComponentPopup");
+
+		if (ImGui::BeginPopup("AddComponentPopup"))
+		{
+			if (ImGui::MenuItem("RotatorComponent"))
+				m_selected->AddComponent<RotatorComponent>(1.0f);
+
+			if (ImGui::MenuItem("FlyCameraController"))
+				m_selected->AddComponent<FlyCameraController>(4.0f, 6.0f);
+
+			ImGui::EndPopup();
+		}
+
 
 		ImGui::End();
 	}

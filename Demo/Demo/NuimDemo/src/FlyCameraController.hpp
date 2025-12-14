@@ -12,6 +12,8 @@ namespace Nuim {
 		FlyCameraController(float moveSpeed = 4.0f, float mouseSens = 6.0f)
 			: m_moveSpeed(moveSpeed), m_mouseSens(mouseSens) {}
 
+        const char* GetTypeName() const override { return "FlyCameraController"; }
+
         void Update(float dt) override
         {
             if (!m_owner) return;

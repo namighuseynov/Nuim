@@ -14,6 +14,8 @@ namespace Nuim {
 			: m_mesh(mesh), m_material(material)
 		{}
 
+		const char* GetTypeName() const override { return "MeshRenderer"; }
+
 		void Submit(RenderQueue& q) override
 		{
 			if (!m_mesh || !m_material || !m_owner) return;

@@ -10,7 +10,7 @@ namespace Nuim {
 	public:
 		virtual ~Component() = default;
 
-		GameObject* GetOwner() const { return m_owner; }
+		virtual const char* GetTypeName() const { return "Component"; }
 
 		bool IsEnabled() const { return m_enabled; }
 		void SetEnabled(bool v) { m_enabled = v; }
@@ -21,12 +21,12 @@ namespace Nuim {
 		virtual void Draw() {}
 		virtual void Submit(RenderQueue& q) {}
 
+
 	protected:
 		GameObject* m_owner = nullptr;
 
 	private:
 		bool m_enabled = true;
-
 		friend class GameObject;
 	};
 }
