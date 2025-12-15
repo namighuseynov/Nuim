@@ -29,6 +29,12 @@ project "NuimDemo"
         "%{wks.location}/Demo/NuimDemo/src/ImGui/*.h",
         "%{wks.location}/Demo/NuimDemo/src/ImGui/*.c",
     }
+    files {
+        "%{wks.location}/Demo/NuimDemo/src/Renderer/*.cpp",
+        "%{wks.location}/Demo/NuimDemo/src/Renderer/*.hpp",
+        "%{wks.location}/Demo/NuimDemo/src/Renderer/*.h",
+        "%{wks.location}/Demo/NuimDemo/src/Renderer/*.c",
+    }
     filter "system:windows"
         links {"d3d11.lib"}
 
