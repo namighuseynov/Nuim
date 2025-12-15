@@ -15,13 +15,16 @@ namespace Nuim {
 
     private:
         void DrawStats(Renderer* renderer);
-        void DrawHierarchy(Scene& scene);
         void DrawInspector(Engine& engine);
+        void DrawAssetBrowser(Engine& engine);
+
+        void DrawHierarchy(Engine& engine);
+        void DrawHierarchyNode(Engine& engine, GameObject* obj);
 
     private:
         GameObject* m_selected = nullptr;
-        void DrawAssetBrowser(Engine& engine);
-        bool m_showAssets = true;
+        std::unordered_map<Transform*, GameObject*> m_tfToObj;
+        std::vector<GameObject*> m_roots;
     };
 
 }

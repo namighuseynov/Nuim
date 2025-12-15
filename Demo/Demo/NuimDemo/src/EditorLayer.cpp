@@ -8,19 +8,130 @@
 
 namespace Nuim {
 
+    static constexpr const char* kPayloadGO = "NUIM_GO_PTR";
+
     void EditorLayer::OnGui(Engine& engine)
     {
         DrawStats(engine.GetRenderer());
-        DrawHierarchy(engine.GetScene());
+        DrawHierarchy(engine);
         DrawInspector(engine);
+        DrawAssetBrowser(engine);
+            
+    }
 
-        if (m_showAssets)
-            DrawAssetBrowser(engine);
+    void EditorLayer::DrawHierarchy(Engine& engine) {
+        Scene& scene = engine.GetScene();
+
+        m_tfToObj.clear();
+        m_roots.clear();
+
+        for (const auto& uptr : scene.GetObjects())
+            m_tfToObj[&uptr->transform] = uptr.get();
+
+        for (const auto& uptr : scene.GetObjects())
+        {
+            auto* obj = uptr.get();
+            if (obj->transform.GetParent() == nullptr)
+                m_roots.push_back(obj);
+        }
+
+        ImGui::Begin("Hierarchy");
+
+        // --- 3) Drop on empty space => unparent (make root) ---
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(kPayloadGO))
+            {
+                auto* dropped = *(GameObject**)payload->Data;
+                if (dropped)
+                    dropped->transform.SetParent(nullptr, true);
+            }
+            ImGui::EndDragDropTarget();
+        }
+
+        // --- 4) draw tree roots ---
+        for (auto* root : m_roots)
+            DrawHierarchyNode(engine, root);
+
+        ImGui::End();
+    }
+
+    void EditorLayer::DrawHierarchyNode(Engine& engine, GameObject* obj) {
+        if (!obj) return;
+
+        bool selected = (m_selected == obj);
+
+        auto& tr = obj->transform;
+        const auto& children = tr.GetChildren();
+
+        ImGuiTreeNodeFlags flags =
+            ImGuiTreeNodeFlags_OpenOnArrow |
+            ImGuiTreeNodeFlags_SpanAvailWidth;
+
+        if (children.empty())
+            flags |= ImGuiTreeNodeFlags_Leaf;
+
+        if (selected)
+            flags |= ImGuiTreeNodeFlags_Selected;
+
+        // label with stable ID
+        std::string label = obj->GetName() + "##" + std::to_string(obj->GetId());
+
+        bool opened = ImGui::TreeNodeEx(label.c_str(), flags);
+
+        // Select by click
+        if (ImGui::IsItemClicked())
+            m_selected = obj;
+
+        // --- Drag source (drag this object) ---
+        if (ImGui::BeginDragDropSource())
+        {
+            GameObject* ptr = obj;
+            ImGui::SetDragDropPayload(kPayloadGO, &ptr, sizeof(GameObject*));
+            ImGui::Text("%s", obj->GetName().c_str());
+            ImGui::EndDragDropSource();
+        }
+
+        // --- Drop target (drop another object onto this => make it child) ---
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(kPayloadGO))
+            {
+                auto* dropped = *(GameObject**)payload->Data;
+                if (dropped && dropped != obj)
+                {
+                    dropped->transform.SetParent(&obj->transform, true);
+                }
+            }
+            ImGui::EndDragDropTarget();
+        }
+
+        // --- Context menu (optional but useful) ---
+        if (ImGui::BeginPopupContextItem())
+        {
+            if (ImGui::MenuItem("Unparent"))
+                obj->transform.SetParent(nullptr, true);
+
+            ImGui::EndPopup();
+        }
+
+        // children recursion
+        if (opened)
+        {
+            for (Transform* chTr : children)
+            {
+                auto it = m_tfToObj.find(chTr);
+                if (it != m_tfToObj.end())
+                    DrawHierarchyNode(engine, it->second);
+            }
+
+            ImGui::TreePop();
+        }
     }
 
     void EditorLayer::DrawAssetBrowser(Engine& engine)
     {
-        ImGui::Begin("Asset Browser", &m_showAssets);
+        ImGui::Begin("Asset Browser");
 
         auto& rm = engine.GetResources();
 
@@ -56,23 +167,6 @@ namespace Nuim {
             ImGui::Separator();
             ImGui::Text("Draw Calls: %u", st.drawCalls);
             ImGui::Text("Triangles:  %u", st.triangles);
-        }
-
-        ImGui::End();
-    }
-
-    void EditorLayer::DrawHierarchy(Scene& scene)
-    {
-        ImGui::Begin("Hierarchy");
-
-        for (const auto& uptr : scene.GetObjects())
-        {
-            GameObject* obj = uptr.get();
-            bool selected = (m_selected == obj);
-
-            std::string label = obj->GetName() + "##" + std::to_string(obj->GetId());
-            if (ImGui::Selectable(label.c_str(), selected))
-                m_selected = obj;
         }
 
         ImGui::End();
