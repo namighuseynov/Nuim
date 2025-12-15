@@ -14,21 +14,108 @@ namespace Nuim {
     {
         ImGuiIO& io = ImGui::GetIO();
 
-        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        // --- Root window for menu bar + docking ---
+        ImGuiWindowFlags flags =
+            ImGuiWindowFlags_MenuBar |
+            ImGuiWindowFlags_NoDocking |
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoBringToFrontOnFocus |
+            ImGuiWindowFlags_NoNavFocus |
+            ImGuiWindowFlags_NoBackground;
+
+        const ImGuiViewport* vp = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(vp->Pos);
+        ImGui::SetNextWindowSize(vp->Size);
+        ImGui::SetNextWindowViewport(vp->ID);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+        ImGui::Begin("##MainDockRoot", nullptr, flags);
+        ImGui::PopStyleVar(2);
+
+        // --- Top menu bar ---
+        if (ImGui::BeginMenuBar())
         {
-            ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("New Scene")) { /* TODO */ }
+                if (ImGui::MenuItem("Open...")) { /* TODO */ }
+                if (ImGui::MenuItem("Save")) { /* TODO */ }
+                if (ImGui::MenuItem("Save As...")) { /* TODO */ }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Exit")) { /* TODO: engine.Quit() */ }
+                ImGui::EndMenu();
+            }
 
-            const ImGuiViewport* vp = ImGui::GetMainViewport();
-            ImGuiID dock_id = ImGui::GetID("MainDockSpace");
+            if (ImGui::BeginMenu("Edit"))
+            {
+                ImGui::MenuItem("Undo", "Ctrl+Z", false, false);
+                ImGui::MenuItem("Redo", "Ctrl+Y", false, false);
+                ImGui::Separator();
+                ImGui::MenuItem("Cut", "Ctrl+X", false, false);
+                ImGui::MenuItem("Copy", "Ctrl+C", false, false);
+                ImGui::MenuItem("Paste", "Ctrl+V", false, false);
+                ImGui::EndMenu();
+            }
 
-            ImGui::DockSpaceOverViewport(dock_id, vp, dock_flags);
+            if (ImGui::BeginMenu("Component"))
+            {
+                if (ImGui::MenuItem("Add RotatorComponent") && m_selected)
+                    m_selected->AddComponent<RotatorComponent>(1.0f);
+
+                if (ImGui::MenuItem("Add FlyCameraController") && m_selected)
+                    m_selected->AddComponent<FlyCameraController>(4.0f, 6.0f);
+
+                if (ImGui::MenuItem("Add MeshRenderer (Cube/VertexColor)") && m_selected)
+                {
+                    auto mesh = engine.GetResources().GetMesh("Cube");
+                    auto mat = engine.GetResources().GetMaterial("VertexColor");
+                    if (mesh && mat)
+                        m_selected->AddComponent<MeshRenderer>(mesh, mat);
+                }
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Window"))
+            {
+                ImGui::MenuItem("Hierarchy");
+                ImGui::MenuItem("Inspector");
+                ImGui::MenuItem("Asset Browser");
+                ImGui::MenuItem("Stats");
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Help"))
+            {
+                ImGui::MenuItem("About");
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMenuBar();
         }
 
+        // --- Dockspace inside root window ---
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        {
+            ImGuiID dock_id = ImGui::GetID("MainDockSpace");
+            ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+            ImGui::DockSpace(dock_id, ImVec2(0, 0), dock_flags);
+        }
+
+        ImGui::End();
+
+        // --- Your docked windows ---
         DrawStats(engine.GetRenderer());
         DrawHierarchy(engine);
         DrawInspector(engine);
         DrawAssetBrowser(engine);
     }
+
 
     void EditorLayer::DrawHierarchy(Engine& engine) {
         Scene& scene = engine.GetScene();
