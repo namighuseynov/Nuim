@@ -1,22 +1,17 @@
 #pragma once
 #include <d3d11.h>
+#include <wrl/client.h>
 
 class Mesh
 {
 public:
 	Mesh() :
-		m_vertexBuffer(nullptr),
-		m_indexBuffer(nullptr),
 		m_vertexStride(0),
 		m_indexCount(0),
 		m_indexFormat(DXGI_FORMAT_R32_UINT) 
 	{}
 
-	~Mesh() {
-		if (m_vertexBuffer) m_vertexBuffer->Release();
-		if (m_indexBuffer) m_indexBuffer->Release();
-
-	}
+	~Mesh() = default;
 
 	bool Init(
 		ID3D11Device* device,
@@ -39,7 +34,7 @@ public:
 		D3D11_SUBRESOURCE_DATA vinit = {};
 		vinit.pSysMem = vertexData;
 
-		HRESULT hr = device->CreateBuffer(&vbd, &vinit, &m_vertexBuffer);
+		HRESULT hr = device->CreateBuffer(&vbd, &vinit, m_vertexBuffer.GetAddressOf());
 		if (FAILED(hr)) return false;
 
 		// --- Index buffer ---
@@ -51,7 +46,7 @@ public:
 		D3D11_SUBRESOURCE_DATA iinit = {};
 		iinit.pSysMem = indices;
 
-		hr = device->CreateBuffer(&ibd, &iinit, &m_indexBuffer);
+		hr = device->CreateBuffer(&ibd, &iinit, m_indexBuffer.GetAddressOf());
 		if (FAILED(hr)) return false;
 
 		return true;
@@ -61,15 +56,15 @@ public:
 	
 	void Draw(ID3D11DeviceContext* context) {
 		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &m_vertexBuffer, &m_vertexStride, &offset);
-		context->IASetIndexBuffer(m_indexBuffer, m_indexFormat, 0);
+		context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &m_vertexStride, &offset);
+		context->IASetIndexBuffer(m_indexBuffer.Get(), m_indexFormat, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		context->DrawIndexed(m_indexCount, 0, 0);
 	}
 
 private:
-	ID3D11Buffer*	m_vertexBuffer;
-	ID3D11Buffer*	m_indexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer;
 	UINT			m_indexCount;
 	UINT			m_vertexStride;
 	DXGI_FORMAT		m_indexFormat;

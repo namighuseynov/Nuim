@@ -1,21 +1,14 @@
 #pragma once
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <wrl/client.h>
 
 class Material
 {
 public:
-	Material() :
-		m_vs(nullptr),
-		m_ps(nullptr),
-		m_inputLayout(nullptr)
-	{}
+    Material() = default;
 
-	~Material() {
-		if (m_vs) m_vs->Release();
-		if (m_ps) m_ps->Release();
-		if (m_inputLayout) m_inputLayout->Release();
-	}
+    ~Material() = default;
 
 	bool Init(
 		ID3D11Device* device,
@@ -53,7 +46,7 @@ public:
             vsBlob->GetBufferPointer(),
             vsBlob->GetBufferSize(),
             nullptr,
-            &m_vs
+            m_vs.GetAddressOf()
         );
         if (FAILED(hr)) return false;
 
@@ -63,7 +56,7 @@ public:
             layoutCount,
             vsBlob->GetBufferPointer(),
             vsBlob->GetBufferSize(),
-            &m_inputLayout
+            m_inputLayout.GetAddressOf()
         );
         vsBlob->Release();
         if (FAILED(hr))
@@ -96,7 +89,7 @@ public:
             psBlob->GetBufferPointer(),
             psBlob->GetBufferSize(),
             nullptr,
-            &m_ps
+            m_ps.GetAddressOf()
         );
         psBlob->Release();
         if (FAILED(hr)) return false;
@@ -106,13 +99,13 @@ public:
 
     void Bind(ID3D11DeviceContext* ctx) const
     {
-        ctx->IASetInputLayout(m_inputLayout);
-        ctx->VSSetShader(m_vs, nullptr, 0);
-        ctx->PSSetShader(m_ps, nullptr, 0);
+        ctx->IASetInputLayout(m_inputLayout.Get());
+        ctx->VSSetShader(m_vs.Get(), nullptr, 0);
+        ctx->PSSetShader(m_ps.Get(), nullptr, 0);
     }
 
 private:
-	ID3D11VertexShader* m_vs;
-	ID3D11PixelShader*	m_ps;
-	ID3D11InputLayout*	m_inputLayout;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader>  m_vs;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader>   m_ps;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_inputLayout;
 };
