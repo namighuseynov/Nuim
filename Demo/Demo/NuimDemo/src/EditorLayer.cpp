@@ -12,11 +12,22 @@ namespace Nuim {
 
     void EditorLayer::OnGui(Engine& engine)
     {
+        ImGuiIO& io = ImGui::GetIO();
+
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        {
+            ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+
+            const ImGuiViewport* vp = ImGui::GetMainViewport();
+            ImGuiID dock_id = ImGui::GetID("MainDockSpace");
+
+            ImGui::DockSpaceOverViewport(dock_id, vp, dock_flags);
+        }
+
         DrawStats(engine.GetRenderer());
         DrawHierarchy(engine);
         DrawInspector(engine);
         DrawAssetBrowser(engine);
-            
     }
 
     void EditorLayer::DrawHierarchy(Engine& engine) {

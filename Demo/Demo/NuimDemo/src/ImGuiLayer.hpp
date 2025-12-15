@@ -9,19 +9,29 @@ namespace Nuim {
     public:
         ImGuiRenderer(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context) { Initialize(hwnd, device, context); }
 
-        void Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context) {
+        bool Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context) {
             IMGUI_CHECKVERSION();
             ImGui::CreateContext();
-            ImGuiIO& io = ImGui::GetIO();
-            io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-            io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-            // Setup Dear ImGui style
+            ImGuiIO& io = ImGui::GetIO();
+            io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+            io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+            io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
             ImGui::StyleColorsDark();
 
-            // Setup Platform/Renderer backends
+            ImGuiStyle& style = ImGui::GetStyle();
+            if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+            {
+                style.WindowRounding = 0.0f;
+                style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+            }
+
             ImGui_ImplWin32_Init(hwnd);
             ImGui_ImplDX11_Init(device, context);
+
+            return true;
         }
 
         void BeginFrame() {
@@ -30,9 +40,24 @@ namespace Nuim {
             ImGui::NewFrame();
         }
 
-        void EndFrame() {
+        void EndFrame(ID3D11DeviceContext* ctx) {
             ImGui::Render();
             ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+            ImGuiIO& io = ImGui::GetIO();
+            if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+            {
+                ID3D11RenderTargetView* oldRTV = nullptr;
+                ID3D11DepthStencilView* oldDSV = nullptr;
+                ctx->OMGetRenderTargets(1, &oldRTV, &oldDSV);
+
+                ImGui::UpdatePlatformWindows();
+                ImGui::RenderPlatformWindowsDefault();
+
+                ctx->OMSetRenderTargets(1, &oldRTV, oldDSV);
+                if (oldRTV) oldRTV->Release();
+                if (oldDSV) oldDSV->Release();
+            }
         }
 
         void ShutDown() {

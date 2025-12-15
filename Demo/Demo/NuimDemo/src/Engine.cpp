@@ -115,8 +115,7 @@ namespace Nuim {
 		m_renderer->BeginFrame(clearColor);
 		m_scene.Render(m_renderer.get());
 
-		ImGui::Render();
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		m_imgui->EndFrame(m_renderer->GetContext());
 
 		m_renderer->EndFrame();
 	}

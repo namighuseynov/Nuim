@@ -1,6 +1,6 @@
 // dear imgui, v1.92.6 WIP
 // (tables and columns code)
-#include "NuimDemoPCH.h"
+
 /*
 
 Index of this file:

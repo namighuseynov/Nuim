@@ -1,6 +1,6 @@
 // dear imgui, v1.92.6 WIP
 // (main code and documentation)
-#include "NuimDemoPCH.h"
+
 // Help:
 // - Call and read ImGui::ShowDemoWindow() in imgui_demo.cpp. All applications in examples/ are doing that.
 // - Read top of imgui.cpp for more details, links and comments.
