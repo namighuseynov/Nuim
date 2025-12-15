@@ -68,7 +68,5 @@ namespace Nuim {
 
         int m_sceneW = 0;
         int m_sceneH = 0;
-
-        bool m_sceneFBInited = false;
     };
 }

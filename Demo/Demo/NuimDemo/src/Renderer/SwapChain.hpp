@@ -4,6 +4,7 @@
 #include <wrl/client.h>
 
 namespace Nuim {
+
     class SwapChain {
     public:
         bool Init(HWND hwnd, ID3D11Device* device, int w, int h);
@@ -11,13 +12,14 @@ namespace Nuim {
         void Present(bool vsync);
 
         ID3D11RenderTargetView* RTV() const { return m_rtv.Get(); }
-        IDXGISwapChain* DxgiSwapChain() const { return m_swapChain.Get(); }
+        IDXGISwapChain* DxgiSwapChain() const { return m_sc.Get(); }
 
     private:
-        void CreateRTV(ID3D11Device* device);
+        bool CreateRTV(ID3D11Device* device);
 
     private:
-        Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapChain;
+        Microsoft::WRL::ComPtr<IDXGISwapChain> m_sc;
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_rtv;
     };
+
 }

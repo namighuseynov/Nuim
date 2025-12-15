@@ -1,3 +1,4 @@
+// DepthStencil.cpp
 #include "NuimDemoPCH.h"
 #include "DepthStencil.hpp"
 
@@ -5,10 +6,12 @@ namespace Nuim {
 
     bool DepthStencil::Create(ID3D11Device* dev, int w, int h, DXGI_FORMAT fmt)
     {
+        if (!dev || w <= 0 || h <= 0) return false;
+
         Reset();
         m_w = w; m_h = h;
 
-        D3D11_TEXTURE2D_DESC td = {};
+        D3D11_TEXTURE2D_DESC td{};
         td.Width = w;
         td.Height = h;
         td.MipLevels = 1;
@@ -18,6 +21,8 @@ namespace Nuim {
         td.SampleDesc.Quality = 0;
         td.Usage = D3D11_USAGE_DEFAULT;
         td.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+        td.CPUAccessFlags = 0;
+        td.MiscFlags = 0;
 
         HRESULT hr = dev->CreateTexture2D(&td, nullptr, &m_tex);
         if (FAILED(hr)) return false;
@@ -25,7 +30,7 @@ namespace Nuim {
         hr = dev->CreateDepthStencilView(m_tex.Get(), nullptr, &m_dsv);
         if (FAILED(hr)) return false;
 
-        D3D11_DEPTH_STENCIL_DESC ds = {};
+        D3D11_DEPTH_STENCIL_DESC ds{};
         ds.DepthEnable = TRUE;
         ds.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
         ds.DepthFunc = D3D11_COMPARISON_LESS;
@@ -54,4 +59,4 @@ namespace Nuim {
         m_w = m_h = 0;
     }
 
-}
+} // namespace Nuim

@@ -1,5 +1,6 @@
 #include "NuimDemoPCH.h"
 #include "RenderTarget2D.hpp"
+#include "SwapChainTarget.hpp"
 
 namespace Nuim {
 
@@ -22,7 +23,7 @@ namespace Nuim {
     bool RenderTarget2D::Resize(ID3D11Device* dev, int w, int h)
     {
         if (w <= 0 || h <= 0) return false;
-        if (w == m_w && h == m_h && m_rtv && m_srv) return true;
+        if (w == m_w && h == m_h && m_rtv && m_srv && m_depth.DSV()) return true;
 
         m_w = w; m_h = h;
 

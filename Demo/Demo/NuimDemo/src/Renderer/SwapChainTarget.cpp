@@ -1,3 +1,4 @@
+// SwapChainTarget.cpp
 #include "NuimDemoPCH.h"
 #include "SwapChainTarget.hpp"
 
@@ -5,6 +6,8 @@ namespace Nuim {
 
     bool SwapChainTarget::Init(HWND hwnd, ID3D11Device* dev, int w, int h, bool vsync)
     {
+        if (!dev || w <= 0 || h <= 0) return false;
+
         m_vsync = vsync;
         m_w = w; m_h = h;
 
@@ -23,7 +26,8 @@ namespace Nuim {
 
     bool SwapChainTarget::Resize(ID3D11Device* dev, int w, int h)
     {
-        if (w <= 0 || h <= 0) return false;
+        if (!dev || w <= 0 || h <= 0) return false;
+
         m_w = w; m_h = h;
 
         if (!m_sc.Resize(dev, w, h)) return false;
@@ -60,4 +64,4 @@ namespace Nuim {
         m_sc.Present(m_vsync);
     }
 
-}
+} // namespace Nuim

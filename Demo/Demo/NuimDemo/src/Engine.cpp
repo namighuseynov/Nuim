@@ -135,6 +135,8 @@ namespace Nuim {
 
 		m_editor.OnGui(*this);
 
+		m_renderer->ResetStats();
+
 		if (m_mode == EngineMode::Editor && m_sceneRT.RTV())
 		{
 			m_renderer->BeginPass(m_sceneRT, clearColor);
