@@ -62,6 +62,7 @@ namespace Nuim {
 
         Nuim::GameObject& cameraObject = scene.CreateObject();
         CameraComponent* cameraComponent = cameraObject.AddComponent<CameraComponent>(engine.GetRenderer(), float(cfg.width) / float(cfg.height));
+        
         scene.SetMainCamera(cameraComponent);
         cameraObject.AddComponent<FlyCameraController>(4.0f, 6.0f);
 

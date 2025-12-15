@@ -79,6 +79,36 @@ namespace Nuim {
 		m_window.reset();
 	}
 
+	void Engine::EnsureSceneViewTargets(int w, int h)
+	{
+		if (!m_renderer) return;
+		if (w <= 0 || h <= 0) return;
+
+		w = (w < 4) ? 4 : w;
+		h = (h < 4) ? 4 : h;
+
+		if (w == m_sceneW && h == m_sceneH && m_sceneRT.SRV())
+			return;
+
+		m_sceneW = w;
+		m_sceneH = h;
+
+		ID3D11Device* dev = m_renderer->GetDevice();
+
+		if (!m_sceneRT.SRV())
+			m_sceneRT.Init(dev, w, h);
+		else
+			m_sceneRT.Resize(dev, w, h);
+
+		if (!m_sceneFBInited) {
+			m_sceneFB.Init(dev, w, h);
+			m_sceneFBInited = true;
+		}
+		else {
+			m_sceneFB.Resize(dev, w, h);
+		}
+	}
+
 	void Engine::ProcessEvents()
 	{
 		MSG msg;
@@ -112,11 +142,19 @@ namespace Nuim {
 
 		m_editor.OnGui(*this);
 
+		if (m_mode == EngineMode::Editor && m_sceneRT.RTV())
+		{
+			m_renderer->BeginFrame(clearColor, m_sceneRT.RTV(), m_sceneFB);
+
+			m_scene.Render(m_renderer.get());
+		}
+
 		m_renderer->BeginFrame(clearColor);
-		m_scene.Render(m_renderer.get());
+
+		if (m_mode == EngineMode::Play)
+			m_scene.Render(m_renderer.get());
 
 		m_imgui->EndFrame(m_renderer->GetContext());
-
 		m_renderer->EndFrame();
 	}
 

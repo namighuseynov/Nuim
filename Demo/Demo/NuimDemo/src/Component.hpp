@@ -13,6 +13,8 @@ namespace Nuim {
 		virtual const char* GetTypeName() const { return "Component"; }
 		virtual bool RunInEditor() const { return false; }
 
+		GameObject* GetOwner() const { return m_owner; }
+
 		bool IsEnabled() const { return m_enabled; }
 		void SetEnabled(bool v) { m_enabled = v; }
 

@@ -10,6 +10,7 @@
 #include "IScene.hpp"
 #include "ResourceManager.hpp"
 #include "EditorLayer.hpp"
+#include "RenderTarget2D.hpp"
 
 namespace Nuim {
     enum class EngineMode { Editor, Play };
@@ -33,6 +34,10 @@ namespace Nuim {
         EngineMode GetMode() const { return m_mode; }
 
         void SetMode(EngineMode m) { m_mode = m; }
+
+        void EnsureSceneViewTargets(int w, int h);
+
+        ID3D11ShaderResourceView* GetSceneViewSRV() const { return m_sceneRT.SRV(); }
 
     private:
         void ProcessEvents();
@@ -58,5 +63,13 @@ namespace Nuim {
         GameObject* m_selected = nullptr;
         ResourceManager m_resources;
         EditorLayer m_editor;
+
+        RenderTarget2D m_sceneRT;
+        FrameBuffers   m_sceneFB;
+
+        int m_sceneW = 0;
+        int m_sceneH = 0;
+
+        bool m_sceneFBInited = false;
     };
 }

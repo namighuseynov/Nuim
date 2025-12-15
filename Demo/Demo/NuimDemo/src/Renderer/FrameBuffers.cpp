@@ -44,7 +44,7 @@ namespace Nuim {
 
     void FrameBuffers::Clear(ID3D11DeviceContext* ctx, ID3D11RenderTargetView* rtv, const float color[4]) {
         ctx->ClearRenderTargetView(rtv, color);
-        ctx->ClearDepthStencilView(m_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+        ctx->ClearDepthStencilView(m_dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     }
     
     bool FrameBuffers::Resize(ID3D11Device* device, int w, int h) {

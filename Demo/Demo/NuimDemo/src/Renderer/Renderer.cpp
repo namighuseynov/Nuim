@@ -29,6 +29,15 @@ namespace Nuim {
         m_frameBuffers.Clear(ctx, m_swapChain.RTV(), clearColor);
     }
 
+    void Renderer::BeginFrame(const float clearColor[4], ID3D11RenderTargetView* rtv, FrameBuffers& fb)
+    {
+        m_stats.Reset();
+
+        auto* ctx = m_device.Context();
+        fb.Bind(ctx, rtv);
+        fb.Clear(ctx, rtv, clearColor);
+    }
+
     void Renderer::EndFrame()
     {
         m_swapChain.Present(true);

@@ -114,6 +114,7 @@ namespace Nuim {
         DrawHierarchy(engine);
         DrawInspector(engine);
         DrawAssetBrowser(engine);
+        DrawSceneView(engine);
     }
 
 
@@ -225,6 +226,29 @@ namespace Nuim {
 
             ImGui::TreePop();
         }
+    }
+
+    void EditorLayer::DrawSceneView(Engine& engine)
+    {
+        ImGui::Begin("Scene");
+
+        ImVec2 avail = ImGui::GetContentRegionAvail();
+        int w = (int)avail.x;
+        int h = (int)avail.y;
+
+        engine.EnsureSceneViewTargets(w, h);
+
+        ID3D11ShaderResourceView* srv = engine.GetSceneViewSRV();
+        if (srv)
+        {
+            ImGui::Image((ImTextureID)srv, avail, ImVec2(0, 1), ImVec2(1, 0));
+        }
+        else
+        {
+            ImGui::Text("Scene RT not ready.");
+        }
+
+        ImGui::End();
     }
 
     void EditorLayer::DrawAssetBrowser(Engine& engine)
@@ -389,8 +413,6 @@ namespace Nuim {
             
 
         }
-
-
 
         // --- Add Component popup ---
         if (ImGui::Button("Add Component..."))

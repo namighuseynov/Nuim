@@ -11,6 +11,7 @@ namespace Nuim {
         bool Init(HWND hwnd, int width, int height);
 
         void BeginFrame(const float clearColor[4]);
+        void BeginFrame(const float clearColor[4], ID3D11RenderTargetView* rtv, FrameBuffers& fb);
         void EndFrame();
 
         void Resize(int width, int height);

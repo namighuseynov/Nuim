@@ -20,6 +20,7 @@ namespace Nuim {
 
         void DrawHierarchy(Engine& engine);
         void DrawHierarchyNode(Engine& engine, GameObject* obj);
+        void DrawSceneView(Engine& engine);
 
     private:
         GameObject* m_selected = nullptr;

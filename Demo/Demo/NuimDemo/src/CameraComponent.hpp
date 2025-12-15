@@ -11,10 +11,7 @@ namespace Nuim {
 	{
     public:
         CameraComponent(Renderer* renderer, float aspect)
-            : m_renderer(renderer), m_aspect(aspect)
-        {
-            m_owner = nullptr;
-        }
+            : m_renderer(renderer), m_aspect(aspect) {}
 
         const char* GetTypeName() const override { return "CameraComponent"; }
 
@@ -34,7 +31,7 @@ namespace Nuim {
         Renderer* m_renderer = nullptr;
 
         // Projection
-        float m_fovY = DirectX::XMConvertToRadians(45.0f);
+        float m_fovY = DirectX::XMConvertToRadians(60.0f);
         float m_aspect = 16.0f / 9.0f;
         float m_nearZ = 0.1f;
         float m_farZ = 100.0f;
