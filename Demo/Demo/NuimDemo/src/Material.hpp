@@ -102,10 +102,21 @@ public:
         ctx->IASetInputLayout(m_inputLayout.Get());
         ctx->VSSetShader(m_vs.Get(), nullptr, 0);
         ctx->PSSetShader(m_ps.Get(), nullptr, 0);
+
+        if (m_srv.Get())  ctx->PSSetShaderResources(0, 1, m_srv.GetAddressOf());
+        if (m_samp.Get()) ctx->PSSetSamplers(0, 1, m_samp.GetAddressOf());
+    }
+
+    void SetTexture(ID3D11ShaderResourceView* srv, ID3D11SamplerState* samp)
+    {
+        m_srv = srv;
+        m_samp = samp;
     }
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>  m_vs;
     Microsoft::WRL::ComPtr<ID3D11PixelShader>   m_ps;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_inputLayout;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_srv;
+    Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samp;
 };

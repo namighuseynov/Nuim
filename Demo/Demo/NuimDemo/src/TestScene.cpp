@@ -3,6 +3,7 @@
 
 #include "FlyCameraController.hpp"
 #include "MeshRenderer.hpp"
+#include "Texture2D.hpp"
 
 
 namespace Nuim {
@@ -75,5 +76,59 @@ namespace Nuim {
         cube2.SetParent(&cube, true);
         cube2.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 2));
         cube2.AddComponent<MeshRenderer>(mesh, mat);
+
+        struct VertexPosUV
+        {
+            DirectX::XMFLOAT3 pos;
+            DirectX::XMFLOAT2 uv;
+        };
+
+        static const VertexPosUV kQuadVerts[4] =
+        {
+            { { -1.0f, -1.0f, 0.0f }, { 0.0f, 1.0f } }, // left-bottom
+            { { -1.0f,  1.0f, 0.0f }, { 0.0f, 0.0f } }, // left-top
+            { {  1.0f,  1.0f, 0.0f }, { 1.0f, 0.0f } }, // right-top
+            { {  1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f } }, // right-bottom
+        };
+
+        static const uint32_t kQuadIdx[6] = { 0, 1, 2, 0, 2, 3 };
+
+        static const D3D11_INPUT_ELEMENT_DESC kLayoutPosUV[] =
+        {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        };
+
+        auto quadMesh = rm.CreateMesh(
+            "Quad",
+            engine.GetRenderer()->GetDevice(),
+            kQuadVerts,
+            sizeof(VertexPosUV),
+            4,
+            kQuadIdx,
+            6
+        );
+
+        auto textureMat = rm.CreateMaterial(
+            "Quad material",
+            engine.GetRenderer()->GetDevice(),
+            L"Shaders/TexturedVS.hlsl",
+            L"Shaders/TexturedPS.hlsl",
+            kLayoutPosUV,
+            (UINT)_countof(kLayoutPosUV)
+        );
+
+        Nuim::Texture2D tex;
+        tex.CreateCheckerboard(engine.GetRenderer()->GetDevice(), 512, 512, 32);
+
+        textureMat->SetTexture(tex.SRV(), tex.Sampler());
+
+        auto& texturedObj = scene.CreateObject();
+        texturedObj.SetName("Quad");
+
+        texturedObj.transform.SetPosition({ 0, 0, 0 });
+        texturedObj.AddComponent<MeshRenderer>(quadMesh, textureMat);
+
+
 	}
 }
