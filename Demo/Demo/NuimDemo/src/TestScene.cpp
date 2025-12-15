@@ -68,5 +68,11 @@ namespace Nuim {
         Nuim::GameObject& cube = scene.CreateObject();
         cube.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 0));
         cube.AddComponent<MeshRenderer>(mesh, mat);
+
+        Nuim::GameObject& cube2 = scene.CreateObject();
+        cube2.SetName("Cube2");
+        cube2.SetParent(&cube, true);
+        cube2.transform.SetPosition(DirectX::XMFLOAT3(0, 0, 2));
+        cube2.AddComponent<MeshRenderer>(mesh, mat);
 	}
 }

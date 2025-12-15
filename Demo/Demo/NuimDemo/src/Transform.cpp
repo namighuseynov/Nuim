@@ -1,106 +1,216 @@
 #include "NuimDemoPCH.h"
 #include "Transform.hpp"
+#include <algorithm>
+
+using namespace DirectX;
 
 namespace Nuim {
-	Transform::Transform() : m_position(0.0f, 0.0f, 0.0f),
-		m_rotation(0.0f, 0.0f, 0.0f, 1.0f),
-		m_scale(1.0f, 1.0f, 1.0f)
-	{
-		m_dirty = true;
-		m_cachedLocal = DirectX::XMMatrixIdentity();
-	}
 
-	void Transform::MarkDirty()
-	{
-		m_dirty = true;
-	}
+    Transform::Transform()
+        : m_localPosition(0, 0, 0),
+        m_localRotation(0, 0, 0, 1),
+        m_localScale(1, 1, 1)
+    {
+        m_cachedLocal = XMMatrixIdentity();
+        m_cachedWorld = XMMatrixIdentity();
+        m_dirtyLocal = true;
+        m_dirtyWorld = true;
+    }
 
-	void Transform::RebuildLocalMatrix()
-	{
-		if (!m_dirty)
-			return;
+    void Transform::MarkDirty()
+    {
+        m_dirtyLocal = true;
+        m_dirtyWorld = true;
+        MarkDirtyWorldRecursive();
+    }
 
-		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
-		DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&m_rotation));
-		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
+    void Transform::MarkDirtyWorldRecursive()
+    {
+        for (auto* ch : m_children)
+        {
+            if (!ch) continue;
+            ch->m_dirtyWorld = true;
+            ch->MarkDirtyWorldRecursive();
+        }
+    }
 
-		m_cachedLocal = S * R * T;
+    void Transform::RebuildLocalMatrixIfNeeded()
+    {
+        if (!m_dirtyLocal) return;
 
-		m_dirty = false;
-	}
+        XMMATRIX S = XMMatrixScaling(m_localScale.x, m_localScale.y, m_localScale.z);
+        XMVECTOR q = XMLoadFloat4(&m_localRotation);
+        q = XMQuaternionNormalize(q);
+        XMMATRIX R = XMMatrixRotationQuaternion(q);
+        XMMATRIX T = XMMatrixTranslation(m_localPosition.x, m_localPosition.y, m_localPosition.z);
 
-	void Transform::SetPosition(const DirectX::XMFLOAT3& p)
-	{
-		m_position = p;
-		MarkDirty();
-	}
+        m_cachedLocal = S * R * T;
 
-	void Transform::SetRotation(const DirectX::XMFLOAT4& q)
-	{
-		DirectX::XMVECTOR vq = DirectX::XMLoadFloat4(&q);
-		vq = DirectX::XMQuaternionNormalize(vq);
-		DirectX::XMStoreFloat4(&m_rotation, vq);
+        m_dirtyLocal = false;
+    }
 
-		MarkDirty();
-	}
+    void Transform::RebuildWorldMatrixIfNeeded()
+    {
+        if (!m_dirtyWorld) return;
 
-	void Transform::SetScale(const DirectX::XMFLOAT3& s)
-	{
-		m_scale = s;
-		MarkDirty(); 
-	}
+        RebuildLocalMatrixIfNeeded();
 
-	void Transform::TranslateWorld(float dx, float dy, float dz)
-	{
-		m_position.x += dx;
-		m_position.y += dy;
-		m_position.z += dz; 
+        if (m_parent)
+        {
+            m_cachedWorld = m_cachedLocal * m_parent->GetWorldMatrix();
+        }
+        else
+        {
+            m_cachedWorld = m_cachedLocal;
+        }
 
-		MarkDirty(); 
-	}
+        m_dirtyWorld = false;
+    }
 
-	void Transform::TranslateLocal(float dx, float dy, float dz)
-	{
-		DirectX::XMVECTOR localOffset = DirectX::XMVectorSet(dx, dy, dz, 0.0f);
+    XMMATRIX Transform::GetLocalMatrix()
+    {
+        RebuildLocalMatrixIfNeeded();
+        return m_cachedLocal;
+    }
 
-		DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&m_rotation);
+    XMMATRIX Transform::GetWorldMatrix()
+    {
+        RebuildWorldMatrixIfNeeded();
+        return m_cachedWorld;
+    }
 
-		DirectX::XMVECTOR worldOffset = DirectX::XMVector3Rotate(localOffset, q);
+    void Transform::SetLocalPosition(const XMFLOAT3& p)
+    {
+        m_localPosition = p;
+        MarkDirty();
+    }
 
-		DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_position);
-		pos = DirectX::XMVectorAdd(pos, worldOffset); 
-		XMStoreFloat3(&m_position, pos);
+    void Transform::SetLocalRotation(const XMFLOAT4& q)
+    {
+        XMVECTOR vq = XMLoadFloat4(&q);
+        vq = XMQuaternionNormalize(vq);
+        XMStoreFloat4(&m_localRotation, vq);
+        MarkDirty();
+    }
 
-		MarkDirty();
-	}
+    void Transform::SetLocalScale(const XMFLOAT3& s)
+    {
+        m_localScale = s;
+        MarkDirty();
+    }
 
-	void Transform::RotateAxisAngleLocal(const DirectX::XMFLOAT3& axis, float radians)
-	{
-		DirectX::XMVECTOR qCurrent = DirectX::XMLoadFloat4(&m_rotation);
+    void Transform::AddChild(Transform* t)
+    {
+        if (!t) return;
+        m_children.push_back(t);
+    }
 
-		DirectX::XMVECTOR vAxis = DirectX::XMLoadFloat3(&axis);
-		vAxis = DirectX::XMVector3Normalize(vAxis);
+    void Transform::RemoveChild(Transform* t)
+    {
+        auto it = std::find(m_children.begin(), m_children.end(), t);
+        if (it != m_children.end())
+            m_children.erase(it);
+    }
 
-		DirectX::XMVECTOR qDelta = DirectX::XMQuaternionRotationAxis(vAxis, radians);
+    void Transform::DetachFromParent()
+    {
+        if (!m_parent) return;
+        m_parent->RemoveChild(this);
+        m_parent = nullptr;
+        MarkDirty();
+    }
 
-		DirectX::XMVECTOR qNew = DirectX::XMQuaternionMultiply(qCurrent, qDelta);
-		qNew = DirectX::XMQuaternionNormalize(qNew);
+    void Transform::SetParent(Transform* newParent, bool keepWorld)
+    {
+        if (newParent == this) return;
+        if (newParent == m_parent) return;
 
-		DirectX::XMStoreFloat4(&m_rotation, qNew);
-		MarkDirty();
-	}
+        for (Transform* p = newParent; p; p = p->m_parent)
+            if (p == this) return;
 
-	DirectX::XMMATRIX Transform::GetLocalMatrix()
-	{
-		RebuildLocalMatrix();
-		return m_cachedLocal;
-	}
+        XMMATRIX oldWorld = keepWorld ? GetWorldMatrix() : XMMatrixIdentity();
 
-	DirectX::XMMATRIX Transform::GetWorldMatrix()
-	{
-		RebuildLocalMatrix();
-		return m_cachedLocal; 
-	}
+        // detach from old
+        if (m_parent)
+            m_parent->RemoveChild(this);
 
-}
+        m_parent = newParent;
 
+        if (m_parent)
+            m_parent->AddChild(this);
+
+        if (keepWorld)
+        {
+            XMMATRIX parentWorld = m_parent ? m_parent->GetWorldMatrix() : XMMatrixIdentity();
+            XMMATRIX invParent = XMMatrixInverse(nullptr, parentWorld);
+
+            // local = world * inv(parentWorld)
+            XMMATRIX newLocal = oldWorld * invParent;
+
+            XMVECTOR S, R, T;
+            if (XMMatrixDecompose(&S, &R, &T, newLocal))
+            {
+                XMStoreFloat3(&m_localScale, S);
+                XMStoreFloat4(&m_localRotation, R);
+                XMStoreFloat3(&m_localPosition, T);
+            }
+        }
+
+        MarkDirty();
+    }
+
+    void Transform::TranslateLocal(float dx, float dy, float dz)
+    {
+        XMVECTOR localOffset = XMVectorSet(dx, dy, dz, 0.0f);
+        XMVECTOR q = XMLoadFloat4(&m_localRotation);
+        XMVECTOR worldOffset = XMVector3Rotate(localOffset, q);
+
+        XMVECTOR pos = XMLoadFloat3(&m_localPosition);
+        pos = XMVectorAdd(pos, worldOffset);
+        XMStoreFloat3(&m_localPosition, pos);
+
+        MarkDirty();
+    }
+
+    void Transform::TranslateWorld(float dx, float dy, float dz)
+    {
+        XMVECTOR worldOffset = XMVectorSet(dx, dy, dz, 0.0f);
+
+        if (m_parent)
+        {
+            XMMATRIX parentWorld = m_parent->GetWorldMatrix();
+            XMMATRIX invParent = XMMatrixInverse(nullptr, parentWorld);
+
+            XMVECTOR localOffset = XMVector3TransformNormal(worldOffset, invParent);
+
+            XMVECTOR pos = XMLoadFloat3(&m_localPosition);
+            pos = XMVectorAdd(pos, localOffset);
+            XMStoreFloat3(&m_localPosition, pos);
+        }
+        else
+        {
+            XMVECTOR pos = XMLoadFloat3(&m_localPosition);
+            pos = XMVectorAdd(pos, worldOffset);
+            XMStoreFloat3(&m_localPosition, pos);
+        }
+
+        MarkDirty();
+    }
+
+    void Transform::RotateAxisAngleLocal(const XMFLOAT3& axis, float radians)
+    {
+        XMVECTOR qCurrent = XMLoadFloat4(&m_localRotation);
+
+        XMVECTOR vAxis = XMLoadFloat3(&axis);
+        vAxis = XMVector3Normalize(vAxis);
+
+        XMVECTOR qDelta = XMQuaternionRotationAxis(vAxis, radians);
+
+        XMVECTOR qNew = XMQuaternionMultiply(qCurrent, qDelta);
+        qNew = XMQuaternionNormalize(qNew);
+
+        XMStoreFloat4(&m_localRotation, qNew);
+        MarkDirty();
+    }
+
+} 

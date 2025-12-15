@@ -33,6 +33,11 @@ namespace Nuim {
 
 		void SetName(const std::string& n) { m_name = n; }
 
+		void SetParent(GameObject* parent, bool keepWorld = true)
+		{
+			transform.SetParent(parent ? &parent->transform : nullptr, keepWorld);
+		}
+
 		~GameObject() = default;
 
 	public:
