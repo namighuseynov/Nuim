@@ -9,8 +9,8 @@ namespace Nuim {
         D3D11_BUFFER_DESC cbd = {};
         cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         cbd.Usage = D3D11_USAGE_DEFAULT;
-        cbd.ByteWidth = sizeof(ConstantBufferData);
         cbd.CPUAccessFlags = 0;
+        cbd.ByteWidth = (sizeof(ConstantBufferData) + 15) & ~15;
 
         HRESULT hr = device->CreateBuffer(&cbd, nullptr, &m_perObjectCB);
         return SUCCEEDED(hr);

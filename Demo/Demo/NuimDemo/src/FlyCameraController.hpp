@@ -35,8 +35,6 @@ namespace Nuim {
                 forward * m_moveSpeed * dt
             );
 
-            std::cout << Input::IsKeyDown('W') << std::endl;
-
             // --- mouse (RMB) yaw/pitch ---
             int dx, dy;
             Input::GetMouseDelta(dx, dy);

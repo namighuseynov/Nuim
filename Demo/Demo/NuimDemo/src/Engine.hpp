@@ -10,7 +10,7 @@
 #include "IScene.hpp"
 #include "ResourceManager.hpp"
 #include "EditorLayer.hpp"
-#include "RenderTarget2D.hpp"
+#include "Renderer/RenderTarget2D.hpp"
 
 namespace Nuim {
     enum class EngineMode { Editor, Play };
@@ -65,7 +65,6 @@ namespace Nuim {
         EditorLayer m_editor;
 
         RenderTarget2D m_sceneRT;
-        FrameBuffers   m_sceneFB;
 
         int m_sceneW = 0;
         int m_sceneH = 0;

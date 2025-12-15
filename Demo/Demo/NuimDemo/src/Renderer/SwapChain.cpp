@@ -4,7 +4,9 @@
 namespace Nuim {
     bool SwapChain::Init(HWND hwnd, ID3D11Device* device, int w, int h) {
         DXGI_SWAP_CHAIN_DESC scd = {};
-        scd.BufferCount = 1;
+        scd.BufferCount = 2;
+        scd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+        scd.Flags = 0;
         scd.BufferDesc.Width = w;
         scd.BufferDesc.Height = h;
         scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -12,6 +14,8 @@ namespace Nuim {
         scd.OutputWindow = hwnd;
         scd.SampleDesc.Count = 1;
         scd.Windowed = TRUE;
+        scd.BufferDesc.RefreshRate.Numerator = 60;
+        scd.BufferDesc.RefreshRate.Denominator = 1;
 
         Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
         device->QueryInterface(IID_PPV_ARGS(&dxgiDevice));

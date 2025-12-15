@@ -241,12 +241,12 @@ namespace Nuim {
         ID3D11ShaderResourceView* srv = engine.GetSceneViewSRV();
         if (srv)
         {
-            ImGui::Image((ImTextureID)srv, avail, ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((ImTextureID)srv, avail, ImVec2(0, 0), ImVec2(1, 1));
         }
         else
         {
             ImGui::Text("Scene RT not ready.");
-        }
+        }   
 
         ImGui::End();
     }

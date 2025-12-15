@@ -24,7 +24,8 @@ namespace Nuim {
 		if (!m_renderer->Init(
 			m_window->GetHWND(),
 			m_window->GetWidth(),
-			m_window->GetHeight()
+			m_window->GetHeight(),
+			m_config.vsync
 		))
 		{
 			return false;
@@ -96,17 +97,9 @@ namespace Nuim {
 		ID3D11Device* dev = m_renderer->GetDevice();
 
 		if (!m_sceneRT.SRV())
-			m_sceneRT.Init(dev, w, h);
+			m_sceneRT.Create(dev, w, h);
 		else
 			m_sceneRT.Resize(dev, w, h);
-
-		if (!m_sceneFBInited) {
-			m_sceneFB.Init(dev, w, h);
-			m_sceneFBInited = true;
-		}
-		else {
-			m_sceneFB.Resize(dev, w, h);
-		}
 	}
 
 	void Engine::ProcessEvents()
@@ -144,17 +137,17 @@ namespace Nuim {
 
 		if (m_mode == EngineMode::Editor && m_sceneRT.RTV())
 		{
-			m_renderer->BeginFrame(clearColor, m_sceneRT.RTV(), m_sceneFB);
-
+			m_renderer->BeginPass(m_sceneRT, clearColor);
 			m_scene.Render(m_renderer.get());
 		}
 
-		m_renderer->BeginFrame(clearColor);
+		m_renderer->BeginBackbufferPass(clearColor);
 
 		if (m_mode == EngineMode::Play)
 			m_scene.Render(m_renderer.get());
 
 		m_imgui->EndFrame(m_renderer->GetContext());
+
 		m_renderer->EndFrame();
 	}
 
