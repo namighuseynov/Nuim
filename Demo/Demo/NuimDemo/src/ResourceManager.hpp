@@ -7,6 +7,7 @@
 
 #include "Mesh.hpp"
 #include "Material.hpp"
+#include "Texture2D.hpp"
 
 namespace Nuim {
 
@@ -76,15 +77,48 @@ namespace Nuim {
             return out;
         }
 
+        using TexturePtr = std::shared_ptr<Nuim::Texture2D>;
+
+        TexturePtr LoadTexture2D(
+            const std::string& name,
+            ID3D11Device* dev,
+            ID3D11DeviceContext* ctx,
+            const std::wstring& path,
+            bool genMips = true)
+        {
+            auto tex = std::make_shared<Nuim::Texture2D>();
+            if (!tex->LoadFromFile(dev, ctx, path, genMips))
+                return nullptr;
+
+            m_textures[name] = tex;
+            return tex;
+        }
+
+        TexturePtr GetTexture2D(const std::string& name) const
+        {
+            auto it = m_textures.find(name);
+            return (it != m_textures.end()) ? it->second : nullptr;
+        }
+
+        std::vector<std::string> GetTextureNames() const
+        {
+            std::vector<std::string> out;
+            out.reserve(m_textures.size());
+            for (auto& [k, v] : m_textures) out.push_back(k);
+            return out;
+        }
+
         void Clear()
         {
             m_meshes.clear();
             m_materials.clear();
+            m_textures.clear();
         }
 
     private:
         std::unordered_map<std::string, MeshPtr> m_meshes;
         std::unordered_map<std::string, MaterialPtr> m_materials;
+        std::unordered_map<std::string, TexturePtr> m_textures;
     };
 
 }

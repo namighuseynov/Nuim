@@ -22,6 +22,7 @@ public:
 		ID3DBlob* psBlob = nullptr;
 		ID3DBlob* errorBlob = nullptr;
 
+
         // --- Vertex shader ---
         hr = D3DCompileFromFile(
             vsPath.c_str(),
@@ -97,14 +98,20 @@ public:
         return true;
 	}
 
+    ID3D11ShaderResourceView* GetTextureSRV() const { return m_srv.Get(); }
+    ID3D11SamplerState* GetSampler() const { return m_samp.Get(); }
+
     void Bind(ID3D11DeviceContext* ctx) const
     {
         ctx->IASetInputLayout(m_inputLayout.Get());
         ctx->VSSetShader(m_vs.Get(), nullptr, 0);
         ctx->PSSetShader(m_ps.Get(), nullptr, 0);
 
-        if (m_srv.Get())  ctx->PSSetShaderResources(0, 1, m_srv.GetAddressOf());
-        if (m_samp.Get()) ctx->PSSetSamplers(0, 1, m_samp.GetAddressOf());
+        ID3D11ShaderResourceView* srv = m_srv.Get();
+        ctx->PSSetShaderResources(0, 1, &srv);
+
+        ID3D11SamplerState* samp = m_samp.Get();
+        ctx->PSSetSamplers(0, 1, &samp);
     }
 
     void SetTexture(ID3D11ShaderResourceView* srv, ID3D11SamplerState* samp)

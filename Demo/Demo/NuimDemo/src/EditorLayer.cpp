@@ -271,6 +271,13 @@ namespace Nuim {
                 ImGui::BulletText("%s", n.c_str());
         }
 
+        if (ImGui::CollapsingHeader("Textures", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            auto names = rm.GetTextureNames();
+            for (auto& n : names)
+                ImGui::BulletText("%s", n.c_str());
+        }
+
         ImGui::End();
     }
 
@@ -407,6 +414,55 @@ namespace Nuim {
                         }
                         ImGui::EndCombo();
                     }
+
+                    // --- Texture combo ---
+                    auto matPtr = mr->GetMaterial();
+
+                    auto texNames = rm.GetTextureNames();
+
+                    ID3D11ShaderResourceView* curSrv = matPtr ? matPtr->GetTextureSRV() : nullptr;
+
+                    int texIndex = -1;
+                    std::string curTexName = "(none)";
+
+                    for (int i = 0; i < (int)texNames.size(); ++i)
+                    {
+                        auto t = rm.GetTexture2D(texNames[i]);
+                        if (t && t->SRV() == curSrv)
+                        {
+                            texIndex = i;
+                            curTexName = texNames[i];
+                            break;
+                        }
+                    }
+
+                    if (ImGui::BeginCombo("Texture", curTexName.c_str()))
+                    {
+                        // none
+                        bool noneSel = (texIndex == -1);
+                        if (ImGui::Selectable("(none)", noneSel))
+                        {
+                            if (matPtr) matPtr->SetTexture(nullptr, nullptr);
+                            texIndex = -1;
+                        }
+                        if (noneSel) ImGui::SetItemDefaultFocus();
+
+                        for (int i = 0; i < (int)texNames.size(); ++i)
+                        {
+                            bool isSel = (i == texIndex);
+                            if (ImGui::Selectable(texNames[i].c_str(), isSel))
+                            {
+                                auto t = rm.GetTexture2D(texNames[i]);
+                                if (t && matPtr)
+                                    matPtr->SetTexture(t->SRV(), t->Sampler());
+                                texIndex = i;
+                            }
+                            if (isSel) ImGui::SetItemDefaultFocus();
+                        }
+
+                        ImGui::EndCombo();
+                    }
+
                 }
             }
 

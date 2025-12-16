@@ -42,7 +42,7 @@ namespace Nuim {
             if (Input::IsMouseButtonDown(MouseButton::Right))
             {
                 m_yaw += DirectX::XMConvertToRadians(dx * m_mouseSens * dt);
-                m_pitch += DirectX::XMConvertToRadians(-dy * m_mouseSens * dt);
+                m_pitch -= DirectX::XMConvertToRadians(-dy * m_mouseSens * dt);
 
                 const float limit = DirectX::XMConvertToRadians(89.0f);
                 if (m_pitch > limit) m_pitch = limit;

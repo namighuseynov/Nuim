@@ -118,20 +118,16 @@ namespace Nuim {
             (UINT)_countof(kLayoutPosUV)
         );
 
-        if (!textureMat) {
-            std::cout << "Quad material creation FAILED\n";
-            return;
-        }
-
-        Nuim::Texture2D tex;
-        tex.LoadFromFile(
+        auto tex = rm.LoadTexture2D(
+            "TestTex",
             engine.GetRenderer()->GetDevice(),
             engine.GetRenderer()->GetContext(),
             L"Assets/Textures/test.png",
-            true // mipmaps
-        );
+            true);
 
-        textureMat->SetTexture(tex.SRV(), tex.Sampler());
+        if (!tex) { std::cout << "Texture load failed\n"; return; }
+
+        textureMat->SetTexture(tex->SRV(), tex->Sampler());
 
         auto& quadObj = scene.CreateObject();
         quadObj.SetName("Quad");
