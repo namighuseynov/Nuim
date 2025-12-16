@@ -415,6 +415,8 @@ namespace Nuim {
                         ImGui::EndCombo();
                     }
 
+
+
                     // --- Texture combo ---
                     auto matPtr = mr->GetMaterial();
 
@@ -461,6 +463,21 @@ namespace Nuim {
                         }
 
                         ImGui::EndCombo();
+                    }
+                    if (matPtr)
+                    {
+                        ImGui::Separator();
+                        ImGui::Text("UV Params");
+
+                        auto til = matPtr->GetUVTiling();
+                        float t[2] = { til.x, til.y };
+                        if (ImGui::DragFloat2("UV Tiling", t, 0.01f, 0.0f, 100.0f))
+                            matPtr->SetUV({ t[0], t[1] }, matPtr->GetUVOffset());
+
+                        auto off = matPtr->GetUVOffset();
+                        float o[2] = { off.x, off.y };
+                        if (ImGui::DragFloat2("UV Offset", o, 0.001f, -100.0f, 100.0f))
+                            matPtr->SetUV(matPtr->GetUVTiling(), { o[0], o[1] });
                     }
 
                 }

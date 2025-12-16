@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <wrl/client.h>
+#include <DirectXMath.h>
 
 class Material
 {
@@ -101,6 +102,16 @@ public:
     ID3D11ShaderResourceView* GetTextureSRV() const { return m_srv.Get(); }
     ID3D11SamplerState* GetSampler() const { return m_samp.Get(); }
 
+    void SetUV(DirectX::XMFLOAT2 tiling, DirectX::XMFLOAT2 offset)
+    {
+        m_uvTiling = tiling;
+        m_uvOffset = offset;
+    }
+
+    DirectX::XMFLOAT2 GetUVTiling() const { return m_uvTiling; }
+    DirectX::XMFLOAT2 GetUVOffset() const { return m_uvOffset; }
+
+
     void Bind(ID3D11DeviceContext* ctx) const
     {
         ctx->IASetInputLayout(m_inputLayout.Get());
@@ -126,4 +137,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_inputLayout;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_srv;
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samp;
+
+    DirectX::XMFLOAT2 m_uvTiling{ 1,1 };
+    DirectX::XMFLOAT2 m_uvOffset{ 0,0 };
 };

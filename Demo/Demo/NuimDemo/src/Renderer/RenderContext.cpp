@@ -37,6 +37,8 @@ namespace Nuim {
         XMStoreFloat4x4(&data.world, XMMatrixTranspose(W));
         data.view = m_view;
         data.proj = m_proj;
+        data.uvTiling = item.material->GetUVTiling();
+        data.uvOffset = item.material->GetUVOffset();
 
         ctx->UpdateSubresource(
             m_perObjectCB.Get(),

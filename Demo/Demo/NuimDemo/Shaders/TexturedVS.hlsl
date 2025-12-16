@@ -3,6 +3,9 @@ cbuffer ConstantBuffer : register(b0)
     float4x4 world;
     float4x4 view;
     float4x4 proj;
+    
+    float2 uvTiling;
+    float2 uvOffset;
 };
 
 struct VSIn
@@ -23,6 +26,6 @@ VSOut main(VSIn v)
     float4 wp = mul(float4(v.pos, 1), world);
     float4 vp = mul(wp, view);
     o.pos = mul(vp, proj);
-    o.uv = v.uv;
+    o.uv = v.uv * uvTiling + uvOffset;
     return o;
 }
