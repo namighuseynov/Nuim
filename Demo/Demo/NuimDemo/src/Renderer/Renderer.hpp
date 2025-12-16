@@ -30,6 +30,15 @@ namespace Nuim {
 
         const RenderStats& GetStats() const { return m_stats; }
 
+        void Renderer::Shutdown()
+        {
+            if (auto* ctx = GetContext())
+            {
+                ctx->ClearState();
+                ctx->Flush();
+            }
+        }
+
         void ResetStats() { m_stats.Reset(); }
 
     private:

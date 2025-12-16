@@ -110,7 +110,7 @@ namespace Nuim {
         );
 
         auto textureMat = rm.CreateMaterial(
-            "Quad material",
+            "QuadMaterial",
             engine.GetRenderer()->GetDevice(),
             L"Shaders/TexturedVS.hlsl",
             L"Shaders/TexturedPS.hlsl",
@@ -118,16 +118,24 @@ namespace Nuim {
             (UINT)_countof(kLayoutPosUV)
         );
 
+        if (!textureMat) {
+            std::cout << "Quad material creation FAILED\n";
+            return;
+        }
+
         Nuim::Texture2D tex;
-        tex.CreateCheckerboard(engine.GetRenderer()->GetDevice(), 512, 512, 32);
+        tex.LoadFromFile(
+            engine.GetRenderer()->GetDevice(),
+            engine.GetRenderer()->GetContext(),
+            L"Assets/Textures/test.png",
+            true // mipmaps
+        );
 
         textureMat->SetTexture(tex.SRV(), tex.Sampler());
 
-        auto& texturedObj = scene.CreateObject();
-        texturedObj.SetName("Quad");
-
-        texturedObj.transform.SetPosition({ 0, 0, 0 });
-        texturedObj.AddComponent<MeshRenderer>(quadMesh, textureMat);
+        auto& quadObj = scene.CreateObject();
+        quadObj.SetName("Quad");
+        quadObj.AddComponent<MeshRenderer>(quadMesh, textureMat);
 
 
 	}

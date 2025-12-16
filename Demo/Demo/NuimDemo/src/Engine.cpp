@@ -7,6 +7,11 @@
 namespace Nuim {
 	bool Engine::Init(const EngineConfig& config)
 	{
+		HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+		if (hr == S_OK || hr == S_FALSE) m_comOwned = true;
+		else if (hr == RPC_E_CHANGED_MODE) m_comOwned = false; 
+		else return false;
+
 		m_config = config;
 
 		AllocConsole();
@@ -75,9 +80,19 @@ namespace Nuim {
 
 	void Engine::Shutdown()
 	{
+		if (m_activeScene) m_activeScene->OnUnload();
+		m_scene.Clear();
+		m_resources.Clear();    
+
 		m_imgui.reset();
-		m_renderer.reset(); 
+
+		if (m_renderer) m_renderer->Shutdown();
+		m_renderer.reset();
+
 		m_window.reset();
+
+		if (m_comOwned)
+			CoUninitialize();
 	}
 
 	void Engine::EnsureSceneViewTargets(int w, int h)

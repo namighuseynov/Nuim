@@ -1,4 +1,5 @@
 #pragma once
+#include <objbase.h>
 #include "Time.hpp"
 #include "Input.hpp"
 #include "Renderer/Renderer.hpp"
@@ -68,5 +69,6 @@ namespace Nuim {
 
         int m_sceneW = 0;
         int m_sceneH = 0;
+        bool m_comOwned = false;
     };
 }
