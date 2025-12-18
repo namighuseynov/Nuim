@@ -1,15 +1,9 @@
 #pragma once
 #include "Event.hpp"
 
-#ifdef EVENTSYSTEMLIBRARY_EXPORTS
-#define EVENTSYSTEMLIBRARY_API __declspec(dllimport)
-#else
-#define EVENTSYSTEMLIBRARY_API __declspec(dllexport)
-#endif
-
 namespace EventSystem {
 
-	class EVENTSYSTEMLIBRARY_API KeyPressEvent :
+	class KeyPressEvent :
 		public Event 
 	{
 	public:
@@ -28,7 +22,7 @@ namespace EventSystem {
 		UINT keyCode = 0;
 	};
 
-	class EVENTSYSTEMLIBRARY_API KeyReleaseEvent :
+	class KeyReleaseEvent :
 		public Event
 	{
 	public:

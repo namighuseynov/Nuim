@@ -1,15 +1,9 @@
 #pragma once
 #include "Event.hpp"
 
-#ifdef EVENTSYSTEMLIBRARY_EXPORTS
-#define EVENTSYSTEMLIBRARY_API __declspec(dllimport)
-#else
-#define EVENTSYSTEMLIBRARY_API __declspec(dllexport)
-#endif
-
 namespace EventSystem {
 
-	class EVENTSYSTEMLIBRARY_API WindowSizeEvent :
+	class WindowSizeEvent :
 		public Event {
 	public:
 		WindowSizeEvent(UINT width, UINT height) : width(width), height(height) {};
@@ -32,7 +26,7 @@ namespace EventSystem {
 
 	};
 
-	class EVENTSYSTEMLIBRARY_API WindowMinimizeEvent :
+	class WindowMinimizeEvent :
 		public Event {
 	public:
 		WindowMinimizeEvent() {};
@@ -46,7 +40,7 @@ namespace EventSystem {
 	private:
 	};
 
-	class EVENTSYSTEMLIBRARY_API WindowRestoreEvent :
+	class WindowRestoreEvent :
 		public Event {
 	public:
 		WindowRestoreEvent() {};
@@ -60,7 +54,7 @@ namespace EventSystem {
 	private:
 	};
 
-	class EVENTSYSTEMLIBRARY_API WindowMaxmimizeEvent :
+	class WindowMaxmimizeEvent :
 		public Event {
 	public:
 		WindowMaxmimizeEvent() {};
@@ -74,7 +68,7 @@ namespace EventSystem {
 	private:
 	};
 
-	class EVENTSYSTEMLIBRARY_API WindowGotFocusEvent :
+	class WindowGotFocusEvent :
 		public Event {
 	public:
 		WindowGotFocusEvent() {};
@@ -88,7 +82,7 @@ namespace EventSystem {
 	private:
 	};
 
-	class EVENTSYSTEMLIBRARY_API WindowLostFocusEvent :
+	class WindowLostFocusEvent :
 		public Event {
 	public:
 		WindowLostFocusEvent() {};

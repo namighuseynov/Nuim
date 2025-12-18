@@ -1,14 +1,8 @@
 #pragma once
 
-#ifdef EVENTSYSTEMLIBRARY_EXPORTS
-#define EVENTSYSTEMLIBRARY_API __declspec(dllimport)
-#else
-#define EVENTSYSTEMLIBRARY_API __declspec(dllexport)
-#endif
-
 namespace EventSystem {
 
-	enum class EVENTSYSTEMLIBRARY_API EventType {
+	enum class EventType {
 		KeyPressEvent, KeyReleaseEvent,
 		MousePressEvent, MouseReleaseEvent, MouseMoveEvent, MouseMiddleButtonDownEvent, MouseMiddleButtonReleaseEvent, MouseScrollEvent,
 		ApplicationStartEvent, ApplicationCloseEvent,
@@ -16,7 +10,7 @@ namespace EventSystem {
 
 	};
 
-	class EVENTSYSTEMLIBRARY_API Event
+	class Event
 	{
 	public:
 		virtual std::string GetName() const = 0;

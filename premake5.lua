@@ -20,15 +20,18 @@ project "NuimCore"
     objdir    ("bin-int/" .. outputdir .. "/%{prj.name}")
 
     pchheader "NuimPCH.h"
-    pchsource "NuimCore/src/NuimPCH.cpp"
+    pchsource "NuimCore/src/Core/NuimPCH.cpp"
 
     files {
         "NuimCore/include/**.h",
+        "NuimCore/src/**.h",
+        "NuimCore/src/**.hpp",
         "NuimCore/src/**.cpp"
     }
 
     includedirs {
-        "NuimCore/include"
+        "NuimCore/include",
+        "NuimCore/src/Core" -- for NuimPCH.h
     }
 
     filter "system:windows"

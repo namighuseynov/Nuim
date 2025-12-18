@@ -1,15 +1,9 @@
 #pragma once
 #include "Event.hpp"
 
-#ifdef EVENTSYSTEMLIBRARY_EXPORTS
-#define EVENTSYSTEMLIBRARY_API __declspec(dllimport)
-#else
-#define EVENTSYSTEMLIBRARY_API __declspec(dllexport)
-#endif
-
 namespace EventSystem {
 	
-	class EVENTSYSTEMLIBRARY_API MousePressEvent :
+	class MousePressEvent :
 		public Event {
 	public:
 		MousePressEvent(const int& mouseButton, const int& coordX, const int&   coordY) : mouseButton(mouseButton), coordX(coordX), coordY(coordY) {};
@@ -35,7 +29,7 @@ namespace EventSystem {
 		int coordY;
 	};
 
-	class EVENTSYSTEMLIBRARY_API MouseReleaseEvent :
+	class MouseReleaseEvent :
 		public Event {
 	public:
 		MouseReleaseEvent(const int& mouseButton) : mouseButton(mouseButton) {};
@@ -54,7 +48,7 @@ namespace EventSystem {
 
 	};
 
-	class EVENTSYSTEMLIBRARY_API MouseMoveEvent :
+	class MouseMoveEvent :
 		public Event {
 	public:
 		MouseMoveEvent(const UINT& coordX, const UINT& coordY) : coordX(coordX), coordY(coordY) {};
@@ -76,7 +70,7 @@ namespace EventSystem {
 		UINT coordY = 0;
 	};
 
-	class EVENTSYSTEMLIBRARY_API MouseMiddleButtonDown :
+	class MouseMiddleButtonDown :
 		public Event {
 	public:
 		MouseMiddleButtonDown(const UINT& coordX, const UINT& coordY) : coordX(coordX), coordY(coordY) {};
@@ -98,7 +92,7 @@ namespace EventSystem {
 		UINT coordY = 0;
 	};
 
-	class EVENTSYSTEMLIBRARY_API MouseMiddleButtonRelease :
+	class MouseMiddleButtonRelease :
 		public Event {
 	public:
 		MouseMiddleButtonRelease(const UINT& coordX, const UINT& coordY) : coordX(coordX), coordY(coordY) {};
@@ -120,7 +114,7 @@ namespace EventSystem {
 		UINT coordY = 0;
 	};
 
-	class EVENTSYSTEMLIBRARY_API MouseScrollEvent :
+	class MouseScrollEvent :
 		public Event {
 
 	};
