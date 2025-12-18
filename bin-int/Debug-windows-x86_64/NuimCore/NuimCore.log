@@ -1,0 +1,8 @@
+﻿  NuimPCH.cpp
+  ApplicationEvent.cpp
+  Event.cpp
+  EventDispatcher.cpp
+  KeyEvent.cpp
+  MouseEvent.cpp
+  WindowEvent.cpp
+  NuimCore.vcxproj -> D:\NamigDev\Git\Nuim\bin\Debug-windows-x86_64\NuimCore\NuimCore.lib
