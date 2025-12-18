@@ -1,6 +1,7 @@
 #Directories
 bin/ 
 bin-obj/
+bin-int/
 build/
 vendor/
 
