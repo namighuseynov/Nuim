@@ -1,7 +1,13 @@
 #pragma once
 #include "Event.hpp"
 
-namespace EventSystem {
+namespace Nuim {
+
+	enum MouseButton {
+		NM_LEFT = 0,
+		NM_RIGHT,
+		NM_MIDDLE
+	};
 	
 	class MousePressEvent :
 		public Event {

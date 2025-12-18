@@ -24,14 +24,20 @@ project "NuimCore"
 
     files {
         "NuimCore/include/**.h",
+        "NuimCore/include/**.hpp",
+
         "NuimCore/src/**.h",
-        "NuimCore/src/**.hpp",
         "NuimCore/src/**.cpp"
     }
 
     includedirs {
+        "NuimCore",
         "NuimCore/include",
-        "NuimCore/src/Core" -- for NuimPCH.h
+        "NuimCore/include/Core/",
+        "NuimCore/include/Core/Events",
+
+        "NuimCore/src/Core", -- for NuimPCH.h
+        
     }
 
     filter "system:windows"

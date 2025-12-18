@@ -1,7 +1,7 @@
 #pragma once
 #include "Event.hpp"
 
-namespace EventSystem {
+namespace Nuim {
 
 	class WindowSizeEvent :
 		public Event {

@@ -1,7 +1,7 @@
 #include "NuimPCH.h"
 #include "EventDispatcher.hpp"
 
-namespace EventSystem {
+namespace Nuim {
 
 	void EventDispatcher::RegisterListener(const std::string& eventType, Listener listener) {
 		listeners[eventType].push_back(listener);
