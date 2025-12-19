@@ -3,10 +3,12 @@
 #include <cstdlib>
 
 // ---------------- Platform ----------------
-#if defined(_WIN32) || defined(_WIN64)
-	#define NUIM_PLATFORM_WINDOWS 1
-#else
-	#error Nuim: Unsupported platform (only Windows is set up in MVP).
+#if !defined(NUIM_PLATFORM_WINDOWS)
+	#if defined(_WIN32) || defined(_WIN64)
+		#define NUIM_PLATFORM_WINDOWS 1
+	#else
+		#error Nuim: Unsupported platform
+	#endif
 #endif
 
 // ---------------- Build config ----------------

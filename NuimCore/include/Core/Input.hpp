@@ -1,14 +1,8 @@
 #pragma once
 #include "Base.hpp"
+#include "InputCodes.hpp"
 
 namespace Nuim {
-
-	enum class MouseButton {
-		Left = 0,
-		Right = 1,
-		Middle = 2
-	};
-
 	class Input
 	{
 	public:

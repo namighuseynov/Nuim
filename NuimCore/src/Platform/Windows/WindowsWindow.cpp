@@ -134,7 +134,7 @@ namespace Nuim {
     {
         if (m_data.NativeHook)
         {
-            if (m_data.NativeHook((void*)hwnd, (U32)msg, (U64)wparam, (I64)lparam))
+            if (m_data.NativeHook(hwnd, msg, (U64)wparam, (I64)lparam))
                 return 0;
         }
 
@@ -188,24 +188,24 @@ namespace Nuim {
         }
 
         case WM_LBUTTONDOWN:
-            if (m_data.EventCallback) { MousePressEvent e(MouseButton::NM_LEFT, LOWORD(lparam), HIWORD(lparam)); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { MousePressEvent e((U32)MouseButton::NM_LEFT, LOWORD(lparam), HIWORD(lparam)); m_data.EventCallback(e); }
             return 0;
         case WM_LBUTTONUP:
-            if (m_data.EventCallback) { MouseReleaseEvent e(MouseButton::NM_LEFT); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { MouseReleaseEvent e((U32)MouseButton::NM_LEFT); m_data.EventCallback(e); }
             return 0;
 
         case WM_RBUTTONDOWN:
-            if (m_data.EventCallback) { MousePressEvent e(MouseButton::NM_RIGHT, LOWORD(lparam), HIWORD(lparam)); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { MousePressEvent e((U32)MouseButton::NM_RIGHT, LOWORD(lparam), HIWORD(lparam)); m_data.EventCallback(e); }
             return 0;
         case WM_RBUTTONUP:
-            if (m_data.EventCallback) { MouseReleaseEvent e(MouseButton::NM_RIGHT); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { MouseReleaseEvent e((U32)MouseButton::NM_RIGHT); m_data.EventCallback(e); }
             return 0;
 
         case WM_MBUTTONDOWN:
-            if (m_data.EventCallback) { MousePressEvent e(MouseButton::NM_MIDDLE, LOWORD(lparam), HIWORD(lparam)); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { MousePressEvent e((U32)MouseButton::NM_MIDDLE, LOWORD(lparam), HIWORD(lparam)); m_data.EventCallback(e); }
             return 0;
         case WM_MBUTTONUP:
-            if (m_data.EventCallback) { MouseReleaseEvent e(MouseButton::NM_MIDDLE); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { MouseReleaseEvent e((U32)MouseButton::NM_MIDDLE); m_data.EventCallback(e); }
             return 0;
 
         case WM_KEYDOWN:

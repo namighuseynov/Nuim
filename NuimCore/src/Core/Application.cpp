@@ -4,6 +4,7 @@
 
 #include "Event.hpp"
 #include "Time.hpp"
+#include "Input.hpp"
 #include "ApplicationEvent.hpp"
 #include "WindowEvent.hpp"
 
@@ -68,7 +69,10 @@ namespace Nuim {
             m_window->PollEvents();
 
             Time::Tick();
+            Input::NewFrame();
             float dt = Time::GetDeltaTime();
+
+            OnBeginFrame();
 
             if (!m_minimized)
             {
@@ -81,6 +85,8 @@ namespace Nuim {
                 for (auto& layer : m_layerStack)
                     layer->OnImGuiRender();
             }
+
+            OnEndFrame();
 
         }
     }

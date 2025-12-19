@@ -10,7 +10,7 @@ namespace Nuim {
     class Event; 
 
     struct WindowProps {
-        std::string Title = "Nuim";
+        std::string Title = "Nuim Engine";
         U32 Width = 1280;
         U32 Height = 720;
         bool VSync = true;

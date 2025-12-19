@@ -38,12 +38,11 @@ namespace Nuim {
     protected:
         virtual void OnInit() {}
         virtual void OnShutdown() {}
+        virtual void OnBeginFrame() {}
+        virtual void OnEndFrame() {}
 
     private:
         void OnEvent(Event& e);
-
-        bool OnWindowClose(class WindowCloseEvent& e);
-        bool OnWindowResize(class WindowResizeEvent& e);
 
     private:
         ApplicationSpecification m_spec;
@@ -54,6 +53,7 @@ namespace Nuim {
         bool m_minimized = false;
 
         static Application* s_instance;
+
     };
 
 }

@@ -23,9 +23,9 @@ namespace Nuim {
 	{
 		switch (button)
 		{
-		case MouseButton::Left:   return 0;
-		case MouseButton::Right:  return 1;
-		case MouseButton::Middle: return 2;
+		case MouseButton::NM_LEFT:   return 0;
+		case MouseButton::NM_RIGHT:  return 1;
+		case MouseButton::NM_MIDDLE: return 2;
 		default:                  return -1;
 		}
 	}
