@@ -4,6 +4,12 @@
 
 int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
 {
+#if defined(NUIM_DEBUG)
+    AllocConsole();
+    FILE* fp;
+    freopen_s(&fp, "CONOUT$", "w", stdout);
+#endif
+
     try
     {
         NuimEditor::EditorApplicationSpecification spec;

@@ -33,6 +33,7 @@ namespace NuimEditor {
     EditorApplication::EditorApplication(const EditorApplicationSpecification& spec)
         : m_spec(spec)
     {
+
         // --- Window ---
         Nuim::WindowProps wp;
         wp.Title = m_spec.Name;
@@ -52,12 +53,12 @@ namespace NuimEditor {
 
         // --- ImGui ---
         m_imgui = std::make_unique<EditorImGuiLayer>();
+        HWND hwnd = (HWND)m_window->GetNativeHandle();
         m_imgui->Init(
-            (HWND)m_window->GetNativeHandle(),
+            hwnd,
             m_device,
             m_context
         );
-
 
         m_window->SetNativeMessageHook([this](void* hwnd, Nuim::U32 msg, Nuim::U64 wp, Nuim::I64 lp) -> bool {
 
@@ -74,9 +75,18 @@ namespace NuimEditor {
             });
 
         // --- Editor layer ---
-        m_editorLayer = std::make_unique<EditorLayer>();
-        m_editorLayer->OnAttach();
-        m_layers.PushLayer(std::move(m_editorLayer));
+        CreateViewportResources(m_spec.Width, m_spec.Height);
+
+        auto editor = std::make_unique<EditorLayer>();
+        m_editorLayerPtr = editor.get();
+
+        m_editorLayerPtr->SetViewportCallbacks(
+            [this]() -> void* { return GetViewportTextureSRV(); },
+            [this](Nuim::U32 w, Nuim::U32 h) { SetViewportSize(w, h); }
+        );
+
+        editor->OnAttach();
+        m_layers.PushOverlay(std::move(editor));
     }
 
     EditorApplication::~EditorApplication()
@@ -90,6 +100,89 @@ namespace NuimEditor {
         }
 
         ShutdownD3D11();
+    }
+
+    void EditorApplication::SetViewportSize(Nuim::U32 w, Nuim::U32 h)
+    {
+        if (w == 0 || h == 0) return;
+        if (w == m_viewportW && h == m_viewportH) return;
+
+        CleanupViewportResources();
+        CreateViewportResources(w, h);
+    }
+
+    void EditorApplication::CreateViewportResources(Nuim::U32 w, Nuim::U32 h)
+    {
+        m_viewportW = w;
+        m_viewportH = h;
+
+        // --- Color texture (RenderTarget + ShaderResource) ---
+        D3D11_TEXTURE2D_DESC td{};
+        td.Width = w;
+        td.Height = h;
+        td.MipLevels = 1;
+        td.ArraySize = 1;
+        td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        td.SampleDesc.Count = 1;
+        td.Usage = D3D11_USAGE_DEFAULT;
+        td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+        HRESULT hr = m_device->CreateTexture2D(&td, nullptr, &m_viewportTex);
+        if (FAILED(hr) || !m_viewportTex) throw std::runtime_error("CreateTexture2D viewport failed");
+
+        hr = m_device->CreateRenderTargetView(m_viewportTex, nullptr, &m_viewportRTV);
+        if (FAILED(hr) || !m_viewportRTV) throw std::runtime_error("CreateRenderTargetView viewport failed");
+
+        hr = m_device->CreateShaderResourceView(m_viewportTex, nullptr, &m_viewportSRV);
+        if (FAILED(hr) || !m_viewportSRV) throw std::runtime_error("CreateShaderResourceView viewport failed");
+
+        // --- Depth texture ---
+        D3D11_TEXTURE2D_DESC dd{};
+        dd.Width = w;
+        dd.Height = h;
+        dd.MipLevels = 1;
+        dd.ArraySize = 1;
+        dd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        dd.SampleDesc.Count = 1;
+        dd.Usage = D3D11_USAGE_DEFAULT;
+        dd.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+        hr = m_device->CreateTexture2D(&dd, nullptr, &m_viewportDepth);
+        if (FAILED(hr) || !m_viewportDepth) throw std::runtime_error("CreateTexture2D depth failed");
+
+        hr = m_device->CreateDepthStencilView(m_viewportDepth, nullptr, &m_viewportDSV);
+        if (FAILED(hr) || !m_viewportDSV) throw std::runtime_error("CreateDepthStencilView failed");
+    }
+
+    void EditorApplication::CleanupViewportResources()
+    {
+        if (m_viewportDSV) { m_viewportDSV->Release(); m_viewportDSV = nullptr; }
+        if (m_viewportDepth) { m_viewportDepth->Release(); m_viewportDepth = nullptr; }
+        if (m_viewportSRV) { m_viewportSRV->Release(); m_viewportSRV = nullptr; }
+        if (m_viewportRTV) { m_viewportRTV->Release(); m_viewportRTV = nullptr; }
+        if (m_viewportTex) { m_viewportTex->Release(); m_viewportTex = nullptr; }
+    }
+
+    void EditorApplication::RenderViewport()
+    {
+        if (!m_viewportRTV || !m_viewportDSV || m_viewportW == 0 || m_viewportH == 0)
+            return;
+
+        // bind viewport RT
+        m_context->OMSetRenderTargets(1, &m_viewportRTV, m_viewportDSV);
+
+        D3D11_VIEWPORT vp{};
+        vp.TopLeftX = 0;
+        vp.TopLeftY = 0;
+        vp.Width = (float)m_viewportW;
+        vp.Height = (float)m_viewportH;
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        m_context->RSSetViewports(1, &vp);
+
+        const float color[4] = { 0.12f, 0.12f, 0.14f, 1.0f };
+        m_context->ClearRenderTargetView(m_viewportRTV, color);
+        m_context->ClearDepthStencilView(m_viewportDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     }
 
     void EditorApplication::Close()
@@ -111,35 +204,37 @@ namespace NuimEditor {
             Nuim::Time::Tick();
             const float dt = Nuim::Time::GetDeltaTime();
 
-            // update
             if (!m_minimized)
             {
-                for (auto& layer : m_layers)
-                    layer->OnUpdate(dt);
-            }
+                RenderViewport();
 
-            // render (DX11 clear)
-            if (!m_minimized && m_context && m_rtv)
-            {
-                const float clear[4] = { 0.07f, 0.07f, 0.09f, 1.0f };
+                // --- DX11 clear ---
+                const float clearColor[4] = { 0.08f, 0.08f, 0.09f, 1.0f };
                 m_context->OMSetRenderTargets(1, &m_rtv, nullptr);
-                m_context->ClearRenderTargetView(m_rtv, clear);
-            }
+                m_context->ClearRenderTargetView(m_rtv, clearColor);
 
-            // imgui
-            if (!m_minimized && m_imgui)
-            {
+                D3D11_VIEWPORT wvp{};
+                wvp.TopLeftX = 0;
+                wvp.TopLeftY = 0;
+                wvp.Width = (float)m_window->GetWidth();
+                wvp.Height = (float)m_window->GetHeight();
+                wvp.MinDepth = 0.0f;
+                wvp.MaxDepth = 1.0f;
+                m_context->RSSetViewports(1, &wvp); 
+
+                // --- ImGui ---
                 m_imgui->BeginFrame();
-
                 for (auto& layer : m_layers)
                     layer->OnImGuiRender();
-
                 m_imgui->EndFrame();
-            }
 
-            // present
-            if (m_swapChain)
+                // present
                 m_swapChain->Present(m_spec.VSync ? 1 : 0, 0);
+            }
+            else
+            {
+                Sleep(1);
+            }
         }
     }
 
@@ -164,6 +259,11 @@ namespace NuimEditor {
 
             break;
         }
+        case Nuim::EventType::WindowCloseEvent: 
+        {
+            m_running = false;
+            break;
+        }
         case Nuim::EventType::ApplicationCloseEvent:
             m_running = false;
             e.Handled = true;
@@ -182,6 +282,8 @@ namespace NuimEditor {
     void EditorApplication::HandleCoreInputEvents(Nuim::Event& e)
     {
         using namespace Nuim;
+
+        Nuim::Log::Info(e.GetName());
 
         switch (e.GetType())
         {
@@ -226,6 +328,7 @@ namespace NuimEditor {
             Input::OnMouseButtonUp(btn);
             break;
         }
+
         default:
             break;
         }
@@ -236,16 +339,19 @@ namespace NuimEditor {
     void EditorApplication::InitD3D11()
     {
         HWND hwnd = (HWND)m_window->GetNativeHandle();
-        if (!hwnd)
+
+        if (!hwnd) {
+            Nuim::Log::Error("EditorApplication: HWND is null");
             throw std::runtime_error("EditorApplication: HWND is null");
+        }
 
         DXGI_SWAP_CHAIN_DESC sd{};
         sd.BufferCount = 2;
         sd.BufferDesc.Width = m_spec.Width;
         sd.BufferDesc.Height = m_spec.Height;
         sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        sd.BufferDesc.RefreshRate.Numerator = 0;
-        sd.BufferDesc.RefreshRate.Denominator = 0;
+        sd.BufferDesc.RefreshRate.Numerator = 60;
+        sd.BufferDesc.RefreshRate.Denominator = 1;
         sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         sd.OutputWindow = hwnd;
         sd.SampleDesc.Count = 1;
@@ -277,8 +383,10 @@ namespace NuimEditor {
             &m_context
         );
 
-        if (FAILED(hr))
+        if (FAILED(hr)) {
+            Nuim::Log::Error("D3D11CreateDeviceAndSwapChain failed");
             throw std::runtime_error("D3D11CreateDeviceAndSwapChain failed");
+        }
 
         CreateRenderTarget();
     }
@@ -306,6 +414,15 @@ namespace NuimEditor {
 
         if (FAILED(hr) || !m_rtv)
             throw std::runtime_error("CreateRenderTargetView failed");
+
+        D3D11_VIEWPORT vp{};
+        vp.TopLeftX = 0;
+        vp.TopLeftY = 0;
+        vp.Width = (float)m_window->GetWidth();
+        vp.Height = (float)m_window->GetHeight();
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        m_context->RSSetViewports(1, &vp);
     }
 
     void EditorApplication::CleanupRenderTarget()
@@ -321,9 +438,11 @@ namespace NuimEditor {
         CleanupRenderTarget();
 
         HRESULT hr = m_swapChain->ResizeBuffers(0, (UINT)w, (UINT)h, DXGI_FORMAT_UNKNOWN, 0);
-        if (FAILED(hr))
+        if (FAILED(hr)) {
+            Nuim::Log::Error("ResizeBuffers failed");
             throw std::runtime_error("SwapChain ResizeBuffers failed");
-
+        }
+            
         CreateRenderTarget();
     }
 

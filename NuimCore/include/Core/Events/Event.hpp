@@ -9,7 +9,7 @@ namespace Nuim {
 		KeyPressEvent, KeyReleaseEvent,
 		MousePressEvent, MouseReleaseEvent, MouseMoveEvent, MouseMiddleButtonDownEvent, MouseMiddleButtonReleaseEvent, MouseScrollEvent,
 		ApplicationStartEvent, ApplicationCloseEvent,
-		WindowSizeEvent, WindowMinimizeEvent, WindowMaxmimizeEvent, WindowRestoreEvent, WindowGotFocus, WindowLostFocus
+		WindowSizeEvent, WindowMinimizeEvent, WindowMaxmimizeEvent, WindowRestoreEvent, WindowGotFocus, WindowLostFocus, WindowCloseEvent
 
 	};
 

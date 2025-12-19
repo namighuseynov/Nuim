@@ -74,8 +74,33 @@ namespace NuimEditor {
         ImGui::End();
 
         ImGui::Begin("Viewport");
-        ImGui::Text("Render view will be here (later)");
+
+        ImVec2 avail = ImGui::GetContentRegionAvail();
+        Nuim::U32 vw = (Nuim::U32)(avail.x > 0 ? avail.x : 0);
+        Nuim::U32 vh = (Nuim::U32)(avail.y > 0 ? avail.y : 0);
+
+        if (vw > 0 && vh > 0 && (vw != m_lastViewportW || vh != m_lastViewportH))
+        {
+            m_lastViewportW = vw;
+            m_lastViewportH = vh;
+            if (m_requestViewportResize)
+                m_requestViewportResize(vw, vh);
+        }
+
+        void* srv = m_getViewportSRV ? m_getViewportSRV() : nullptr;
+        if (srv && vw > 0 && vh > 0)
+        {
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+            ImGui::Image((ImTextureID)srv, ImVec2((float)vw, (float)vh));
+            ImGui::PopStyleVar();
+        }
+        else
+        {
+            ImGui::Text("Viewport texture not ready...");
+        }
+
         ImGui::End();
+
 
         ImGui::ShowDemoWindow();
 

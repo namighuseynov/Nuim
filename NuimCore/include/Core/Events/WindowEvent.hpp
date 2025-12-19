@@ -95,4 +95,17 @@ namespace Nuim {
 		}
 	private:
 	};
+
+	class WindowCloseEvent :
+		public Event {
+	public:
+		WindowCloseEvent() {};
+	public:
+		std::string GetName() const override {
+			return "WindowCloseEvent";
+		}
+		EventType GetType() const override {
+			return EventType::WindowCloseEvent;
+		}
+	};
 }

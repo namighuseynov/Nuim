@@ -232,7 +232,8 @@ namespace Nuim {
         {
             if (m_data.EventCallback)
             {
-
+                WindowCloseEvent e;
+                m_data.EventCallback(e); 
             }
             PostQuitMessage(0);
             return 0;
