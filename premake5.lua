@@ -53,4 +53,32 @@ project "NuimCore"
         optimize "on"
 
 
+project "NuimEditor"
+    location "NuimEditor"
+    kind "WindowedApp"
+    language "C++"
+    cppdialect "C++20"
+    staticruntime "on"
+
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir    ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+    files {
+        "NuimEditor/src/**.cpp",
+        "NuimEditor/src/**.h"
+    }
+
+    includedirs {
+        "NuimCore/include"
+    }
+
+    links {
+        "NuimCore"
+    }
+
+    filter "system:windows"
+        systemversion "latest"
+
+
+
 

@@ -34,7 +34,7 @@ namespace Nuim {
         void Shutdown();
 
         LRESULT HandleMessage(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-        static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+        static LRESULT CALLBACK WndProc(HWND hwnd, U32 msg, WPARAM wparam, LPARAM lparam);
 
     private:
         HWND m_hwnd = nullptr;

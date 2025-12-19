@@ -62,7 +62,7 @@ namespace Nuim {
             const size_t pos = fmt.find("{}");
             if (pos == std::string::npos) {
                 oss << fmt << " " << value;
-                (void)std::initializer_list<int>{ (oss << " " << rest, 0)... };
+                (void)std::initializer_list<U32>{ (oss << " " << rest, 0)... };
                 return;
             }
 

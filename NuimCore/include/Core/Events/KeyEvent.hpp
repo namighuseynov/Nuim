@@ -1,4 +1,5 @@
 #pragma once
+#include "Base.hpp"
 #include "Event.hpp"
 
 namespace Nuim {
@@ -36,7 +37,7 @@ namespace Nuim {
 		public Event 
 	{
 	public:
-		KeyPressEvent(UINT keyCode) : keyCode(keyCode) {}
+		KeyPressEvent(U32 keyCode) : keyCode(keyCode) {}
 	public:
 		std::string GetName() const override {
 			return "KeyPress";
@@ -44,18 +45,18 @@ namespace Nuim {
 		EventType GetType() const override {
 			return EventType::KeyPressEvent;
 		}
-		const UINT& GetKeyCode() {
+		const U32& GetKeyCode() {
 			return keyCode;
 		}
 	private:
-		UINT keyCode = 0;
+		U32 keyCode = 0;
 	};
 
 	class KeyReleaseEvent :
 		public Event
 	{
 	public:
-		KeyReleaseEvent(UINT keyCode) : keyCode(keyCode) {};
+		KeyReleaseEvent(U32 keyCode) : keyCode(keyCode) {};
 	public:
 		std::string GetName() const override {
 			return "KeyRelease";
@@ -63,10 +64,10 @@ namespace Nuim {
 		EventType GetType() const override {
 			return EventType::KeyReleaseEvent;
 		}
-		const UINT& GetKeyCode() {
+		const U32& GetKeyCode() {
 			return keyCode;
 		}
 	private:
-		UINT keyCode = 0;
+		U32 keyCode = 0;
 	};
 }

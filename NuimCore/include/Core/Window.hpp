@@ -20,7 +20,7 @@ namespace Nuim {
     public:
         using EventCallbackFn = std::function<void(Event&)>;
 
-        using NativeMessageHook = std::function<bool(void* hwnd, uint32_t msg, uint64_t wparam, int64_t lparam)>;
+        using NativeMessageHook = std::function<bool(void* hwnd, U32 msg, U32 wparam, I64 lparam)>;
 
         virtual ~Window() = default;
 
@@ -29,8 +29,8 @@ namespace Nuim {
 
         virtual void SetNativeMessageHook(const NativeMessageHook& hook) = 0;
 
-        virtual uint32_t GetWidth()  const = 0;
-        virtual uint32_t GetHeight() const = 0;
+        virtual U32 GetWidth()  const = 0;
+        virtual U32 GetHeight() const = 0;
 
         virtual void* GetNativeHandle() const = 0;
 

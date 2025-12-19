@@ -17,6 +17,7 @@ namespace Nuim {
 	class ApplicationStartEvent :
 		public Event
 	{
+	public:
 		std::string GetName() const override {
 			return "ApplicationStart";
 		}

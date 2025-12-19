@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "Base.hpp"
 
 namespace Nuim {
 
@@ -14,7 +15,10 @@ namespace Nuim {
 	class Event
 	{
 	public:
+		virtual ~Event() = default;
 		virtual std::string GetName() const = 0;
 		virtual EventType GetType() const = 0;
+
+		bool Handled = false;
 	};
 }

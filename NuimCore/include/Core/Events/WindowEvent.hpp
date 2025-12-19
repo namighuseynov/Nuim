@@ -6,7 +6,7 @@ namespace Nuim {
 	class WindowSizeEvent :
 		public Event {
 	public:
-		WindowSizeEvent(UINT width, UINT height) : width(width), height(height) {};
+		WindowSizeEvent(U32 width, U32 height) : width(width), height(height) {};
 	public:
 		std::string GetName() const override {
 			return "WindowSize";
@@ -14,15 +14,15 @@ namespace Nuim {
 		EventType GetType() const override {
 			return EventType::WindowSizeEvent;
 		}
-		UINT GetWidth() {
+		U32 GetWidth() const {
 			return width;
 		}
-		UINT GetHeight() {
+		U32 GetHeight() const {
 			return height;
 		}
 	private:
-		UINT width;
-		UINT height;
+		U32 width;
+		U32 height;
 
 	};
 

@@ -15,9 +15,9 @@ namespace Nuim {
     static std::wstring ToWide(const std::string& s)
     {
         if (s.empty()) return L"";
-        int len = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (int)s.size(), nullptr, 0);
+        U32 len = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (U32)s.size(), nullptr, 0);
         std::wstring out(len, L'\0');
-        MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (int)s.size(), out.data(), len);
+        MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (U32)s.size(), out.data(), len);
         return out;
     }
 
@@ -110,7 +110,7 @@ namespace Nuim {
         }
     }
 
-    LRESULT CALLBACK WindowsWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+    LRESULT CALLBACK WindowsWindow::WndProc(HWND hwnd, U32 msg, WPARAM wparam, LPARAM lparam)
     {
         if (msg == WM_NCCREATE)
         {
@@ -179,9 +179,9 @@ namespace Nuim {
         {
             if (m_data.EventCallback)
             {
-                int x = GET_X_LPARAM(lparam);
-                int y = GET_Y_LPARAM(lparam);
-                MouseMoveEvent e((float)x, (float)y);
+                U32 x = GET_X_LPARAM(lparam);
+                U32 y = GET_Y_LPARAM(lparam);
+                MouseMoveEvent e(x, y);
                 m_data.EventCallback(e);
             }
             return 0;
@@ -212,7 +212,7 @@ namespace Nuim {
         {
             if (m_data.EventCallback)
             {
-                KeyPressEvent e((int)wparam);
+                KeyPressEvent e((U32)wparam);
                 m_data.EventCallback(e); 
             }
             return 0;
@@ -222,7 +222,7 @@ namespace Nuim {
         {
             if (m_data.EventCallback)
             {
-                KeyReleaseEvent e((int)wparam);
+                KeyReleaseEvent e((U32)wparam);
                 m_data.EventCallback(e);
             }
             return 0;

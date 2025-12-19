@@ -12,7 +12,7 @@ namespace Nuim {
 	class MousePressEvent :
 		public Event {
 	public:
-		MousePressEvent(const int& mouseButton, const int& coordX, const int&   coordY) : mouseButton(mouseButton), coordX(coordX), coordY(coordY) {};
+		MousePressEvent(const U32& mouseButton, const U32& coordX, const U32&   coordY) : mouseButton(mouseButton), coordX(coordX), coordY(coordY) {};
 	public:
 		std::string GetName() const override {
 			return "MousePress";
@@ -20,25 +20,25 @@ namespace Nuim {
 		EventType GetType() const  override {
 			return EventType::MousePressEvent; 
 		}
-		int GetMouseButton() {
+		U32 GetMouseButton() {
 			return mouseButton;
 		}
-		const int& GetX() {
+		const U32& GetX() {
 			return coordX;
 		}
-		const int& GetY() {
+		const U32& GetY() {
 			return coordY;
 		}
 	private:
-		int mouseButton;
-		int coordX;
-		int coordY;
+		U32 mouseButton;
+		U32 coordX;
+		U32 coordY;
 	};
 
 	class MouseReleaseEvent :
 		public Event {
 	public:
-		MouseReleaseEvent(const int& mouseButton) : mouseButton(mouseButton) {};
+		MouseReleaseEvent(const U32& mouseButton) : mouseButton(mouseButton) {};
 	public:
 		std::string GetName() const override {
 			return "MouseRelease";
@@ -46,18 +46,18 @@ namespace Nuim {
 		EventType GetType() const  override {
 			return EventType::MouseReleaseEvent;
 		}
-		int GetMouseButton() {
+		U32 GetMouseButton() {
 			return mouseButton;
 		}
 	private:
-		int mouseButton;
+		U32 mouseButton;
 
 	};
 
 	class MouseMoveEvent :
 		public Event {
 	public:
-		MouseMoveEvent(const UINT& coordX, const UINT& coordY) : coordX(coordX), coordY(coordY) {};
+		MouseMoveEvent(const U32& coordX, const U32& coordY) : coordX(coordX), coordY(coordY) {};
 	public:
 		std::string GetName() const override {
 			return "MouseMove";
@@ -65,21 +65,21 @@ namespace Nuim {
 		EventType GetType() const  override {
 			return EventType::MouseMoveEvent;
 		}
-		const UINT& GetX() {
+		const U32& GetX() {
 			return this->coordX;
 		}
-		const UINT& GetY() {
+		const U32& GetY() {
 			return this->coordY;
 		}
 	private:
-		UINT coordX = 0;
-		UINT coordY = 0;
+		U32 coordX = 0;
+		U32 coordY = 0;
 	};
 
 	class MouseMiddleButtonDown :
 		public Event {
 	public:
-		MouseMiddleButtonDown(const UINT& coordX, const UINT& coordY) : coordX(coordX), coordY(coordY) {};
+		MouseMiddleButtonDown(const U32& coordX, const U32& coordY) : coordX(coordX), coordY(coordY) {};
 	public:
 		std::string GetName() const override {
 			return "MouseMiddleButtonDown";
@@ -87,21 +87,21 @@ namespace Nuim {
 		EventType GetType() const  override {
 			return EventType::MouseMiddleButtonDownEvent;
 		}
-		const UINT& GetX() {
+		const U32& GetX() {
 			return this->coordX;
 		}
-		const UINT& GetY() {
+		const U32& GetY() {
 			return this->coordY;
 		}
 	private:
-		UINT coordX = 0;
-		UINT coordY = 0;
+		U32 coordX = 0;
+		U32 coordY = 0;
 	};
 
 	class MouseMiddleButtonRelease :
 		public Event {
 	public:
-		MouseMiddleButtonRelease(const UINT& coordX, const UINT& coordY) : coordX(coordX), coordY(coordY) {};
+		MouseMiddleButtonRelease(const U32& coordX, const U32& coordY) : coordX(coordX), coordY(coordY) {};
 	public:
 		std::string GetName() const override {
 			return "MouseMiddleButtonRelease";
@@ -109,15 +109,15 @@ namespace Nuim {
 		EventType GetType() const  override {
 			return EventType::MouseMiddleButtonReleaseEvent;
 		}
-		const UINT& GetX() {
+		const U32& GetX() {
 			return this->coordX;
 		}
-		const UINT& GetY() {
+		const U32& GetY() {
 			return this->coordY;
 		}
 	private:
-		UINT coordX = 0;
-		UINT coordY = 0;
+		U32 coordX = 0;
+		U32 coordY = 0;
 	};
 
 	class MouseScrollEvent :
