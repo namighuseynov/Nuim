@@ -17,8 +17,8 @@ namespace NuimEditor {
     struct EditorApplicationSpecification
     {
         std::string Name = "NuimEditor";
-        U32 Width = 1280;
-        U32 Height = 720;
+        Nuim::U32 Width = 1280;
+        Nuim::U32 Height = 720;
         bool VSync = true;
     };
 
@@ -43,7 +43,7 @@ namespace NuimEditor {
         void ShutdownD3D11();
         void CreateRenderTarget();
         void CleanupRenderTarget();
-        void ResizeSwapChain(U32 w, U32 h);
+        void ResizeSwapChain(Nuim::U32 w, Nuim::U32 h);
 
     private:
         EditorApplicationSpecification m_spec;

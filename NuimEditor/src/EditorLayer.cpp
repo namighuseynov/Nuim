@@ -77,6 +77,8 @@ namespace NuimEditor {
         ImGui::Text("Render view will be here (later)");
         ImGui::End();
 
+        ImGui::ShowDemoWindow();
+
         ImGui::End();
     }
 

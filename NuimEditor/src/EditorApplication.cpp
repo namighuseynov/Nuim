@@ -59,7 +59,7 @@ namespace NuimEditor {
         );
 
 
-        m_window->SetNativeMessageHook([this](void* hwnd, U32 msg, U64 wp, I64 lp) -> bool {
+        m_window->SetNativeMessageHook([this](void* hwnd, Nuim::U32 msg, Nuim::U64 wp, Nuim::I64 lp) -> bool {
 
             if (m_imgui && m_imgui->HandleWin32Message((HWND)hwnd, (UINT)msg, (WPARAM)wp, (LPARAM)lp))
                 return true;
@@ -154,8 +154,8 @@ namespace NuimEditor {
         case Nuim::EventType::WindowSizeEvent:
         {
             auto& ev = static_cast<Nuim::WindowSizeEvent&>(e);
-            const U32 w = ev.GetWidth();
-            const U32 h = ev.GetHeight();
+            const Nuim::U32 w = ev.GetWidth();
+            const Nuim::U32 h = ev.GetHeight();
 
             m_minimized = (w == 0 || h == 0);
 
@@ -313,7 +313,7 @@ namespace NuimEditor {
         SafeRelease((IUnknown*&)m_rtv);
     }
 
-    void EditorApplication::ResizeSwapChain(U32 w, U32 h)
+    void EditorApplication::ResizeSwapChain(Nuim::U32 w, Nuim::U32 h)
     {
         if (!m_swapChain)
             return;
