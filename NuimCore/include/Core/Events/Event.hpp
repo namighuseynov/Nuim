@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "Base.hpp"
+#include "Core/Base.hpp"
 #include "../InputCodes.hpp"
 
 namespace Nuim {

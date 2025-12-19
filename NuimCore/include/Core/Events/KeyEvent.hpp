@@ -1,6 +1,6 @@
 #pragma once
-#include "Base.hpp"
-#include "Event.hpp"
+#include "Core/Base.hpp"
+#include "Core/Events/Event.hpp"
 
 
 namespace Nuim {

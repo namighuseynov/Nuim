@@ -46,10 +46,12 @@ project "NuimCore"
 
     filter "configurations:Debug"
         defines { "NUIM_DEBUG" }
+        runtime "Debug"
         symbols "on"
 
     filter "configurations:Release"
         defines { "NUIM_RELEASE" }
+        runtime "Release"
         optimize "on"
 
 
@@ -65,13 +67,22 @@ project "NuimRender"
 
     files {
         "NuimRender/include/**.hpp",
-        "NuimRender/src/**.cpp"
+        "NuimRender/src/**.cpp",
+        "NuimRender/**.cpp"
     }
 
     includedirs {
         "NuimRender/include",
         "NuimCore/include",
     }
+
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "on"
 
     links { "NuimCore" } --"NuimWorld", "NuimAssets"-- }
 
@@ -109,6 +120,14 @@ project "NuimRenderDX11"
         systemversion "latest"
         defines { "NUIM_RENDER_DX11" }
 
+        filter "configurations:Debug"
+    runtime "Debug"
+    symbols "on"
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "on"
+
     pchheader "NuimPCH.h"
     pchsource "NuimRenderDX11/src/NuimPCH.cpp"
 
@@ -133,6 +152,14 @@ project "ImGui"
         "ImGui/imgui_impl_win32.h",
         "ImGui/imgui_impl_dx11.h"
     }
+
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "on"
 
     includedirs { "%{IncludeDir.ImGui}" }
     defines { "IMGUI_IMPL_WIN32_DISABLE_GAMEPAD" }
@@ -160,16 +187,25 @@ project "NuimEditor"
         "NuimAssets/include",
         "NuimRender/include",
         "NuimRenderDX11/include",
+        "ImGui",
         "%{IncludeDir.ImGui}"
     }
 
     links {
-        "NuimRenderDX11", "NuimRender", "NuimAssets", "NuimWorld", "NuimCore",
+        "NuimRenderDX11", "NuimRender", "NuimCore",
         "ImGui"
     }
 
     filter "system:windows"
         systemversion "latest"
+
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "on"
 
 
 

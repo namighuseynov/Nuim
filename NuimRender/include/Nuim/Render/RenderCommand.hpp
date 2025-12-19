@@ -1,6 +1,5 @@
 #pragma once
 #include "Core/Base.hpp"
-#include "RenderTypes.hpp"
 
 namespace Nuim {
     class ClearColor;
