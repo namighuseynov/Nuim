@@ -8,9 +8,6 @@ namespace NuimEditor {
     class EditorImGuiLayer
     {
     public:
-        EditorImGuiLayer() = default;
-        ~EditorImGuiLayer() = default;
-
         void Init(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context);
         void Shutdown();
 
@@ -23,4 +20,4 @@ namespace NuimEditor {
         bool m_initialized = false;
     };
 
-} 
+}

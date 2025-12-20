@@ -7,14 +7,10 @@
 #include "Core/Window.hpp"
 #include "Core/LayerStack.hpp"
 
-struct ID3D11Device;
-struct ID3D11DeviceContext;
-struct IDXGISwapChain;
-struct ID3D11RenderTargetView;
-
-struct ID3D11Texture2D;
-struct ID3D11ShaderResourceView;
-struct ID3D11DepthStencilView; 
+#include "Render/IRenderContext.hpp"
+#include "Render/ISwapChain.hpp"
+#include "Render/IRenderTarget.hpp"
+#include "Render/RenderTypes.hpp"
 
 namespace NuimEditor {
 
@@ -38,23 +34,11 @@ namespace NuimEditor {
         void Run();
         void Close();
 
-        void* GetViewportTextureSRV() const { return (void*)m_viewportSRV; } 
-        void  SetViewportSize(Nuim::U32 w, Nuim::U32 h); 
-
     private:
         void OnEvent(Nuim::Event& e);
-        void HandleCoreInputEvents(Nuim::Event& e);
 
-        // DX11
-        void InitD3D11();
-        void ShutdownD3D11();
-        void CreateRenderTarget();
-        void CleanupRenderTarget();
-        void ResizeSwapChain(Nuim::U32 w, Nuim::U32 h);
-
-        void CreateViewportResources(Nuim::U32 w, Nuim::U32 h);
-        void CleanupViewportResources();
-        void RenderViewport();
+        void OnWindowResize(Nuim::U32 w, Nuim::U32 h);
+        void BindBackbuffer();
 
     private:
         EditorApplicationSpecification m_spec;
@@ -65,23 +49,13 @@ namespace NuimEditor {
         bool m_running = true;
         bool m_minimized = false;
 
-        // DX11 resources
-        ID3D11Device* m_device = nullptr;
-        ID3D11DeviceContext* m_context = nullptr;
-        IDXGISwapChain* m_swapChain = nullptr;
-        ID3D11RenderTargetView* m_rtv = nullptr;
+        std::unique_ptr<Nuim::Render::IRenderContext> m_renderContext;
+        std::unique_ptr<Nuim::Render::ISwapChain>     m_swapChain;
+        std::unique_ptr<Nuim::Render::IRenderTarget>  m_viewportTarget;
 
-        ID3D11Texture2D* m_viewportTex = nullptr;
-        ID3D11RenderTargetView* m_viewportRTV = nullptr;
-        ID3D11ShaderResourceView* m_viewportSRV = nullptr;
-        ID3D11Texture2D* m_viewportDepth = nullptr;
-        ID3D11DepthStencilView* m_viewportDSV = nullptr;
-        Nuim::U32                  m_viewportW = 0;
-        Nuim::U32                  m_viewportH = 0; 
-
-        // Layers
         std::unique_ptr<EditorImGuiLayer> m_imgui;
-        EditorLayer* m_editorLayerPtr = nullptr;
+        EditorLayer* m_editorLayer = nullptr;
+
     };
 
-} // namespace NuimEditor
+}
