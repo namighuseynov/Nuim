@@ -54,6 +54,29 @@ project "NuimCore"
         runtime "Release"
         optimize "on"
 
+project "NuimWorld"
+    location "NuimWorld"
+    kind "StaticLib"
+    language "C++"
+    cppdialect "C++20"
+    staticruntime "on"
+
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir    ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+    files {
+        "NuimWorld/include/**.h",
+        "NuimWorld/include/**.hpp",
+        "NuimWorld/src/**.cpp"
+    }
+
+    includedirs {
+        "NuimWorld/include",
+        "NuimCore/include"
+    }
+
+    links { "NuimCore" }
+
 
 project "NuimRender"
     location "NuimRender"
