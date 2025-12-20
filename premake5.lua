@@ -130,10 +130,11 @@ project "NuimRenderDX11"
         "NuimRenderDX11/include",
         "NuimRender/include",
         "NuimCore/include",
+        "ImGui",
     }
 
     links {
-        "NuimRender", "NuimCore",
+        "NuimRender", "NuimCore", "ImGui",
         "d3d11", "dxgi", "d3dcompiler",
         "windowscodecs", -- WIC
         "ole32"          -- CoInitialize/COM

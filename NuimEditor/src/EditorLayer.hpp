@@ -6,6 +6,7 @@
 
 #include "Render/IRenderTarget.hpp"
 #include "World/Scene.hpp"
+#include "World/FlyCameraScript.hpp"
 
 namespace NuimEditor {
 
@@ -48,6 +49,8 @@ namespace NuimEditor {
         // Optional: focus/hover state
         bool m_viewportFocused = false;
         bool m_viewportHovered = false;
+
+        Nuim::World::FlyCameraScript* m_camera = nullptr;
     };
 
 }

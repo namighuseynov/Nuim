@@ -34,10 +34,31 @@ namespace NuimEditor {
     }
 
     void EditorLayer::OnEvent(Nuim::Event& e) {
-        if (m_scene)
-            m_scene->DispatchEvent(e);
+        ImGuiIO& io = ImGui::GetIO();
 
-        (void)e;
+        bool blockKeyboard = io.WantCaptureKeyboard;
+        bool blockMouse = io.WantCaptureMouse;
+
+        if (m_scene && m_scene->IsRunning())
+        {
+            const bool allowKeyboard = m_viewportFocused && !blockKeyboard;
+            const bool allowMouse = m_viewportHovered && !blockMouse;
+
+            const auto type = e.GetType();
+
+            const bool isKeyboardEvent =
+                type == Nuim::EventType::KeyPressEvent ||
+                type == Nuim::EventType::KeyReleaseEvent;
+
+            const bool isMouseEvent =
+                type == Nuim::EventType::MouseMoveEvent ||
+                type == Nuim::EventType::MousePressEvent ||
+                type == Nuim::EventType::MouseReleaseEvent ||
+                type == Nuim::EventType::MouseScrollEvent;
+
+            if ((isKeyboardEvent && allowKeyboard) || (isMouseEvent && allowMouse) || (!isKeyboardEvent && !isMouseEvent))
+                m_scene->DispatchEvent(e);
+        }
     }
 
     bool EditorLayer::ConsumeViewportResize(Nuim::U32& outW, Nuim::U32& outH)
@@ -129,6 +150,9 @@ namespace NuimEditor {
 
         // Viewport panel
         ImGui::Begin("Viewport");
+
+        m_viewportFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+        m_viewportHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
 
         ImVec2 avail = ImGui::GetContentRegionAvail();
 

@@ -11,6 +11,7 @@
 #include "Render/ISwapChain.hpp"
 #include "Render/IRenderTarget.hpp"
 #include "Render/RenderTypes.hpp"
+#include "Render/IImGuiBackend.hpp"
 
 namespace NuimEditor {
 
@@ -22,7 +23,6 @@ namespace NuimEditor {
         bool VSync = true;
     };
 
-    class EditorImGuiLayer;
     class EditorLayer;
 
     class EditorApplication
@@ -38,7 +38,6 @@ namespace NuimEditor {
         void OnEvent(Nuim::Event& e);
 
         void OnWindowResize(Nuim::U32 w, Nuim::U32 h);
-        void BindBackbuffer();
 
     private:
         EditorApplicationSpecification m_spec;
@@ -52,8 +51,8 @@ namespace NuimEditor {
         std::unique_ptr<Nuim::Render::IRenderContext> m_renderContext;
         std::unique_ptr<Nuim::Render::ISwapChain>     m_swapChain;
         std::unique_ptr<Nuim::Render::IRenderTarget>  m_viewportTarget;
+        std::unique_ptr<Nuim::Render::IImGuiBackend> m_imgui; 
 
-        std::unique_ptr<EditorImGuiLayer> m_imgui;
         EditorLayer* m_editorLayer = nullptr;
 
     };

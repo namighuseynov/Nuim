@@ -1,6 +1,4 @@
 #include "EditorApplication.hpp"
-
-#include "EditorImGuiLayer.hpp"
 #include "EditorLayer.hpp"
 
 
@@ -19,16 +17,12 @@
 // DX11 factory
 #include "DX11/DX11Factory.hpp"
 
-#ifdef NUIM_PLATFORM_WINDOWS
-#include <Windows.h>
-#include <d3d11.h>
-#endif
-
 namespace NuimEditor {
 
     EditorApplication::EditorApplication(const EditorApplicationSpecification& spec)
         : m_spec(spec)
     {
+        
         // 1) Window
         Nuim::WindowProps wp;
         wp.Title = m_spec.Name;
@@ -64,17 +58,15 @@ namespace NuimEditor {
         m_viewportTarget = Nuim::DX11::CreateRenderTargetDX11(*m_renderContext, rt);
 
         // 3) ImGui layer
-        m_imgui = std::make_unique<EditorImGuiLayer>();
-        m_imgui->Init(
-            (HWND)m_window->GetNativeHandle(),
-            (ID3D11Device*)m_renderContext->GetNativeDevice(),
-            (ID3D11DeviceContext*)m_renderContext->GetNativeContext()
-        );
+        m_imgui = Nuim::DX11::CreateImGuiBackendDX11();
+        m_imgui->Init(m_window->GetNativeHandle(), m_renderContext.get());
 
         m_window->SetNativeMessageHook([this](void* hwnd, Nuim::U32 msg, Nuim::U64 wparam, Nuim::I64 lparam) -> bool
         {
-                return m_imgui ? m_imgui->HandleWin32Message((HWND)hwnd, (UINT)msg, (WPARAM)wparam, (LPARAM)lparam) : false;
+                return m_imgui ? m_imgui->HandleNativeMessage(hwnd, msg, wparam, lparam) : false;
         });
+
+
 
         // 4) Editor UI Layer (Dockspace + Viewport)
         auto editorLayer = std::make_unique<EditorLayer>();
@@ -114,76 +106,44 @@ namespace NuimEditor {
     {
         while (m_running)
         {
-            // 1) messages/events
+            // 1) poll
             m_window->PollEvents();
-
-            Nuim::Input::NewFrame(); 
-
-            // 2) time
+            Nuim::Input::NewFrame();
             Nuim::Time::Tick();
             float dt = Nuim::Time::GetDeltaTime();
 
+            // 2) update layers
+            for (auto& layer : m_layers)
+                layer->OnUpdate(dt);
+
+            // 3) viewport resize from editor layer -> resize RT
             if (m_editorLayer && m_viewportTarget)
             {
                 Nuim::U32 vw = 0, vh = 0;
                 if (m_editorLayer->ConsumeViewportResize(vw, vh))
-                {
                     m_viewportTarget->Resize(vw, vh);
-                }
             }
 
+            // 4) render scene to viewport target
             if (!m_minimized)
             {
-                // 5.1) Render to viewport target (offscreen)
                 m_viewportTarget->Bind();
                 m_viewportTarget->Clear(0.08f, 0.08f, 0.10f, 1.0f);
 
-                // RenderScene()
+                // RenderScene() after
 
-                // 5.2) Backbuffer for ImGui
-                BindBackbuffer();
+                // 5) render UI to swapchain backbuffer
+                m_swapChain->BindBackbuffer();
+                m_swapChain->ClearBackbuffer(0.06f, 0.06f, 0.07f, 1.0f);
 
-#ifdef NUIM_PLATFORM_WINDOWS
-                auto* ctx = (ID3D11DeviceContext*)m_renderContext->GetNativeContext();
-                auto* rtv = (ID3D11RenderTargetView*)m_swapChain->GetNativeBackbufferRTV();
-                float bg[4] = { 0.06f, 0.06f, 0.07f, 1.0f };
-                ctx->ClearRenderTargetView(rtv, bg);
-#endif
-
-                // 4) ImGui
                 m_imgui->BeginFrame();
-
                 for (auto& layer : m_layers)
-                {
-                    layer->OnUpdate(dt);
                     layer->OnImGuiRender();
-                }
-
                 m_imgui->EndFrame();
             }
 
-            // 5) Present
             m_swapChain->Present();
         }
-    }
-
-    void EditorApplication::BindBackbuffer()
-    {
-#ifdef NUIM_PLATFORM_WINDOWS
-        auto* ctx = (ID3D11DeviceContext*)m_renderContext->GetNativeContext();
-        auto* rtv = (ID3D11RenderTargetView*)m_swapChain->GetNativeBackbufferRTV();
-
-        ctx->OMSetRenderTargets(1, &rtv, nullptr);
-
-        D3D11_VIEWPORT vp{};
-        vp.TopLeftX = 0.0f;
-        vp.TopLeftY = 0.0f;
-        vp.Width = (float)m_swapChain->GetWidth();
-        vp.Height = (float)m_swapChain->GetHeight();
-        vp.MinDepth = 0.0f;
-        vp.MaxDepth = 1.0f;
-        ctx->RSSetViewports(1, &vp);
-#endif
     }
 
     void EditorApplication::OnWindowResize(Nuim::U32 w, Nuim::U32 h)

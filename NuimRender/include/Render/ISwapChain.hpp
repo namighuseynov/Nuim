@@ -4,10 +4,6 @@
 
 namespace Nuim::Render {
 
-    struct ClearColor {
-        float r = 0.1f, g = 0.1f, b = 0.1f, a = 1.0f;
-    };
-
     class ISwapChain {
     public:
         virtual ~ISwapChain() = default;
@@ -20,6 +16,9 @@ namespace Nuim::Render {
 
         virtual void SetVSync(bool enabled) = 0;
         virtual bool IsVSync() const = 0;
+
+        virtual void BindBackbuffer() = 0;
+        virtual void ClearBackbuffer(float r, float g, float b, float a) = 0;
 
         virtual void* GetNativeBackbufferRTV() const = 0;
     };
