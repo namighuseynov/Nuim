@@ -1,11 +1,15 @@
 #pragma once
 
+#include <memory>
 #include "Core/Layer.hpp"
+#include "Core/Base.hpp"
+
 #include "Render/IRenderTarget.hpp"
+#include "World/Scene.hpp"
 
 namespace NuimEditor {
 
-    class EditorLayer : public Nuim::Layer
+    class EditorLayer final : public Nuim::Layer
     {
     public:
         EditorLayer();
@@ -23,14 +27,27 @@ namespace NuimEditor {
         bool ConsumeViewportResize(Nuim::U32& outW, Nuim::U32& outH);
 
     private:
+        void TogglePlayStop();
+
+    private:
+        // Scene runtime
+        std::unique_ptr<Nuim::World::Scene> m_scene;
+        bool m_playMode = false;
+
+        // Viewport target (owned by EditorApplication)
         Nuim::Render::IRenderTarget* m_viewportTarget = nullptr;
 
-        float m_viewportW = 0.0f;
-        float m_viewportH = 0.0f;
+        // Viewport size tracking
+        Nuim::U32 m_viewportW = 1;
+        Nuim::U32 m_viewportH = 1;
 
-        Nuim::U32 m_pendingViewportW = 0;
-        Nuim::U32 m_pendingViewportH = 0;
+        Nuim::U32 m_pendingViewportW = 1;
+        Nuim::U32 m_pendingViewportH = 1;
         bool m_viewportResizeRequested = false;
+
+        // Optional: focus/hover state
+        bool m_viewportFocused = false;
+        bool m_viewportHovered = false;
     };
 
 }

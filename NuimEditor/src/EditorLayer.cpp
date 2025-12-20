@@ -7,10 +7,38 @@ namespace NuimEditor {
     EditorLayer::EditorLayer()
         : Nuim::Layer("EditorLayer") {}
 
-    void EditorLayer::OnAttach() {}
-    void EditorLayer::OnDetach() {}
-    void EditorLayer::OnUpdate(float) {}
-    void EditorLayer::OnEvent(Nuim::Event&) {}
+    void EditorLayer::OnAttach() {
+        m_scene = std::make_unique<Nuim::World::Scene>();
+    }
+    void EditorLayer::OnDetach() {
+        if (m_scene && m_scene->IsRunning())
+            m_scene->OnRuntimeStop();
+
+        m_scene.reset();
+    }
+
+    void EditorLayer::TogglePlayStop()
+    {
+        if (!m_scene)
+            return;
+
+        m_playMode = !m_playMode;
+        if (m_playMode) m_scene->OnRuntimeStart();
+        else            m_scene->OnRuntimeStop();
+    }
+
+
+    void EditorLayer::OnUpdate(float dt) {
+        if (m_scene)
+            m_scene->Update(dt);
+    }
+
+    void EditorLayer::OnEvent(Nuim::Event& e) {
+        if (m_scene)
+            m_scene->DispatchEvent(e);
+
+        (void)e;
+    }
 
     bool EditorLayer::ConsumeViewportResize(Nuim::U32& outW, Nuim::U32& outH)
     {
@@ -52,7 +80,6 @@ namespace NuimEditor {
         ImGuiID dockspaceID = ImGui::GetID("NuimDockspaceID");
         ImGui::DockSpace(dockspaceID, ImVec2(0, 0), ImGuiDockNodeFlags_PassthruCentralNode);
 
-        // Menu
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -63,6 +90,32 @@ namespace NuimEditor {
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
+        }
+
+        ImGui::Begin("Runtime");
+
+        if (!m_scene)
+        {
+            ImGui::Text("Scene: null");
+            ImGui::End();
+        }
+        else
+        {
+            if (!m_playMode)
+            {
+                if (ImGui::Button("Play"))
+                    TogglePlayStop();
+            }
+            else
+            {
+                if (ImGui::Button("Stop"))
+                    TogglePlayStop();
+            }
+
+            ImGui::SameLine();
+            ImGui::Text("Running: %s", m_scene->IsRunning() ? "true" : "false");
+
+            ImGui::End();
         }
 
         // Panels

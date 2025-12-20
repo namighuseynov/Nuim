@@ -8,11 +8,13 @@ namespace Nuim::World {
 
     class IScriptComponent
     {
-    public:
+    public: 
         virtual ~IScriptComponent() = default;
 
         void SetOwner(GameObject* owner) { m_owner = owner; }
         GameObject* GetOwner() const { return m_owner; }
+
+        bool IsAttached() const { return m_attached; }
 
         virtual void OnAttach() {}
         virtual void OnDetach() {}
@@ -22,6 +24,9 @@ namespace Nuim::World {
 
     protected:
         GameObject* m_owner = nullptr;
+        bool m_attached = false;
+
+        friend class GameObject;
     };
 
 }
