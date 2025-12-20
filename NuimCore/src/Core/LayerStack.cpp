@@ -14,14 +14,23 @@ namespace Nuim {
     {
         if (!layer) return;
 
+        Layer* raw = layer.get();
+
         m_layers.emplace(m_layers.begin() + m_insertIndex, std::move(layer));
         m_insertIndex++;
+
+        raw->OnAttach();
     }
 
     void LayerStack::PushOverlay(std::unique_ptr<Layer> overlay)
     {
         if (!overlay) return;
+
+        Layer* raw = overlay.get();
+
         m_layers.emplace_back(std::move(overlay));
+
+        raw->OnAttach();
     }
 
     void LayerStack::PopLayer(Layer* layer)

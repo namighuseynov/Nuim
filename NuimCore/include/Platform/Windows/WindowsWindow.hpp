@@ -2,11 +2,6 @@
 
 #include "include/Core/Window.hpp"
 
-#if NUIM_PLATFORM_WINDOWS
-#include <Windows.h>
-#include <windowsx.h> // GET_X_LPARAM / GET_Y_LPARAM
-#endif
-
 #include <string>
 
 namespace Nuim {

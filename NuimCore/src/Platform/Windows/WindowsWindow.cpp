@@ -7,8 +7,15 @@
 #include "include/Core/Events/MouseEvent.hpp"
 #include "include/Core/Events/WindowEvent.hpp"
 
+#include "include/Platform/Windows/WindowsKeyMap.hpp"
+
 #include <stdexcept>
 #include <memory>
+
+#if NUIM_PLATFORM_WINDOWS
+#include <Windows.h>
+#include <windowsx.h> // GET_X_LPARAM / GET_Y_LPARAM
+#endif
 
 namespace Nuim {
 
@@ -188,32 +195,54 @@ namespace Nuim {
         }
 
         case WM_LBUTTONDOWN:
-            if (m_data.EventCallback) { MousePressEvent e((U32)MouseButton::NM_LEFT, LOWORD(lparam), HIWORD(lparam)); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { 
+                U32 x = (U32)GET_X_LPARAM(lparam);
+                U32 y = (U32)GET_Y_LPARAM(lparam);
+                MousePressEvent e((U32)MouseButton::Left, x, y);
+                m_data.EventCallback(e);
+            }
             return 0;
         case WM_LBUTTONUP:
-            if (m_data.EventCallback) { MouseReleaseEvent e((U32)MouseButton::NM_LEFT); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { 
+                MouseReleaseEvent e((U32)MouseButton::Left);
+                m_data.EventCallback(e);
+            }
             return 0;
 
         case WM_RBUTTONDOWN:
-            if (m_data.EventCallback) { MousePressEvent e((U32)MouseButton::NM_RIGHT, LOWORD(lparam), HIWORD(lparam)); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { 
+                U32 x = (U32)GET_X_LPARAM(lparam);
+                U32 y = (U32)GET_Y_LPARAM(lparam);
+                MousePressEvent e((U32)MouseButton::Right, x, y); // <-- FIX
+                m_data.EventCallback(e);
+            }
             return 0;
         case WM_RBUTTONUP:
-            if (m_data.EventCallback) { MouseReleaseEvent e((U32)MouseButton::NM_RIGHT); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { MouseReleaseEvent e((U32)MouseButton::Right); m_data.EventCallback(e); }
             return 0;
 
         case WM_MBUTTONDOWN:
-            if (m_data.EventCallback) { MousePressEvent e((U32)MouseButton::NM_MIDDLE, LOWORD(lparam), HIWORD(lparam)); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { 
+                U32 x = (U32)GET_X_LPARAM(lparam);
+                U32 y = (U32)GET_Y_LPARAM(lparam);
+                MousePressEvent e((U32)MouseButton::Middle, x, y);
+                m_data.EventCallback(e);
+            }
             return 0;
         case WM_MBUTTONUP:
-            if (m_data.EventCallback) { MouseReleaseEvent e((U32)MouseButton::NM_MIDDLE); m_data.EventCallback(e); }
+            if (m_data.EventCallback) { MouseReleaseEvent e((U32)MouseButton::Middle); m_data.EventCallback(e); }
             return 0;
 
         case WM_KEYDOWN:
         {
             if (m_data.EventCallback)
             {
-                KeyPressEvent e((U32)wparam);
-                m_data.EventCallback(e); 
+                KeyCode key = WindowsKeyMap::ToKeyCode((U32)wparam);
+                if (key != KeyCode::Unknown)
+                {
+                    KeyPressEvent e(key);
+                    m_data.EventCallback(e);
+                }
             }
             return 0;
         }
@@ -222,8 +251,12 @@ namespace Nuim {
         {
             if (m_data.EventCallback)
             {
-                KeyReleaseEvent e((U32)wparam);
-                m_data.EventCallback(e);
+                KeyCode key = WindowsKeyMap::ToKeyCode((U32)wparam);
+                if (key != KeyCode::Unknown)
+                {
+                    KeyReleaseEvent e(key);
+                    m_data.EventCallback(e);
+                }
             }
             return 0;
         }

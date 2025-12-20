@@ -66,15 +66,10 @@ namespace NuimEditor {
                 return m_imgui ? m_imgui->HandleNativeMessage(hwnd, msg, wparam, lparam) : false;
         });
 
-
-
         // 4) Editor UI Layer (Dockspace + Viewport)
         auto editorLayer = std::make_unique<EditorLayer>();
         editorLayer->SetViewportTarget(m_viewportTarget.get());
 
-        m_editorLayer = editorLayer.get();
-
-        m_editorLayer->OnAttach();
         m_layers.PushLayer(std::move(editorLayer));
     }
 
@@ -180,19 +175,19 @@ namespace NuimEditor {
         case Nuim::EventType::KeyPressEvent:
         {
             auto& ke = static_cast<Nuim::KeyPressEvent&>(e);
-            Nuim::Input::OnKeyDown((int)ke.GetKeyCode());
+            Nuim::Input::OnKeyDown(ke.GetKeyCode());
             break;
         }
         case Nuim::EventType::KeyReleaseEvent:
         {
             auto& ke = static_cast<Nuim::KeyReleaseEvent&>(e);
-            Nuim::Input::OnKeyUp((int)ke.GetKeyCode());
+            Nuim::Input::OnKeyUp(ke.GetKeyCode());
             break;
         }
         case Nuim::EventType::MouseMoveEvent: 
         {
             auto& me = static_cast<Nuim::MouseMoveEvent&>(e);
-            Nuim::Input::OnMouseMove((int)me.GetX(), (int)me.GetY());
+            Nuim::Input::OnMouseMove(me.GetX(), me.GetY());
             break;
         }
         case Nuim::EventType::MousePressEvent: 
