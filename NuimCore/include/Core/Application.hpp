@@ -41,6 +41,12 @@ namespace Nuim {
         virtual void OnBeginFrame() {}
         virtual void OnEndFrame() {}
 
+        virtual void OnImGuiBegin() {}
+        virtual void OnImGuiEnd() {}
+        virtual void OnWindowResize(U32 w, U32 h) {}
+
+        LayerStack& GetLayerStack() { return m_layerStack; }
+
     private:
         void OnEvent(Event& e);
 
@@ -51,6 +57,7 @@ namespace Nuim {
 
         bool m_running = true;
         bool m_minimized = false;
+        bool m_initialized = false;
 
         static Application* s_instance;
 

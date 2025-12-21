@@ -7,7 +7,7 @@ workspace "Nuim"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
-IncludeDir["ImGui"] = "extern/imgui"
+IncludeDir["ImGui"] = "ImGui"
 
 project "NuimCore"
     location "NuimCore"
@@ -232,6 +232,25 @@ project "NuimEditor"
         runtime "Release"
         optimize "on"
 
+project "NuimAssets"
+    location "NuimAssets"
+    kind "StaticLib"
+    language "C++"
+    cppdialect "C++20"
+    staticruntime "on"
 
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir    ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+    files {
+        "NuimAssets/include/**.h",
+        "NuimAssets/src/**.cpp"
+    }
 
+    includedirs {
+        "NuimAssets/include",
+        "NuimCore/include",
+        "NuimWorld/include"
+    }
+
+    links { "NuimCore", "NuimWorld" }

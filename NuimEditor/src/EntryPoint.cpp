@@ -1,5 +1,4 @@
-#include "EditorApplication.hpp"
-
+#include "EditorApp.hpp"
 #include <Windows.h>
 
 int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
@@ -12,13 +11,14 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
 
     try
     {
-        NuimEditor::EditorApplicationSpecification spec;
+        Nuim::ApplicationSpecification spec;
         spec.Name = "NuimEditor";
         spec.Width = 1280;
         spec.Height = 720;
         spec.VSync = true;
+        spec.EnableImGui = true;
 
-        NuimEditor::EditorApplication app(spec);
+        NuimEditor::EditorApp app(spec);
         app.Run();
     }
     catch (const std::exception& e)
