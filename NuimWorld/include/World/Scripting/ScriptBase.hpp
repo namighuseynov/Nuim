@@ -19,6 +19,7 @@ namespace Nuim::World {
         virtual void OnAttach() {}
         virtual void OnDetach() {}
         virtual void OnUpdate(float dt) {}
+        virtual void OnFixedUpdate(float fixedDt) {}
         virtual void OnEvent(Nuim::Event& e) {}
         virtual void OnImGuiRender() {}
 

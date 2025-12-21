@@ -1,6 +1,7 @@
 #pragma once
 #include "World/ECS/Registry.hpp"
-#include "World/Components/TransformComponent.hpp"
+#include "World/Components/HierarchyComponent.hpp"
+#include "World/Components/TransformCacheComponent.hpp"
 #include <vector>
 
 namespace Nuim::World {

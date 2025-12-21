@@ -15,12 +15,16 @@ namespace Nuim::World {
         void OnRuntimeStop();
 
         void Update(float dt);
+        void FixedUpdate(float fixedDt);
         void DispatchEvent(Nuim::Event& e);
 
         void OnEntityDestroy(Entity e);
 
+        void OnEntityActiveChanged(Entity e, bool active);
+
     private:
         void DetachIfRunning(Entity e);
+        void AttachIfRunning(Entity e);
 
     private:
         Registry& m_r;

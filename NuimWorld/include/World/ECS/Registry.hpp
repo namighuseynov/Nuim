@@ -35,6 +35,12 @@ namespace Nuim::World {
             return m_entities.Create();
         }
 
+        void Clear()
+        {
+            m_pools.clear();
+            m_entities.Clear();
+        }
+
         void DestroyEntity(Entity e)
         {
             if (!m_entities.IsAlive(e)) return;
@@ -144,6 +150,8 @@ namespace Nuim::World {
             if (it == m_pools.end()) return nullptr;
             return static_cast<const Pool<T>*>(it->second.get());
         }
+
+        
 
     private:
         EntityManager m_entities;

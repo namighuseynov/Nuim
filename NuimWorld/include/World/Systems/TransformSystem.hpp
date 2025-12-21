@@ -1,6 +1,8 @@
 #pragma once
 #include "World/ECS/Registry.hpp"
 #include "World/Components/TransformComponent.hpp"
+#include "World/Components/HierarchyComponent.hpp"
+#include "World/Components/TransformCacheComponent.hpp"
 #include "World/Systems/HierarchySystem.hpp"
 #include <DirectXMath.h>
 
@@ -15,6 +17,7 @@ namespace Nuim::World {
         DirectX::XMMATRIX GetWorldMatrix(Entity e);
 
         void MarkDirty(Entity e);
+        void FlushDirtyAll();
 
         // keepWorld: keep child's WORLD transform unchanged when reparenting
         void SetParent(Entity child, Entity newParent, bool keepWorld);

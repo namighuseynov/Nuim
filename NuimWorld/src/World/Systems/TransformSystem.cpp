@@ -138,154 +138,167 @@ namespace Nuim::World {
     }
 #endif
 
+    void TransformSystem::FlushDirtyAll()
+    {
+        auto* set = m_r.TryGetSet<TransformComponent>();
+        if (!set) return;
+
+        for (Entity e : set->DenseEntities())
+            EnsureWorldUpToDate_NoRecursion(e);
+    }
+
+
     void TransformSystem::RebuildLocalIfNeeded(Entity e)
     {
-        auto& tr = m_r.Get<TransformComponent>(e);
-        if (!tr.dirtyLocal) return;
+        auto& tc = m_r.Get<TransformComponent>(e);
+        auto& cc = m_r.Get<TransformCacheComponent>(e);
+        if (!cc.dirtyLocal) return;
 
-        XMMATRIX SS = BuildScaleShearMatrix_Row(tr.localScale, tr.shear);
+        DirectX::XMMATRIX SS = BuildScaleShearMatrix_Row(tc.localScale, tc.shear);
 
-        XMVECTOR q = XMQuaternionNormalize(XMLoadFloat4(&tr.localRot));
-        XMMATRIX R = XMMatrixRotationQuaternion(q);
+        DirectX::XMVECTOR q = DirectX::XMQuaternionNormalize(DirectX::XMLoadFloat4(&tc.localRot));
+        DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(q);
 
-        XMMATRIX T = XMMatrixTranslation(tr.localPos.x, tr.localPos.y, tr.localPos.z);
+        DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(tc.localPos.x, tc.localPos.y, tc.localPos.z);
 
-        XMMATRIX local = SS * R * T;
-        XMStoreFloat4x4(&tr.cachedLocal, local);
+        DirectX::XMMATRIX local = SS * R * T;
+        DirectX::XMStoreFloat4x4(&cc.cachedLocal, local);
 
-        tr.dirtyLocal = false;
+        cc.dirtyLocal = false;
     }
 
     // NEW: non-recursive ensure world for entity + required parents
     void TransformSystem::EnsureWorldUpToDate_NoRecursion(Entity e)
     {
-        if (!m_r.Has<TransformComponent>(e)) return;
+        if (!m_r.Has<TransformComponent>(e) || !m_r.Has<HierarchyComponent>(e) || !m_r.Has<TransformCacheComponent>(e))
+            return;
 
-        // Build chain from e up to root
         std::vector<Entity> chain;
         chain.reserve(64);
 
         Entity cur = e;
-        while (cur != NullEntity && m_r.Has<TransformComponent>(cur))
+        while (cur != NullEntity &&
+            m_r.Has<TransformComponent>(cur) &&
+            m_r.Has<HierarchyComponent>(cur) &&
+            m_r.Has<TransformCacheComponent>(cur))
         {
             chain.push_back(cur);
-            const auto& tr = m_r.Get<TransformComponent>(cur);
-            cur = tr.parent;
+            cur = m_r.Get<HierarchyComponent>(cur).parent;
         }
 
-        // Walk from root to child, rebuilding only dirty nodes
-        for (size_t i = chain.size(); i-- > 0; )
+        for (size_t i = chain.size(); i-- > 0;)
         {
             Entity node = chain[i];
-            auto& tr = m_r.Get<TransformComponent>(node);
+            auto& cc = m_r.Get<TransformCacheComponent>(node);
 
-            if (!tr.dirtyWorld && !tr.dirtyLocal)
+            if (!cc.dirtyWorld && !cc.dirtyLocal)
                 continue;
 
             RebuildLocalIfNeeded(node);
-            XMMATRIX local = XMLoadFloat4x4(&tr.cachedLocal);
+            DirectX::XMMATRIX local = DirectX::XMLoadFloat4x4(&cc.cachedLocal);
 
-            if (tr.parent != NullEntity && m_r.Has<TransformComponent>(tr.parent))
+            Entity parent = m_r.Get<HierarchyComponent>(node).parent;
+
+            if (parent != NullEntity &&
+                m_r.Has<TransformCacheComponent>(parent))
             {
-                // Parent is earlier in chain (closer to root); it will be processed already
-                auto& p = m_r.Get<TransformComponent>(tr.parent);
-                // ensure parent's cachedWorld is valid; if parent was not dirty, it remains valid
-                XMMATRIX parentWorld = XMLoadFloat4x4(&p.cachedWorld);
-                XMStoreFloat4x4(&tr.cachedWorld, local * parentWorld);
+                auto& pc = m_r.Get<TransformCacheComponent>(parent);
+                DirectX::XMMATRIX parentWorld = DirectX::XMLoadFloat4x4(&pc.cachedWorld);
+                DirectX::XMStoreFloat4x4(&cc.cachedWorld, local * parentWorld);
             }
             else
             {
-                XMStoreFloat4x4(&tr.cachedWorld, local);
+                DirectX::XMStoreFloat4x4(&cc.cachedWorld, local);
             }
 
-            tr.dirtyWorld = false;
+            cc.dirtyWorld = false;
         }
     }
 
-    XMMATRIX TransformSystem::GetLocalMatrix(Entity e)
+
+    DirectX::XMMATRIX TransformSystem::GetLocalMatrix(Entity e)
     {
         RebuildLocalIfNeeded(e);
-        return XMLoadFloat4x4(&m_r.Get<TransformComponent>(e).cachedLocal);
+        return DirectX::XMLoadFloat4x4(&m_r.Get<TransformCacheComponent>(e).cachedLocal);
     }
 
-    XMMATRIX TransformSystem::GetWorldMatrix(Entity e)
+    DirectX::XMMATRIX TransformSystem::GetWorldMatrix(Entity e)
     {
         EnsureWorldUpToDate_NoRecursion(e);
-        return XMLoadFloat4x4(&m_r.Get<TransformComponent>(e).cachedWorld);
+        return DirectX::XMLoadFloat4x4(&m_r.Get<TransformCacheComponent>(e).cachedWorld);
     }
+
 
     void TransformSystem::MarkDirty(Entity e)
     {
-        if (!m_r.Has<TransformComponent>(e)) return;
-        auto& tr = m_r.Get<TransformComponent>(e);
-        tr.dirtyLocal = true;
+        if (!m_r.Has<TransformCacheComponent>(e)) return;
+        m_r.Get<TransformCacheComponent>(e).dirtyLocal = true;
         m_h.MarkWorldDirtySubtree(e);
     }
 
     void TransformSystem::SetParent(Entity child, Entity newParent, bool keepWorld)
     {
         if (!m_r.IsAlive(child)) return;
-        if (!m_r.Has<TransformComponent>(child)) return;
+        if (!m_r.Has<TransformComponent>(child) || !m_r.Has<HierarchyComponent>(child) || !m_r.Has<TransformCacheComponent>(child))
+            return;
 
-        if (newParent != NullEntity && !m_r.IsAlive(newParent)) return;
-        if (newParent != NullEntity && !m_r.Has<TransformComponent>(newParent)) return;
+        if (newParent != NullEntity && (!m_r.IsAlive(newParent) ||
+            !m_r.Has<TransformComponent>(newParent) || !m_r.Has<HierarchyComponent>(newParent) || !m_r.Has<TransformCacheComponent>(newParent)))
+            return;
 
         if (child == newParent) return;
 
-        // save old parent for rollback
-        Entity oldParent = m_r.Get<TransformComponent>(child).parent;
+        Entity oldParent = m_r.Get<HierarchyComponent>(child).parent;
 
-        XMMATRIX oldWorld = XMMatrixIdentity();
+        DirectX::XMMATRIX oldWorld = DirectX::XMMatrixIdentity();
         if (keepWorld)
             oldWorld = GetWorldMatrix(child);
 
-        // change hierarchy first (your design)
         m_h.SetParentRaw(child, newParent);
 
         if (!keepWorld) return;
 
-        XMMATRIX parentWorld = XMMatrixIdentity();
+        DirectX::XMMATRIX parentWorld = DirectX::XMMatrixIdentity();
         if (newParent != NullEntity)
             parentWorld = GetWorldMatrix(newParent);
 
-        XMVECTOR det;
-        XMMATRIX invParent = XMMatrixInverse(&det, parentWorld);
-        const float detX = XMVectorGetX(det);
+        DirectX::XMVECTOR det;
+        DirectX::XMMATRIX invParent = DirectX::XMMatrixInverse(&det, parentWorld);
+        const float detX = DirectX::XMVectorGetX(det);
 
-        // If parent is singular -> exact keepWorld impossible => rollback
         if (AbsF(detX) <= 1e-8f)
         {
             m_h.SetParentRaw(child, oldParent);
             return;
         }
 
-        // Convention: world = local * parentWorld  => local = world * inverse(parentWorld)
-        XMMATRIX newLocal = oldWorld * invParent;
+        DirectX::XMMATRIX newLocal = oldWorld * invParent;
 
-        XMFLOAT3 pos;
-        XMFLOAT4 rot;
-        XMFLOAT3 scl;
-        XMFLOAT3 shr;
+        DirectX::XMFLOAT3 pos;
+        DirectX::XMFLOAT4 rot;
+        DirectX::XMFLOAT3 scl;
+        DirectX::XMFLOAT3 shr;
 
         if (!DecomposeAffine_RowScaleShearRotTrans(newLocal, pos, rot, scl, shr))
         {
-            // decomposition failed -> rollback
             m_h.SetParentRaw(child, oldParent);
             return;
         }
 
-        auto& tr = m_r.Get<TransformComponent>(child);
-        tr.localPos = pos;
-        tr.localRot = rot;
-        tr.localScale = scl;
-        tr.shear = shr;
+        auto& tc = m_r.Get<TransformComponent>(child);
+        tc.localPos = pos;
+        tc.localRot = rot;
+        tc.localScale = scl;
+        tc.shear = shr;
 
-        tr.dirtyLocal = true;
+        auto& cc = m_r.Get<TransformCacheComponent>(child);
+        cc.dirtyLocal = true;
         m_h.MarkWorldDirtySubtree(child);
 
 #if defined(_DEBUG) || defined(DEBUG)
         DebugValidateKeepWorld(child, newParent, oldWorld);
 #endif
     }
+
 
 }

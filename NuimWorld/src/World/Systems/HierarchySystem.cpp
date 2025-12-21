@@ -4,23 +4,26 @@ namespace Nuim::World {
 
     Entity HierarchySystem::GetParent(Entity e) const
     {
-        if (!m_r.Has<TransformComponent>(e)) return NullEntity;
-        return m_r.Get<TransformComponent>(e).parent;
+        if (!m_r.Has<HierarchyComponent>(e)) return NullEntity;
+        return m_r.Get<HierarchyComponent>(e).parent;
     }
+
     Entity HierarchySystem::GetFirstChild(Entity e) const
     {
-        if (!m_r.Has<TransformComponent>(e)) return NullEntity;
-        return m_r.Get<TransformComponent>(e).firstChild;
+        if (!m_r.Has<HierarchyComponent>(e)) return NullEntity;
+        return m_r.Get<HierarchyComponent>(e).firstChild;
     }
+
     Entity HierarchySystem::GetNextSibling(Entity e) const
     {
-        if (!m_r.Has<TransformComponent>(e)) return NullEntity;
-        return m_r.Get<TransformComponent>(e).nextSibling;
+        if (!m_r.Has<HierarchyComponent>(e)) return NullEntity;
+        return m_r.Get<HierarchyComponent>(e).nextSibling;
     }
 
     void HierarchySystem::MarkWorldDirtySubtree(Entity root)
     {
-        if (!m_r.Has<TransformComponent>(root)) return;
+        if (!m_r.Has<HierarchyComponent>(root)) return;
+        if (!m_r.Has<TransformCacheComponent>(root)) return;
 
         std::vector<Entity> stack;
         stack.reserve(64);
@@ -31,14 +34,15 @@ namespace Nuim::World {
             Entity e = stack.back();
             stack.pop_back();
 
-            auto& tr = m_r.Get<TransformComponent>(e);
-            tr.dirtyWorld = true;
+            if (m_r.Has<TransformCacheComponent>(e))
+                m_r.Get<TransformCacheComponent>(e).dirtyWorld = true;
 
-            Entity ch = tr.firstChild;
+            const auto& h = m_r.Get<HierarchyComponent>(e);
+            Entity ch = h.firstChild;
             while (ch != NullEntity)
             {
                 stack.push_back(ch);
-                ch = m_r.Get<TransformComponent>(ch).nextSibling;
+                ch = m_r.Get<HierarchyComponent>(ch).nextSibling;
             }
         }
     }
@@ -48,7 +52,7 @@ namespace Nuim::World {
         outNodes.clear();
         outNodes.reserve(64);
 
-        if (!m_r.Has<TransformComponent>(root))
+        if (!m_r.Has<HierarchyComponent>(root))
         {
             outNodes.push_back(root);
             return;
@@ -64,63 +68,61 @@ namespace Nuim::World {
             stack.pop_back();
             outNodes.push_back(e);
 
-            const auto& tr = m_r.Get<TransformComponent>(e);
-            Entity ch = tr.firstChild;
+            const auto& h = m_r.Get<HierarchyComponent>(e);
+            Entity ch = h.firstChild;
             while (ch != NullEntity)
             {
                 stack.push_back(ch);
-                ch = m_r.Get<TransformComponent>(ch).nextSibling;
+                ch = m_r.Get<HierarchyComponent>(ch).nextSibling;
             }
         }
     }
 
     void HierarchySystem::DetachNoRecalc(Entity child)
     {
-        auto& trChild = m_r.Get<TransformComponent>(child);
-        Entity parent = trChild.parent;
+        auto& hc = m_r.Get<HierarchyComponent>(child);
+        Entity parent = hc.parent;
         if (parent == NullEntity) return;
 
-        auto& trParent = m_r.Get<TransformComponent>(parent);
+        auto& hp = m_r.Get<HierarchyComponent>(parent);
 
-        if (trChild.prevSibling != NullEntity)
-            m_r.Get<TransformComponent>(trChild.prevSibling).nextSibling = trChild.nextSibling;
-        if (trChild.nextSibling != NullEntity)
-            m_r.Get<TransformComponent>(trChild.nextSibling).prevSibling = trChild.prevSibling;
+        if (hc.prevSibling != NullEntity)
+            m_r.Get<HierarchyComponent>(hc.prevSibling).nextSibling = hc.nextSibling;
+        if (hc.nextSibling != NullEntity)
+            m_r.Get<HierarchyComponent>(hc.nextSibling).prevSibling = hc.prevSibling;
 
-        if (trParent.firstChild == child)
-            trParent.firstChild = trChild.nextSibling;
+        if (hp.firstChild == child)
+            hp.firstChild = hc.nextSibling;
 
-        trChild.parent = NullEntity;
-        trChild.prevSibling = NullEntity;
-        trChild.nextSibling = NullEntity;
+        hc.parent = NullEntity;
+        hc.prevSibling = NullEntity;
+        hc.nextSibling = NullEntity;
 
-        trParent.dirtyWorld = true;
         MarkWorldDirtySubtree(child);
     }
 
     void HierarchySystem::AttachChild(Entity parent, Entity child)
     {
-        auto& trParent = m_r.Get<TransformComponent>(parent);
-        auto& trChild = m_r.Get<TransformComponent>(child);
+        auto& hp = m_r.Get<HierarchyComponent>(parent);
+        auto& hc = m_r.Get<HierarchyComponent>(child);
 
-        Entity oldFirst = trParent.firstChild;
-        trParent.firstChild = child;
+        Entity oldFirst = hp.firstChild;
+        hp.firstChild = child;
 
-        trChild.parent = parent;
-        trChild.prevSibling = NullEntity;
-        trChild.nextSibling = oldFirst;
+        hc.parent = parent;
+        hc.prevSibling = NullEntity;
+        hc.nextSibling = oldFirst;
 
         if (oldFirst != NullEntity)
-            m_r.Get<TransformComponent>(oldFirst).prevSibling = child;
+            m_r.Get<HierarchyComponent>(oldFirst).prevSibling = child;
 
-        trParent.dirtyWorld = true;
         MarkWorldDirtySubtree(child);
     }
 
     void HierarchySystem::Detach(Entity child)
     {
         if (!m_r.IsAlive(child)) return;
-        if (!m_r.Has<TransformComponent>(child)) return;
+        if (!m_r.Has<HierarchyComponent>(child)) return;
         DetachNoRecalc(child);
     }
 
@@ -130,16 +132,18 @@ namespace Nuim::World {
         if (newParent != NullEntity && !m_r.IsAlive(newParent)) return;
         if (child == newParent) return;
 
-        // prevent cycles
+        if (!m_r.Has<HierarchyComponent>(child)) return;
+        if (newParent != NullEntity && !m_r.Has<HierarchyComponent>(newParent)) return;
+
         if (newParent != NullEntity)
         {
-            for (Entity p = newParent; p != NullEntity; p = m_r.Get<TransformComponent>(p).parent)
+            for (Entity p = newParent; p != NullEntity; p = m_r.Get<HierarchyComponent>(p).parent)
                 if (p == child) return;
         }
 
-        auto& trChild = m_r.Get<TransformComponent>(child);
+        auto& hc = m_r.Get<HierarchyComponent>(child);
 
-        if (trChild.parent != NullEntity)
+        if (hc.parent != NullEntity)
             DetachNoRecalc(child);
 
         if (newParent != NullEntity)
@@ -148,4 +152,4 @@ namespace Nuim::World {
         MarkWorldDirtySubtree(child);
     }
 
-}
+} 
