@@ -5,7 +5,7 @@
 #include "Core/Base.hpp"
 
 #include "Render/IRenderTarget.hpp"
-#include "World/Scene.hpp"
+#include "World/World.hpp"
 
 namespace NuimEditor {
 
@@ -31,7 +31,7 @@ namespace NuimEditor {
 
     private:
         // Scene runtime
-        std::unique_ptr<Nuim::World::Scene> m_scene;
+        //std::unique_ptr<Nuim::World::World> m_scene;
         bool m_playMode = false;
 
         // Viewport target (owned by EditorApplication)

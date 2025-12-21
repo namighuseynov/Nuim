@@ -4,7 +4,7 @@
 
 namespace Nuim::World {
 
-    class Scene;
+    class World; 
 
     class ScriptBase
     {
@@ -12,7 +12,7 @@ namespace Nuim::World {
         virtual ~ScriptBase() = default;
 
         Entity GetEntity() const { return m_entity; }
-        Scene* GetScene()  const { return m_scene; }
+        World* GetWorld()  const { return m_world; }
 
         bool IsAttached() const { return m_attached; }
 
@@ -23,15 +23,15 @@ namespace Nuim::World {
         virtual void OnImGuiRender() {}
 
     private:
-        void _Bind(Scene* scene, Entity e) { m_scene = scene; m_entity = e; }
+        void _Bind(World* world, Entity e) { m_world = world; m_entity = e; }
         void _SetAttached(bool a) { m_attached = a; }
 
     private:
-        Scene* m_scene = nullptr;
-        Entity m_entity = NullEntity;
-        bool m_attached = false;
+        World* m_world = nullptr;
+        Entity  m_entity = NullEntity;
+        bool    m_attached = false;
 
-        friend class Scene;
+        friend class ScriptSystem;
     };
 
-} // namespace Nuim::World
+} 
