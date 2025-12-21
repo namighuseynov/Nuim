@@ -1,10 +1,116 @@
 #include "World/Scene.hpp"
 #include "World/EntityHandle.hpp"
+
 #include <DirectXMath.h>
+#include <cmath>
 
 using namespace DirectX;
 
 namespace Nuim::World {
+
+    // --------- small helpers ----------
+    static inline float AbsF(float x) { return x < 0.0f ? -x : x; }
+
+    // Decompose affine matrix into Translation + Rotation + (Scale+Shear)
+    // Row-vector convention (consistent with your SS*R*T build).
+    static bool DecomposeAffine_RowScaleShearRotTrans(
+        const DirectX::XMMATRIX& M,
+        DirectX::XMFLOAT3& outPos,
+        DirectX::XMFLOAT4& outRot,
+        DirectX::XMFLOAT3& outScale,
+        DirectX::XMFLOAT3& outShear)
+    {
+        // translation in r[3]
+        XMStoreFloat3(&outPos, M.r[3]);
+
+        XMVECTOR row0 = XMVectorSetW(M.r[0], 0.0f);
+        XMVECTOR row1 = XMVectorSetW(M.r[1], 0.0f);
+        XMVECTOR row2 = XMVectorSetW(M.r[2], 0.0f);
+
+        const float eps = 1e-8f;
+
+        float sx = XMVectorGetX(XMVector3Length(row0));
+        if (sx < eps) return false;
+        XMVECTOR r0 = XMVectorScale(row0, 1.0f / sx);
+
+        float shXY = XMVectorGetX(XMVector3Dot(r0, row1));
+        row1 = XMVectorSubtract(row1, XMVectorScale(r0, shXY));
+
+        float sy = XMVectorGetX(XMVector3Length(row1));
+        if (sy < eps) return false;
+        XMVECTOR r1 = XMVectorScale(row1, 1.0f / sy);
+        shXY /= sy;
+
+        float shXZ = XMVectorGetX(XMVector3Dot(r0, row2));
+        row2 = XMVectorSubtract(row2, XMVectorScale(r0, shXZ));
+
+        float shYZ = XMVectorGetX(XMVector3Dot(r1, row2));
+        row2 = XMVectorSubtract(row2, XMVectorScale(r1, shYZ));
+
+        float sz = XMVectorGetX(XMVector3Length(row2));
+        if (sz < eps) return false;
+        XMVECTOR r2 = XMVectorScale(row2, 1.0f / sz);
+        shXZ /= sz;
+        shYZ /= sz;
+
+        // handedness fix
+        float det = XMVectorGetX(XMVector3Dot(r0, XMVector3Cross(r1, r2)));
+        if (det < 0.0f)
+        {
+            float ax = AbsF(sx), ay = AbsF(sy), az = AbsF(sz);
+
+            if (ax >= ay && ax >= az)
+            {
+                sx = -sx;
+                r0 = XMVectorNegate(r0);
+                shXY = -shXY;
+                shXZ = -shXZ;
+            }
+            else if (ay >= ax && ay >= az)
+            {
+                sy = -sy;
+                r1 = XMVectorNegate(r1);
+                shYZ = -shYZ;
+            }
+            else
+            {
+                sz = -sz;
+                r2 = XMVectorNegate(r2);
+            }
+        }
+
+        XMMATRIX R = XMMatrixIdentity();
+        R.r[0] = XMVectorSetW(r0, 0.0f);
+        R.r[1] = XMVectorSetW(r1, 0.0f);
+        R.r[2] = XMVectorSetW(r2, 0.0f);
+
+        XMVECTOR q = XMQuaternionRotationMatrix(R);
+        q = XMQuaternionNormalize(q);
+        XMStoreFloat4(&outRot, q);
+
+        outScale = XMFLOAT3(sx, sy, sz);
+        outShear = XMFLOAT3(shXY, shXZ, shYZ);
+        return true;
+    }
+
+    static DirectX::XMMATRIX BuildScaleShearMatrix_Row(
+        const DirectX::XMFLOAT3& scale,
+        const DirectX::XMFLOAT3& shear)
+    {
+        const float sx = scale.x, sy = scale.y, sz = scale.z;
+        const float shXY = shear.x;
+        const float shXZ = shear.y;
+        const float shYZ = shear.z;
+
+        XMMATRIX SS = XMMatrixIdentity();
+        SS.r[0] = XMVectorSet(sx, 0.0f, 0.0f, 0.0f);
+        SS.r[1] = XMVectorSet(shXY * sy, sy, 0.0f, 0.0f);
+        SS.r[2] = XMVectorSet(shXZ * sz, shYZ * sz, sz, 0.0f);
+        SS.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+        return SS;
+    }
+
+    // ---------------- Scene ----------------
 
     EntityHandle Scene::CreateEntity(const std::string& name)
     {
@@ -38,7 +144,6 @@ namespace Nuim::World {
     {
         _DetachScriptsIfRunning(e);
 
-        // destroy children first
         auto* trSet = m_registry.TryGetSet<TransformComponent>();
         if (trSet && trSet->Has(e))
         {
@@ -52,11 +157,9 @@ namespace Nuim::World {
             }
         }
 
-        // detach from parent (safe)
         if (trSet && trSet->Has(e))
             _DetachNoRecalc(e);
 
-        // kill entity
         m_registry.DestroyEntity(e);
     }
 
@@ -87,7 +190,6 @@ namespace Nuim::World {
         }
 
         _DetachScriptsIfRunning(e);
-
         m_registry.DestroyEntity(e);
     }
 
@@ -105,7 +207,7 @@ namespace Nuim::World {
         return NullEntity;
     }
 
-    // ---- Hierarchy internals ----
+    // ---- hierarchy internals ----
     void Scene::_DetachNoRecalc(Entity child)
     {
         auto& trChild = m_registry.Get<TransformComponent>(child);
@@ -128,6 +230,7 @@ namespace Nuim::World {
 
         trParent.dirtyWorld = true;
 
+        // IMPORTANT: whole subtree changes reference frame
         _MarkWorldDirtyRecursive(child);
     }
 
@@ -148,6 +251,7 @@ namespace Nuim::World {
 
         trParent.dirtyWorld = true;
 
+        // IMPORTANT: whole subtree must update world
         _MarkWorldDirtyRecursive(child);
     }
 
@@ -216,35 +320,51 @@ namespace Nuim::World {
             if (newParent != NullEntity)
                 parentWorld = GetWorldMatrix(newParent);
 
-            XMMATRIX invParent = XMMatrixInverse(nullptr, parentWorld);
-            XMMATRIX newLocal = oldWorld * invParent;
+            XMVECTOR det;
+            XMMATRIX invParent = XMMatrixInverse(&det, parentWorld);
 
-            XMVECTOR S, R, T;
-            if (XMMatrixDecompose(&S, &R, &T, newLocal))
+            const float detX = XMVectorGetX(det);
+            if (AbsF(detX) > 1e-8f)
             {
-                XMStoreFloat3(&trChild.localScale, S);
-                XMStoreFloat4(&trChild.localRot, XMQuaternionNormalize(R));
-                XMStoreFloat3(&trChild.localPos, T);
-            }
+                XMMATRIX newLocal = oldWorld * invParent;
 
-            trChild.dirtyLocal = true;
+                XMFLOAT3 pos;
+                XMFLOAT4 rot;
+                XMFLOAT3 scl;
+                XMFLOAT3 shr;
+
+                if (DecomposeAffine_RowScaleShearRotTrans(newLocal, pos, rot, scl, shr))
+                {
+                    trChild.localPos = pos;
+                    trChild.localRot = rot;
+                    trChild.localScale = scl;
+                    trChild.shear = shr;
+                    trChild.dirtyLocal = true;
+                }
+            }
+            // else parent is singular -> exact keepWorld impossible without full matrix storage
         }
 
         _MarkWorldDirtyRecursive(child);
     }
 
+    // ---- transform rebuild ----
     void Scene::_RebuildLocalIfNeeded(Entity e)
     {
         auto& tr = m_registry.Get<TransformComponent>(e);
         if (!tr.dirtyLocal) return;
 
-        XMMATRIX S = XMMatrixScaling(tr.localScale.x, tr.localScale.y, tr.localScale.z);
-        XMVECTOR q = XMLoadFloat4(&tr.localRot);
-        q = XMQuaternionNormalize(q);
-        XMMATRIX R = XMMatrixRotationQuaternion(q);
-        XMMATRIX T = XMMatrixTranslation(tr.localPos.x, tr.localPos.y, tr.localPos.z);
+        DirectX::XMMATRIX SS = BuildScaleShearMatrix_Row(tr.localScale, tr.shear);
 
-        tr.cachedLocal = S * R * T;
+        DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&tr.localRot);
+        q = DirectX::XMQuaternionNormalize(q);
+        DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(q);
+
+        DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(tr.localPos.x, tr.localPos.y, tr.localPos.z);
+
+        DirectX::XMMATRIX local = SS * R * T;
+        DirectX::XMStoreFloat4x4(&tr.cachedLocal, local);
+
         tr.dirtyLocal = false;
     }
 
@@ -255,14 +375,21 @@ namespace Nuim::World {
 
         _RebuildLocalIfNeeded(e);
 
+        DirectX::XMMATRIX local = DirectX::XMLoadFloat4x4(&tr.cachedLocal);
+
         if (tr.parent != NullEntity)
         {
             _RebuildWorldIfNeeded(tr.parent);
-            tr.cachedWorld = tr.cachedLocal * m_registry.Get<TransformComponent>(tr.parent).cachedWorld;
+
+            const auto& trParent = m_registry.Get<TransformComponent>(tr.parent);
+            DirectX::XMMATRIX parentWorld = DirectX::XMLoadFloat4x4(&trParent.cachedWorld);
+
+            DirectX::XMMATRIX world = local * parentWorld;
+            DirectX::XMStoreFloat4x4(&tr.cachedWorld, world);
         }
         else
         {
-            tr.cachedWorld = tr.cachedLocal;
+            DirectX::XMStoreFloat4x4(&tr.cachedWorld, local);
         }
 
         tr.dirtyWorld = false;
@@ -271,13 +398,13 @@ namespace Nuim::World {
     DirectX::XMMATRIX Scene::GetLocalMatrix(Entity e)
     {
         _RebuildLocalIfNeeded(e);
-        return m_registry.Get<TransformComponent>(e).cachedLocal;
+        return DirectX::XMLoadFloat4x4(&m_registry.Get<TransformComponent>(e).cachedLocal);
     }
 
     DirectX::XMMATRIX Scene::GetWorldMatrix(Entity e)
     {
         _RebuildWorldIfNeeded(e);
-        return m_registry.Get<TransformComponent>(e).cachedWorld;
+        return DirectX::XMLoadFloat4x4(&m_registry.Get<TransformComponent>(e).cachedWorld);
     }
 
     void Scene::MarkTransformDirty(Entity e)
@@ -288,7 +415,7 @@ namespace Nuim::World {
         _MarkWorldDirtyRecursive(e);
     }
 
-    // ---- Runtime ----
+    // ---- runtime ----
     void Scene::OnRuntimeStart()
     {
         m_running = true;
@@ -354,4 +481,4 @@ namespace Nuim::World {
             });
     }
 
-}
+} 

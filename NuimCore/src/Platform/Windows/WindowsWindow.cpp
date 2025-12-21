@@ -21,10 +21,8 @@ namespace Nuim {
 
     static std::wstring ToWide(const std::string& s)
     {
-        if (s.empty()) return L"";
-        U32 len = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (U32)s.size(), nullptr, 0);
-        std::wstring out(len, L'\0');
-        MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (U32)s.size(), out.data(), len);
+        std::wstring wsTmp(s.begin(), s.end());
+        std::wstring out = wsTmp;
         return out;
     }
 
@@ -124,7 +122,7 @@ namespace Nuim {
             auto* cs = reinterpret_cast<CREATESTRUCTW*>(lparam);
             auto* window = reinterpret_cast<WindowsWindow*>(cs->lpCreateParams);
             SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(window));
-            return TRUE;
+            return DefWindowProcW(hwnd, msg, wparam, lparam);
         }
 
         auto* window = reinterpret_cast<WindowsWindow*>(

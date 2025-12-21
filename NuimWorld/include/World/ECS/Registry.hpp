@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 #include <type_traits>
+#include <stdexcept>
+#include <cassert>
 
 namespace Nuim::World {
 
@@ -54,7 +56,14 @@ namespace Nuim::World {
         template<typename T>
         T& Get(Entity e)
         {
-            auto* p = EnsurePool<T>();
+            auto* p = GetPool<T>();
+            if (!p)
+            {
+#if defined(_DEBUG) || defined(DEBUG)
+                assert(false && "Registry::Get<const>: pool does not exist for this component type");
+#endif
+                throw std::runtime_error("Registry::Get<const>: pool does not exist for this component type");
+            }
             return p->set.Get(e);
         }
 
@@ -62,6 +71,13 @@ namespace Nuim::World {
         const T& Get(Entity e) const
         {
             const auto* p = GetPool<T>();
+            if (!p)
+            {
+#if defined(_DEBUG) || defined(DEBUG)
+                assert(false && "Registry::Get<const>: pool does not exist for this component type");
+#endif
+                throw std::runtime_error("Registry::Get<const>: pool does not exist for this component type");
+            }
             return p->set.Get(e);
         }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "World/ECS/Registry.hpp"
+#include <tuple>
 
 namespace Nuim::World {
 

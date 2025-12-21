@@ -1,4 +1,5 @@
 #pragma once
+#include <cassert>
 #include "World/ECS/Entity.hpp"
 
 namespace Nuim::World {
@@ -12,7 +13,6 @@ namespace Nuim::World {
         EntityHandle(Scene* scene, Entity e) : m_scene(scene), m_e(e) {}
 
         Entity Raw() const { return m_e; }
-
         bool IsValid() const;
 
         template<typename T>
@@ -29,14 +29,15 @@ namespace Nuim::World {
 
     private:
         Scene* m_scene = nullptr;
-        Entity  m_e = NullEntity;
+        Entity m_e = NullEntity;
     };
 
-} 
+} // namespace Nuim::World
 
 
-// ---------- template + inline impl ----------
+// ---- inline + template impl ----
 #include "World/Scene.hpp"
+#include <utility>
 
 namespace Nuim::World {
 
@@ -54,18 +55,21 @@ namespace Nuim::World {
     template<typename T>
     T& EntityHandle::Get()
     {
+        assert(IsValid() && "EntityHandle::Get on invalid handle");
         return m_scene->GetRegistry().Get<T>(m_e);
     }
 
     template<typename T, typename... Args>
     T& EntityHandle::Add(Args&&... args)
     {
+        assert(IsValid() && "EntityHandle::Add on invalid handle");
         return m_scene->GetRegistry().Emplace<T>(m_e, std::forward<Args>(args)...);
     }
 
     template<typename T>
     void EntityHandle::Remove()
     {
+        assert(IsValid() && "EntityHandle::Remove on invalid handle");
         m_scene->GetRegistry().Remove<T>(m_e);
     }
 

@@ -17,7 +17,7 @@
 
 namespace Nuim::World {
 
-    class EntityHandle; 
+    class EntityHandle; // forward
 
     class Scene
     {
@@ -49,7 +49,7 @@ namespace Nuim::World {
 
         void MarkTransformDirty(Entity e);
 
-        // ---- Scripts API
+        // ---- Scripts API ----
         template<typename T, typename... Args>
         T& AddScript(Entity e, Args&&... args)
         {
@@ -104,4 +104,4 @@ namespace Nuim::World {
         bool m_running = false;
     };
 
-} 
+}

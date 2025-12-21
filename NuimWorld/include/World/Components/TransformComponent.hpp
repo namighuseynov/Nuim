@@ -19,8 +19,16 @@ namespace Nuim::World {
         bool dirtyLocal = true;
         bool dirtyWorld = true;
 
-        DirectX::XMMATRIX cachedLocal = DirectX::XMMatrixIdentity();
-        DirectX::XMMATRIX cachedWorld = DirectX::XMMatrixIdentity();
+        DirectX::XMFLOAT4X4 cachedLocal;
+        DirectX::XMFLOAT4X4 cachedWorld;
+
+        DirectX::XMFLOAT3 shear{ 0,0,0 }; // XY, XZ, YZ
+
+        TransformComponent()
+        {
+            DirectX::XMStoreFloat4x4(&cachedLocal, DirectX::XMMatrixIdentity());
+            DirectX::XMStoreFloat4x4(&cachedWorld, DirectX::XMMatrixIdentity());
+        }
     };
 
 } // namespace Nuim::World
