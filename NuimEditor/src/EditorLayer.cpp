@@ -8,57 +8,58 @@ namespace NuimEditor {
         : Nuim::Layer("EditorLayer") {}
 
     void EditorLayer::OnAttach() {
-        m_scene = std::make_unique<Nuim::World::Scene>();
+        //m_scene = std::make_unique<Nuim::World::Scene>();
     }
     void EditorLayer::OnDetach() {
-        if (m_scene && m_scene->IsRunning())
-            m_scene->OnRuntimeStop();
+        //if (m_scene && m_scene->IsRunning())
+        //    m_scene->OnRuntimeStop();
 
-        m_scene.reset();
+        //m_scene.reset();
     }
 
     void EditorLayer::TogglePlayStop()
     {
-        if (!m_scene)
-            return;
+        // This should be deleted
+        //if (!m_scene)
+        //    return;
 
-        m_playMode = !m_playMode;
-        if (m_playMode) m_scene->OnRuntimeStart();
-        else            m_scene->OnRuntimeStop();
+        //m_playMode = !m_playMode;
+        //if (m_playMode) m_scene->OnRuntimeStart();
+        //else            m_scene->OnRuntimeStop();
     }
 
 
     void EditorLayer::OnUpdate(float dt) {
-        if (m_scene)
-            m_scene->Update(dt);
+        //if (m_scene)
+        //    m_scene->Update(dt);
     }
 
     void EditorLayer::OnEvent(Nuim::Event& e) {
-        ImGuiIO& io = ImGui::GetIO();
+        //ImGuiIO& io = ImGui::GetIO();
 
-        bool blockKeyboard = io.WantCaptureKeyboard;
-        bool blockMouse = io.WantCaptureMouse;
+        //bool blockKeyboard = io.WantCaptureKeyboard;
+        //bool blockMouse = io.WantCaptureMouse;
 
-        if (m_scene && m_scene->IsRunning())
-        {
-            const bool allowKeyboard = m_viewportFocused && !blockKeyboard;
-            const bool allowMouse = m_viewportHovered && !blockMouse;
+        //if (m_scene && m_scene->IsRunning())
+        //{
+        //    const bool allowKeyboard = m_viewportFocused && !blockKeyboard;
+        //    const bool allowMouse = m_viewportHovered && !blockMouse;
 
-            const auto type = e.GetType();
+        //    const auto type = e.GetType();
 
-            const bool isKeyboardEvent =
-                type == Nuim::EventType::KeyPressEvent ||
-                type == Nuim::EventType::KeyReleaseEvent;
+        //    const bool isKeyboardEvent =
+        //        type == Nuim::EventType::KeyPressEvent ||
+        //        type == Nuim::EventType::KeyReleaseEvent;
 
-            const bool isMouseEvent =
-                type == Nuim::EventType::MouseMoveEvent ||
-                type == Nuim::EventType::MousePressEvent ||
-                type == Nuim::EventType::MouseReleaseEvent ||
-                type == Nuim::EventType::MouseScrollEvent;
+        //    const bool isMouseEvent =
+        //        type == Nuim::EventType::MouseMoveEvent ||
+        //        type == Nuim::EventType::MousePressEvent ||
+        //        type == Nuim::EventType::MouseReleaseEvent ||
+        //        type == Nuim::EventType::MouseScrollEvent;
 
-            if ((isKeyboardEvent && allowKeyboard) || (isMouseEvent && allowMouse) || (!isKeyboardEvent && !isMouseEvent))
-                m_scene->DispatchEvent(e);
-        }
+        //    if ((isKeyboardEvent && allowKeyboard) || (isMouseEvent && allowMouse) || (!isKeyboardEvent && !isMouseEvent))
+        //        m_scene->DispatchEvent(e);
+        //}
     }
 
     bool EditorLayer::ConsumeViewportResize(Nuim::U32& outW, Nuim::U32& outH)
@@ -113,31 +114,31 @@ namespace NuimEditor {
             ImGui::EndMenuBar();
         }
 
-        ImGui::Begin("Runtime");
+        //ImGui::Begin("Runtime");
 
-        if (!m_scene)
-        {
-            ImGui::Text("Scene: null");
-            ImGui::End();
-        }
-        else
-        {
-            if (!m_playMode)
-            {
-                if (ImGui::Button("Play"))
-                    TogglePlayStop();
-            }
-            else
-            {
-                if (ImGui::Button("Stop"))
-                    TogglePlayStop();
-            }
+        //if (!m_scene)
+        //{
+        //    ImGui::Text("Scene: null");
+        //    ImGui::End();
+        //}
+        //else
+        //{
+        //    if (!m_playMode)
+        //    {
+        //        if (ImGui::Button("Play"))
+        //            TogglePlayStop();
+        //    }
+        //    else
+        //    {
+        //        if (ImGui::Button("Stop"))
+        //            TogglePlayStop();
+        //    }
 
-            ImGui::SameLine();
-            ImGui::Text("Running: %s", m_scene->IsRunning() ? "true" : "false");
+        //    ImGui::SameLine();
+        //    ImGui::Text("Running: %s", m_scene->IsRunning() ? "true" : "false");
 
-            ImGui::End();
-        }
+        //    ImGui::End();
+        //}
 
         // Panels
         ImGui::Begin("Hierarchy");

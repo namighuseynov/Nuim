@@ -1,82 +1,106 @@
 #pragma once
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <memory>
+#include "World/ECS/Registry.hpp"
+#include "World/ECS/View.hpp"
+#include "World/ECS/Entity.hpp"
 
-#include "Core/UUID.hpp"
+#include "World/Components/UUIDComponent.hpp"
+#include "World/Components/NameComponent.hpp"
+#include "World/Components/TransformComponent.hpp"
+#include "World/Components/ScriptComponent.hpp"
+
 #include "Core/Events/Event.hpp"
-#include "World/GameObject.hpp"
+#include <DirectXMath.h>
+
+#include <string>
+#include <type_traits>
+#include <stdexcept>
 
 namespace Nuim::World {
+
+    class EntityHandle; 
 
     class Scene
     {
     public:
-        GameObject& CreateGameObject(const std::string& name = "GameObject")
+        Scene() = default;
+
+        // ---- Entities ----
+        EntityHandle CreateEntity(const std::string& name = "Entity");
+        void DestroyEntity(Entity e, bool recursive = true);
+
+        bool IsAlive(Entity e) const { return m_registry.IsAlive(e); }
+
+        Entity FindByUUID(const Nuim::UUID& uuid) const;
+
+        Registry& GetRegistry() { return m_registry; }
+        const Registry& GetRegistry() const { return m_registry; }
+
+        // ---- Hierarchy API ----
+        void SetParent(Entity child, Entity newParent, bool keepWorld = true);
+        void Detach(Entity child, bool keepWorld = true);
+
+        Entity GetParent(Entity e) const;
+        Entity GetFirstChild(Entity e) const;
+        Entity GetNextSibling(Entity e) const;
+
+        // ---- Transform API ----
+        DirectX::XMMATRIX GetLocalMatrix(Entity e);
+        DirectX::XMMATRIX GetWorldMatrix(Entity e);
+
+        void MarkTransformDirty(Entity e);
+
+        // ---- Scripts API
+        template<typename T, typename... Args>
+        T& AddScript(Entity e, Args&&... args)
         {
-            auto obj = std::make_unique<GameObject>(this, Nuim::UUID{});
-            obj->SetName(name);
+            static_assert(std::is_base_of_v<ScriptBase, T>, "T must derive from ScriptBase");
+            if (!m_registry.IsAlive(e))
+                throw std::runtime_error("AddScript: entity not alive");
 
-            m_objects.emplace_back(std::move(obj));
-            return *m_objects.back();
-        }
+            ScriptComponent* sc = nullptr;
+            if (!m_registry.Has<ScriptComponent>(e))
+                sc = &m_registry.Emplace<ScriptComponent>(e);
+            else
+                sc = &m_registry.Get<ScriptComponent>(e);
 
-        void DestroyGameObject(Nuim::UUID id)
-        {
-            auto it = std::find_if(m_objects.begin(), m_objects.end(),
-                [&](const std::unique_ptr<GameObject>& o) { return o->GetUUID() == id; });
+            auto ptr = std::make_unique<T>(std::forward<Args>(args)...);
+            T& ref = *ptr;
 
-            if (it != m_objects.end())
+            if (m_running)
             {
-                (*it)->RemoveAllComponents();
-                *it = std::move(m_objects.back());
-                m_objects.pop_back();
+                ptr->_Bind(this, e);
+                ptr->_SetAttached(true);
+                ptr->OnAttach();
             }
+
+            sc->scripts.emplace_back(std::move(ptr));
+            return ref;
         }
 
-        GameObject* Find(Nuim::UUID id)
-        {
-            for (auto& o : m_objects)
-                if (o->GetUUID() == id)
-                    return o.get();
-            return nullptr;
-        }
-
-        void OnRuntimeStart()
-        {
-            m_running = true;
-            for (auto& o : m_objects)
-                o->OnRuntimeStart();
-        }
-
-        void OnRuntimeStop()
-        {
-            for (auto& o : m_objects)
-                o->OnRuntimeStop();
-            m_running = false;
-        }
+        // ---- Runtime ----
+        void OnRuntimeStart();
+        void OnRuntimeStop();
 
         bool IsRunning() const { return m_running; }
 
-        void Update(float dt)
-        {
-            if (!m_running) return;
-            for (auto& o : m_objects)
-                o->UpdateComponents(dt);
-        }
-
-        void DispatchEvent(Nuim::Event& e)
-        {
-            if (!m_running) return;
-            for (auto& o : m_objects)
-                o->DispatchEventToScripts(e);
-        }
-
-        const auto& GetAll() const { return m_objects; }
+        void Update(float dt);
+        void DispatchEvent(Nuim::Event& e);
 
     private:
-        std::vector<std::unique_ptr<GameObject>> m_objects;
+        // hierarchy internals
+        void _DetachNoRecalc(Entity child);
+        void _AttachChild(Entity parent, Entity child);
+
+        void _MarkWorldDirtyRecursive(Entity e);
+
+        void _RebuildLocalIfNeeded(Entity e);
+        void _RebuildWorldIfNeeded(Entity e);
+
+        void _DestroyRecursive(Entity e);
+        void _DetachScriptsIfRunning(Entity e);
+
+    private:
+        Registry m_registry;
         bool m_running = false;
     };
 
