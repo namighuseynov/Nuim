@@ -226,14 +226,20 @@ namespace Nuim::World {
     {
         if (!m_r.IsAlive(child)) return;
         if (!m_r.Has<TransformComponent>(child)) return;
+
         if (newParent != NullEntity && !m_r.IsAlive(newParent)) return;
         if (newParent != NullEntity && !m_r.Has<TransformComponent>(newParent)) return;
+
         if (child == newParent) return;
+
+        // save old parent for rollback
+        Entity oldParent = m_r.Get<TransformComponent>(child).parent;
 
         XMMATRIX oldWorld = XMMatrixIdentity();
         if (keepWorld)
             oldWorld = GetWorldMatrix(child);
 
+        // change hierarchy first (your design)
         m_h.SetParentRaw(child, newParent);
 
         if (!keepWorld) return;
@@ -246,11 +252,14 @@ namespace Nuim::World {
         XMMATRIX invParent = XMMatrixInverse(&det, parentWorld);
         const float detX = XMVectorGetX(det);
 
+        // If parent is singular -> exact keepWorld impossible => rollback
         if (AbsF(detX) <= 1e-8f)
-            return; // singular parent -> exact keepWorld impossible
+        {
+            m_h.SetParentRaw(child, oldParent);
+            return;
+        }
 
-        // Consistent with your convention: world = local * parentWorld
-        // => local = world * inverse(parentWorld)
+        // Convention: world = local * parentWorld  => local = world * inverse(parentWorld)
         XMMATRIX newLocal = oldWorld * invParent;
 
         XMFLOAT3 pos;
@@ -258,21 +267,25 @@ namespace Nuim::World {
         XMFLOAT3 scl;
         XMFLOAT3 shr;
 
-        if (DecomposeAffine_RowScaleShearRotTrans(newLocal, pos, rot, scl, shr))
+        if (!DecomposeAffine_RowScaleShearRotTrans(newLocal, pos, rot, scl, shr))
         {
-            auto& tr = m_r.Get<TransformComponent>(child);
-            tr.localPos = pos;
-            tr.localRot = rot;
-            tr.localScale = scl;
-            tr.shear = shr;
+            // decomposition failed -> rollback
+            m_h.SetParentRaw(child, oldParent);
+            return;
+        }
 
-            tr.dirtyLocal = true;
-            m_h.MarkWorldDirtySubtree(child);
+        auto& tr = m_r.Get<TransformComponent>(child);
+        tr.localPos = pos;
+        tr.localRot = rot;
+        tr.localScale = scl;
+        tr.shear = shr;
+
+        tr.dirtyLocal = true;
+        m_h.MarkWorldDirtySubtree(child);
 
 #if defined(_DEBUG) || defined(DEBUG)
-            DebugValidateKeepWorld(child, newParent, oldWorld);
+        DebugValidateKeepWorld(child, newParent, oldWorld);
 #endif
-        }
     }
 
 }

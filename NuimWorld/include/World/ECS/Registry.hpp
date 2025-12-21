@@ -1,11 +1,14 @@
 #pragma once
 #include "World/ECS/EntityManager.hpp"
 #include "World/ECS/SparseSet.hpp"
+
 #include <memory>
-#include <vector>
+#include <unordered_map>
+#include <typeindex>
 #include <type_traits>
 #include <stdexcept>
 #include <cassert>
+#include <utility>
 
 namespace Nuim::World {
 
@@ -21,7 +24,6 @@ namespace Nuim::World {
         struct Pool final : IPool
         {
             SparseSet<T> set;
-
             void Remove(Entity e) override { set.Remove(e); }
         };
 
@@ -38,8 +40,8 @@ namespace Nuim::World {
             if (!m_entities.IsAlive(e)) return;
 
             // remove all components from all pools
-            for (auto& p : m_pools)
-                if (p) p->Remove(e);
+            for (auto& kv : m_pools)
+                if (kv.second) kv.second->Remove(e);
 
             m_entities.Destroy(e);
         }
@@ -60,9 +62,9 @@ namespace Nuim::World {
             if (!p)
             {
 #if defined(_DEBUG) || defined(DEBUG)
-                assert(false && "Registry::Get<const>: pool does not exist for this component type");
+                assert(false && "Registry::Get: pool does not exist for this component type");
 #endif
-                throw std::runtime_error("Registry::Get<const>: pool does not exist for this component type");
+                throw std::runtime_error("Registry::Get: pool does not exist for this component type");
             }
             return p->set.Get(e);
         }
@@ -74,9 +76,9 @@ namespace Nuim::World {
             if (!p)
             {
 #if defined(_DEBUG) || defined(DEBUG)
-                assert(false && "Registry::Get<const>: pool does not exist for this component type");
+                assert(false && "Registry::Get const: pool does not exist for this component type");
 #endif
-                throw std::runtime_error("Registry::Get<const>: pool does not exist for this component type");
+                throw std::runtime_error("Registry::Get const: pool does not exist for this component type");
             }
             return p->set.Get(e);
         }
@@ -111,46 +113,41 @@ namespace Nuim::World {
 
     private:
         template<typename T>
-        static size_t TypeId()
-        {
-            static const size_t id = s_typeCounter++;
-            return id;
-        }
-
-        template<typename T>
         Pool<T>* EnsurePool()
         {
-            const size_t id = TypeId<T>();
-            if (id >= m_pools.size())
-                m_pools.resize(id + 1);
-
-            if (!m_pools[id])
-                m_pools[id] = std::make_unique<Pool<T>>();
-
-            return static_cast<Pool<T>*>(m_pools[id].get());
+            const std::type_index key(typeid(T));
+            auto it = m_pools.find(key);
+            if (it == m_pools.end())
+            {
+                auto up = std::make_unique<Pool<T>>();
+                Pool<T>* raw = up.get();
+                m_pools.emplace(key, std::move(up));
+                return raw;
+            }
+            return static_cast<Pool<T>*>(it->second.get());
         }
 
         template<typename T>
         Pool<T>* GetPool()
         {
-            const size_t id = TypeId<T>();
-            if (id >= m_pools.size()) return nullptr;
-            return static_cast<Pool<T>*>(m_pools[id].get());
+            const std::type_index key(typeid(T));
+            auto it = m_pools.find(key);
+            if (it == m_pools.end()) return nullptr;
+            return static_cast<Pool<T>*>(it->second.get());
         }
 
         template<typename T>
         const Pool<T>* GetPool() const
         {
-            const size_t id = TypeId<T>();
-            if (id >= m_pools.size()) return nullptr;
-            return static_cast<const Pool<T>*>(m_pools[id].get());
+            const std::type_index key(typeid(T));
+            auto it = m_pools.find(key);
+            if (it == m_pools.end()) return nullptr;
+            return static_cast<const Pool<T>*>(it->second.get());
         }
 
     private:
         EntityManager m_entities;
-
-        std::vector<std::unique_ptr<IPool>> m_pools;
-        inline static size_t s_typeCounter = 0;
+        std::unordered_map<std::type_index, std::unique_ptr<IPool>> m_pools;
     };
 
-}
+} 

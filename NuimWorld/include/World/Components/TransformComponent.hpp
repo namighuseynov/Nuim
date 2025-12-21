@@ -31,4 +31,4 @@ namespace Nuim::World {
         }
     };
 
-} // namespace Nuim::World
+}
