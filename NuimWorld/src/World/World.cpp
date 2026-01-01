@@ -155,6 +155,26 @@ namespace Nuim::World {
         m_registry.DestroyEntity(e);
     }
 
+    Entity World::CreateEntityWithUUID(const Nuim::UUID& uuid, const std::string& name)
+    {
+#if defined(_DEBUG) || defined(DEBUG)
+        // Detect duplicates early (loader safety)
+        if (FindByUUID(uuid) != NullEntity)
+        {
+            // In debug, fail fast: scene file has duplicated UUID
+            assert(false && "CreateEntityWithUUID: duplicated UUID in scene");
+        }
+#endif
+
+        // Use normal creation path to ensure all base components are present
+        Entity e = CreateEntity(name);
+
+        // Override UUID to the requested value
+        m_registry.Get<UUIDComponent>(e).uuid = uuid;
+
+        return e;
+    }
+
 
     Entity World::DuplicateEntity(Entity src, bool recursive)
     {

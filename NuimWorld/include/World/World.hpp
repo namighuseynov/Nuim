@@ -33,6 +33,7 @@ namespace Nuim::World {
 
         // --- User API ---
         Entity CreateEntity(const std::string& name = "Entity");
+        Entity CreateEntityWithUUID(const Nuim::UUID& uuid, const std::string& name = "Entity");
         void   DestroyEntity(Entity e, bool recursive = true);
 
         Entity DuplicateEntity(Entity src, bool recursive = true);
